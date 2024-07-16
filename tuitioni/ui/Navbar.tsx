@@ -1,27 +1,15 @@
 import { Button } from "@/components/ui/button";
-import Logo from "@/app/ui/Logo";
+import Image from "next/image";
 import React from "react";
+import NavbarButtons from "./NavbarButtons";
 
 export default function Navbar() {
   return (
-    <div className="flex justify-between px-8 py-2 border-b">
+    <div className="flex items-center justify-between px-8 py-2 border-b">
       <div>
-        <Logo />
+        <Image src="/Logo.svg" width={100} height={80} alt="Logo" />
       </div>
-      <div className="flex gap-2">
-        <Button className="" variant="outline">
-          Home
-        </Button>
-        <Button className="ghost" variant="outline">
-          Job
-        </Button>
-        <Button className="ghost" variant="outline">
-          Tutors
-        </Button>
-        <Button className="ghost" variant="outline">
-          How we work
-        </Button>
-      </div>
+      <NavbarButtons />
       <div className="flex gap-2">
         <Button
           variant="default"
