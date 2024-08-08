@@ -1,5 +1,54 @@
 import React from "react";
+import JobCard from "@/ui/jobs/JobCard";
+
+// Define the type for the job data
+interface Job {
+  type: string;
+  postDate: string;
+  title: string;
+  description: string;
+  medium: string;
+  preferredTutor: string;
+  tutoringDays: string;
+  monthlySalary: string;
+  subjects: string[];
+}
 
 export default function Page() {
-  return <div>hello</div>;
+  const mockJobs: Job[] = [
+    {
+      type: "Full-time",
+      postDate: "2024-08-01",
+      title: "Tutor needed for English version",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      medium: "Online",
+      preferredTutor: "Native English Speaker",
+      tutoringDays: "Mon, Wed, Fri",
+      monthlySalary: "$3000",
+      subjects: ["English", "Literature"],
+    },
+    {
+      type: "Part-time",
+      postDate: "2024-08-05",
+      title: "Math Tutor for High School",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna.",
+      medium: "In-person",
+      preferredTutor: "Certified Math Teacher",
+      tutoringDays: "Tue, Thu",
+      monthlySalary: "$1500",
+      subjects: ["Mathematics", "Algebra"],
+    },
+  ];
+
+  return (
+    <div className="flex">
+      <div>Search</div>
+      <div className="flex gap-2 flex-col p-4 flex-1">
+        {mockJobs.map((job, index) => (
+          <JobCard key={index} {...job} />
+        ))}
+      </div>
+    </div>
+  );
 }

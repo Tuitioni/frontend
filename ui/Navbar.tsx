@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
 import NavbarButtons from "./NavbarButtons";
+import Link from "next/link";
 
 export default function Navbar() {
   return (
@@ -11,18 +12,22 @@ export default function Navbar() {
       </div>
       <NavbarButtons />
       <div className="flex gap-2">
-        <Button
-          variant="default"
-          className=" border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink "
-        >
-          Login
-        </Button>
-        <Button
-          className="border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink"
-          variant="default"
-        >
-          Register
-        </Button>
+        <Link href="/login">
+          <Button
+            variant="default"
+            className=" border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink "
+          >
+            Login
+          </Button>
+        </Link>
+        <Link href="/register">
+          <Button
+            className="border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink"
+            variant="default"
+          >
+            Register
+          </Button>
+        </Link>
       </div>
     </div>
   );
