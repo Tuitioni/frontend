@@ -1,5 +1,14 @@
 import React from "react";
 import JobCard from "@/ui/jobs/JobCard";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import FilterJobs from "@/ui/jobs/FilterJobs";
 
 // Define the type for the job data
 interface Job {
@@ -42,9 +51,9 @@ export default function Page() {
   ];
 
   return (
-    <div className="flex">
-      <div>Search</div>
-      <div className="flex gap-2 flex-col p-4 flex-1">
+    <div className="flex mt-4">
+      <FilterJobs />
+      <div className="flex gap-2 flex-col p-4 flex-1 w-3/4">
         {mockJobs.map((job, index) => (
           <JobCard key={index} {...job} />
         ))}

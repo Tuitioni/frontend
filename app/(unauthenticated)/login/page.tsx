@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
 
 export default function Page() {
-  const [activeButton, setActiveButton] = useState("login"); // Initial state as "login"
+  const [activeButton, setActiveButton] = useState("login"); 
 
   return (
     <div className="p-6 w-2/3 mx-auto">

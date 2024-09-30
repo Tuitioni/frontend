@@ -10,15 +10,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Testimonial } from "@/types/Testimonial";
+import { testimonials } from "@/data/testimonials";
 
-interface TestimonialSliderCardProps {
-  testimonials: Testimonial[];
-}
-
-export default function TestimonialSliderCard({
-  testimonials,
-}: TestimonialSliderCardProps) {
+export default function TestimonialSliderCard() {
   return (
     <section className="w-full py-4">
       <div className="mx-auto lg:max-w-6xl px-3">

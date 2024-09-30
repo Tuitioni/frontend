@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import Navbar from "@/ui/Navbar";
+import Footer from "@/ui/Footer";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -19,12 +20,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "flex flex-col min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
         <Navbar />
-        {children}
+        <main className="flex-grow">{children}</main>
+        <Footer />
       </body>
     </html>
   );
