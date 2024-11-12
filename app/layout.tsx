@@ -24,9 +24,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Navbar />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

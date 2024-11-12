@@ -4,9 +4,6 @@ import SearchTutor from "@/ui/SearchTutor";
 import TestimonialSliderCard from "@/ui/Testimonial";
 import TopTutors from "@/ui/TopTutors";
 
-import VideoPlayer from "@/ui/VideoPlayer";
-import Image from "next/image";
-
 export default function Home() {
   return (
     <>

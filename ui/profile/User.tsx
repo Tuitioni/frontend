@@ -1,35 +1,54 @@
+"use client";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { usePathname } from "next/navigation";
 
 const menuItems = [
-  "Dashboard",
-  "Job Board",
-  "Notification",
-  "Update Profile",
-  "Payment Section",
-  "My Apply Status",
-  "Profile Verification Request",
-  "Security",
+  { name: "Dashboard", path: "/profile/dashboard" },
+  // { name: "Job Board", path: "/profile/job-board" },
+  // { name: "Notification", path: "/profile/notification" },
+  { name: "Update Profile", path: "/profile/update-profile" },
+  { name: "Payment Section", path: "/profile/payment-section" },
+  // { name: "My Apply Status", path: "/profile/apply-status" },
+  {
+    name: "Profile Verification Request",
+    path: "/profile/verification-request",
+  },
+  // { name: "Security", path: "/profile/security" },
 ];
 
 export default function User() {
+  const pathname = usePathname();
+
   return (
     <div className="h-screen p-4 w-1/4 bg-gray-100">
-      <div className="mb-4">
-        <Image
-          alt="dummy image"
-          src="https://via.placeholder.com/100" // Dummy image URL
-          width={100}
-          height={100}
-        />
-      </div>
-      {menuItems.map((item, index) => (
-        <div key={index} className="mb-2">
-          <button className="w-full p-2 text-left bg-blue-500 text-black rounded hover:bg-blue-600">
-            {item}
-          </button>
+      <div className="mx-auto">
+        <div className="mb-4 flex justify-center">
+          <Image
+            alt="dummy image"
+            src="https://via.placeholder.com/100"
+            width={200}
+            height={150}
+          />
         </div>
-      ))}
+        {menuItems.map((item, index) => (
+          <div key={index} className="mb-2">
+            <Link href={item.path}>
+              <div
+                className={`mx-auto p-2 rounded text-black ${
+                  pathname === item.path
+                    ? "bg-sky-300"
+                    : "bg-sky-100 hover:bg-sky-300"
+                }`}
+              >
+                {item.name}
+              </div>
+            </Link>
+            {index < menuItems.length - 1 && <Separator />}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

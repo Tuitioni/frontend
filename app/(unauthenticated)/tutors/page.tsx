@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import TutorCard from "@/ui/tutors/TutorCard"; // Adjust the import path as needed
 import FilterTutors from "@/ui/tutors/FilterTutors";
 import {
@@ -17,6 +18,20 @@ interface Tutor {
 }
 
 export default function Page() {
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch("/api/tutors"); // Update this path based on your API route
+        const data = await response.json();
+        console.log(data); // Log the API response
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const mockTutors: Tutor[] = [
     { id: "T001", university: "Harvard", subject: "Mathematics" },
     { id: "T002", university: "Stanford", subject: "Physics" },

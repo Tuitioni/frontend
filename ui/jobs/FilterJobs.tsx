@@ -14,16 +14,17 @@ export default function FilterJobs() {
       <div>
         <div>Gender</div>
         <div className="flex gap-2">
-          <Button>Male</Button>
-          <Button>Female</Button>
+          <Button variant="yellowBorder">Male</Button>
+          <Button variant="yellowBorder">Female</Button>
         </div>
       </div>
+
       <div className="">
         <div>Tuition Type</div>
         <div className="flex gap-2">
-          <Button>Online</Button>
-          <Button>Offline</Button>
-          <Button> Hybrid </Button>
+          <Button variant="yellowBorder">Online</Button>
+          <Button variant="yellowBorder">Offline</Button>
+          <Button variant="yellowBorder">Hybrid</Button>
         </div>
       </div>
       <Select>

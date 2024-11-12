@@ -1,13 +1,7 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import JobCard from "@/ui/jobs/JobCard";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import FilterJobs from "@/ui/jobs/FilterJobs";
 
 // Define the type for the job data
@@ -24,6 +18,23 @@ interface Job {
 }
 
 export default function Page() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch("/api/jobs"); // Update this path based on your API route
+        const data = await response.json();
+        console.log(data); // Log the API response
+        setJobs(data); // Set the fetched jobs to state
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const mockJobs: Job[] = [
     {
       type: "Full-time",
