@@ -46,7 +46,7 @@ export default function Page() {
       <div className="flex mt-4 ">
         <FilterTutors />
         <div className="w-3/4">
-          <div className="flex justify-between px-4">
+          <div className="flex justify-between px-4 mb-2">
             <div>Showing Results: 40</div>
             <div className="flex gap-1 items-center">
               <div> Sort By: </div>
@@ -62,7 +62,7 @@ export default function Page() {
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4  flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex-1 mx-auto p-2">
             {mockTutors.map((tutor, index) => (
               <TutorCard
                 key={index}

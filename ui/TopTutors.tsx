@@ -26,7 +26,9 @@ const dummyTutors = [
 export default function TopTutors() {
   return (
     <div className="mt-10 mx-20">
-      <div className="text-yellow text-lg">Top Tutors</div>
+      <div className="text-yellow md:text-xl font-semibold text-lg ">
+        Top Tutors
+      </div>
       <div className="text-xl mb-6">
         We help to make communication between teachers and students
       </div>

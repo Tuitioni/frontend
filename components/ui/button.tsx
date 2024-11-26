@@ -9,12 +9,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-background text-grey ",
+        default:
+          "bg-background text-xs px-1 md:text-base text-grey border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink ",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border-input bg-background hover:text-yellow",
         yellowBorder:
-          "border-input bg-background  hover:text-yellow border border-yellow",
+          "border-input bg-background  hover:text-yellow border border-yellow ",
         activeOutline: "border-input bg-background  text-yellow",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
@@ -23,7 +24,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
+        sm: "h-7 rounded-md px-1 py-1 md:py-2 md:px-2",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
       },

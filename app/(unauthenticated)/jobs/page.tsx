@@ -64,7 +64,7 @@ export default function Page() {
   return (
     <div className="flex mt-4">
       <FilterJobs />
-      <div className="flex gap-2 flex-col p-4 flex-1 w-3/4">
+      <div className="flex gap-2 flex-col p-4 flex-1 w-3/4 justify-center items-center">
         {mockJobs.map((job, index) => (
           <JobCard key={index} {...job} />
         ))}

@@ -6,25 +6,25 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <div className="flex items-center justify-between px-8 py-2 border-b">
-      <div>
-        <Image src="/Logo.svg" width={100} height={80} alt="Logo" />
+    <div className="flex items-center justify-between px-2 sm:px-4 xl:px-8 py-2 border-b ">
+      <div className="w-[50px] md:w-[100px] cursor-pointer">
+        <Image
+          src="/Logo.svg"
+          alt="Logo"
+          width={50}
+          height={50}
+          layout="responsive"
+        />
       </div>
       <NavbarButtons />
-      <div className="flex gap-2">
+      <div className="flex gap-1 sm:gap-2">
         <Link href="/login">
-          <Button
-            variant="default"
-            className=" border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink "
-          >
+          <Button variant="default" className="px-1 py-1 md:px-4 md:py-2 h-9">
             Login
           </Button>
         </Link>
         <Link href="/register">
-          <Button
-            className="border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:to-pink"
-            variant="default"
-          >
+          <Button variant="default" className="px-1 py-1 md:px-4 md:py-2 h-9">
             Register
           </Button>
         </Link>

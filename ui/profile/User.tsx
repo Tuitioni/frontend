@@ -36,10 +36,10 @@ export default function User() {
           <div key={index} className="mb-2">
             <Link href={item.path}>
               <div
-                className={`mx-auto p-2 rounded text-black ${
+                className={`mx-auto p-2 rounded  ${
                   pathname === item.path
-                    ? "bg-sky-300"
-                    : "bg-sky-100 hover:bg-sky-300"
+                    ? "bg-yellow text-white"
+                    : "bg-sky-100 hover:bg-yellow hover:text-white"
                 }`}
               >
                 {item.name}
