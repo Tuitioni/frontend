@@ -29,17 +29,17 @@ export default function SearchTutor() {
           <div className="flex flex-col gap-2 md:flex-row md:gap-2">
             <Select>
               <SelectTrigger className="md:w-[180px] w-[100px]">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Curriculum" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="light">Bangla Medium</SelectItem>
+                <SelectItem value="dark">English Version</SelectItem>
+                <SelectItem value="system">English Medium</SelectItem>
               </SelectContent>
             </Select>
             <Select>
               <SelectTrigger className="md:w-[180px] w-[100px]">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Area" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="light">Light</SelectItem>
@@ -53,22 +53,13 @@ export default function SearchTutor() {
           <div className="flex flex-col gap-2 md:flex-row md:gap-2">
             <Select>
               <SelectTrigger className="md:w-[180px] w-[100px]">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Class" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger className="md:w-[180px] w-[100px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="dark">Primary</SelectItem>
+                <SelectItem value="dark">Middle School</SelectItem>
+                <SelectItem value="dark">SSC or HSC</SelectItem>
+                <SelectItem value="light">O/A-levels</SelectItem>
               </SelectContent>
             </Select>
           </div>

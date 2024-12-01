@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobCard from "@/ui/jobs/JobCard";
-
 import FilterJobs from "@/ui/jobs/FilterJobs";
 
 // Define the type for the job data
@@ -59,15 +58,66 @@ export default function Page() {
       monthlySalary: "$1500",
       subjects: ["Mathematics", "Algebra"],
     },
+    {
+      type: "Part-time",
+      postDate: "2024-08-05",
+      title: "Math Tutor for High School",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna.",
+      medium: "In-person",
+      preferredTutor: "Certified Math Teacher",
+      tutoringDays: "Tue, Thu",
+      monthlySalary: "$1500",
+      subjects: ["Mathematics", "Algebra"],
+    },
+    {
+      type: "Part-time",
+      postDate: "2024-08-05",
+      title: "Math Tutor for High School",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna.",
+      medium: "In-person",
+      preferredTutor: "Certified Math Teacher",
+      tutoringDays: "Tue, Thu",
+      monthlySalary: "$1500",
+      subjects: ["Mathematics", "Algebra"],
+    },
+    {
+      type: "Part-time",
+      postDate: "2024-08-05",
+      title: "Math Tutor for High School",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna.",
+      medium: "In-person",
+      preferredTutor: "Certified Math Teacher",
+      tutoringDays: "Tue, Thu",
+      monthlySalary: "$1500",
+      subjects: ["Mathematics", "Algebra"],
+    },
+    {
+      type: "Part-time",
+      postDate: "2024-08-05",
+      title: "Math Tutor for High School",
+      description:
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna.",
+      medium: "In-person",
+      preferredTutor: "Certified Math Teacher",
+      tutoringDays: "Tue, Thu",
+      monthlySalary: "$1500",
+      subjects: ["Mathematics", "Algebra"],
+    },
+    // Add more mock jobs as needed
   ];
 
   return (
     <div className="flex mt-4">
       <FilterJobs />
-      <div className="flex gap-2 flex-col p-4 flex-1 w-3/4 justify-center items-center">
-        {mockJobs.map((job, index) => (
-          <JobCard key={index} {...job} />
-        ))}
+      <div className="flex-1 w-3/4 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {mockJobs.map((job, index) => (
+            <JobCard key={index} {...job} />
+          ))}
+        </div>
       </div>
     </div>
   );

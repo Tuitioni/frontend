@@ -24,33 +24,23 @@ export default function JobCard({
   subjects,
 }: JobCardProps) {
   return (
-    <div className="p-4 border rounded-md shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
-      <div className="mb-4">
-        <div className="font-bold text-lg md:text-xl xl:text-2xl">{title}</div>
-        <div className="text-xs md:text-sm xl:text-base text-gray-600">
-          {description}
-        </div>
+    <div className="p-3 lg:p-2 border rounded-md shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+      <div className="mb-3 lg:mb-2">
+        <div className="font-bold text-sm">{title}</div>
+        <div className="text-xs text-gray-600">{description}</div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="text-sm md:text-base xl:text-lg">Type: {type}</div>
-        <div className="text-sm md:text-base xl:text-lg">
-          Post Date: {postDate}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-1">
+        <div className="text-xs">Type: {type}</div>
+        <div className="text-xs">Post Date: {postDate}</div>
 
-        <div className="text-sm md:text-base xl:text-lg">Medium: {medium}</div>
-        <div className="text-sm md:text-base xl:text-lg">
-          Preferred Tutor: {preferredTutor}
-        </div>
+        <div className="text-xs">Medium: {medium}</div>
+        <div className="text-xs">Preferred Tutor: {preferredTutor}</div>
 
-        <div className="text-sm md:text-base xl:text-lg">
-          Tutoring Days: {tutoringDays}
-        </div>
-        <div className="text-sm md:text-base xl:text-lg">
-          Monthly Salary: {monthlySalary}
-        </div>
+        <div className="text-xs">Tutoring Days: {tutoringDays}</div>
+        <div className="text-xs">Monthly Salary: {monthlySalary}</div>
 
-        <div className="text-sm md:text-base xl:text-lg col-span-2">
+        <div className="text-xs col-span-2">
           Subjects: {subjects.join(", ")}
         </div>
       </div>
