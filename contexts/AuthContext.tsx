@@ -22,17 +22,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (token: string) => {
+    if (!token) {
+      console.error("No token provided to login function");
+      return;
+    }
+
     localStorage.setItem("admin_token", token);
-    // Also set the token in cookies for middleware
-    document.cookie = `admin_token=${token}; path=/`;
+
+    // Set secure cookie with proper attributes
+    const secure = process.env.NODE_ENV === "production";
+    document.cookie = `admin_token=${token}; path=/; ${
+      secure ? "secure;" : ""
+    } samesite=strict; max-age=86400`; // 24 hours
+    console.log("Token set in cookies:", token);
+
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem("admin_token");
-    // Remove from cookies as well
-    document.cookie =
-      "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    // Remove cookie with same attributes used when setting
+    document.cookie = `admin_token=; path=/; ${
+      process.env.NODE_ENV === "production" ? "secure;" : ""
+    } samesite=strict; max-age=0; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
     setIsAuthenticated(false);
   };
 
