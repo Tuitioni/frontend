@@ -1,29 +1,50 @@
+"use client";
+
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 import { cn } from "@/lib/utils";
-import Sidebar from "@/components/ui/admin/sidebar";
+import Sidebar from "@/components/ui/admin/sideBar";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-export default function RootLayout({
+export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (!token) {
+      router.replace("/signin");
+    }
+  }, [router]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <html lang="en">
       <body
         className={cn(
-          "flex flex-col min-h-screen bg-background font-sans antialiased",
+          "flex min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
-        <Sidebar />
-        {children}
+        <div className="flex flex-row min-h-screen w-full">
+          <Sidebar />
+          <main className="flex-1 p-8 flex justify-center">{children}</main>
+        </div>
       </body>
     </html>
   );

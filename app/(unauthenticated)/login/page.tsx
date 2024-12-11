@@ -38,7 +38,7 @@ export default function Page() {
 
       const data = await response.json();
       console.log("Registration success:", data);
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
       console.error("Registration error:", error);
     }
@@ -63,7 +63,7 @@ export default function Page() {
 
       const data = await response.json();
       console.log("Login success:", data);
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
       console.error("Login error:", error);
     }

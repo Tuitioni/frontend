@@ -2,23 +2,23 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const token = request.cookies.get("admin_token");
+  const isAdminRoute = request.nextUrl.pathname.startsWith("/dashboard");
+  const isAuthRoute = request.nextUrl.pathname === "/signin";
 
-  // Redirect from "/" to "/home"
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/home", request.url));
+  // If trying to access admin route without token
+  if (isAdminRoute && !token) {
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
-  // Redirect from "/profile" to "/dashboard"
-  if (pathname === "/profile") {
-    return NextResponse.redirect(new URL("/profile/dashboard", request.url));
+  // If trying to access signin page with valid token
+  if (isAuthRoute && token) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Continue with the request if no redirection is needed
   return NextResponse.next();
 }
 
-// Specify the paths where the middleware should run
 export const config = {
-  matcher: ["/", "/profile"], // Middleware will run on both "/" and "/profile"
+  matcher: ["/dashboard/:path*", "/signin"],
 };
