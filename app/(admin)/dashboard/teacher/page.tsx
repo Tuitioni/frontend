@@ -11,6 +11,35 @@ export default function TeacherDashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleDelete = async (id: string) => {
+    try {
+      const token = localStorage.getItem("admin_token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const apiUrl = `http://localhost:8000/teacher/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete teacher");
+      }
+
+      // Update state by filtering out the deleted teacher
+      setTeachers((prevTeachers) =>
+        prevTeachers.filter((teacher) => teacher.id !== id)
+      );
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
@@ -70,13 +99,23 @@ export default function TeacherDashboard() {
     window.location.href = `/dashboard/teacher/${id}`;
   };
 
+  const handleEdit = (id: string) => {
+    window.location.href = `/dashboard/teacher/${id}/edit`;
+  };
+
   return (
     <div className="flex flex-col items-center p-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
         Teacher Dashboard
       </h1>
       <div className="w-full flex justify-center">
-        <DataTable data={tableData} columns={columns} onView={handleView} />
+        <DataTable
+          data={tableData}
+          columns={columns}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
