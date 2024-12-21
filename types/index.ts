@@ -1,0 +1,10 @@
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
+export enum Medium {
+  ENGLISH_MEDIUM = "ENGLISH_MEDIUM",
+  BANGLA_MEDIUM = "BANGLA_MEDIUM",
+  ENGLISH_VERSION = "ENGLISH_VERSION",
+}

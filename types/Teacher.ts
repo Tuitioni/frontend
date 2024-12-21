@@ -1,3 +1,5 @@
+import { Gender, Medium } from "./index";
+
 export interface TeacherPreview {
   id: string;
   firstName: string;
@@ -9,17 +11,6 @@ export interface TeacherPreview {
     gender: Gender;
     medium: Medium;
   };
-}
-
-enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
-
-enum Medium {
-  ENGLISH_MEDIUM = "ENGLISH_MEDIUM",
-  BANGLA_MEDIUM = "BANGLA_MEDIUM",
-  ENGLISH_VERSION = "ENGLISH_VERSION",
 }
 
 export interface TeacherDetail {
@@ -46,4 +37,30 @@ export interface TeacherDetail {
     availability: string;
     monthlySalary: number;
   };
+}
+
+export interface UpdateTeacherProfileDto {
+  district?: string;
+  area?: string;
+  gender?: Gender;
+  age?: number;
+  medium?: Medium;
+  education?: string;
+  yearsOfExperience?: number;
+  subjects?: string[];
+  specialization?: string;
+  teachingLevel?: string;
+  availability?: string;
+  monthlySalary?: number;
+  teacherId?: string;
+}
+
+export interface UpdateTeacherDto {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  location?: string;
+  phone?: string;
+  profile?: UpdateTeacherProfileDto;
 }

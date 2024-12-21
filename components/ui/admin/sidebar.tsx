@@ -12,6 +12,8 @@ import {
   LineChart,
   Settings,
   LogOut,
+  Bell,
+  Briefcase,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -59,6 +61,15 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
+              href="/dashboard/job"
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
+            >
+              <Briefcase size={20} />
+              Job
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/dashboard/tuition"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
@@ -73,6 +84,15 @@ export default function Sidebar() {
             >
               <Wallet size={20} />
               Payment
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/dashboard/announcement"
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
+            >
+              <Bell size={20} />
+              Announcement
             </Link>
           </li>
           <li>
