@@ -17,7 +17,7 @@ export default function Page() {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch("/api/register/student", {
+      const response = await fetch("/api/register/teacher", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export default function Page() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("/api/login/student", {
+      const response = await fetch("/api/login/teacher", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +62,9 @@ export default function Page() {
       }
 
       const data = await response.json();
+      if (data.access_token) {
+        sessionStorage.setItem("access_token", data.access_token);
+      }
       console.log("Login success:", data);
     } catch (error) {
       setError(error.message);

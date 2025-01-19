@@ -4,21 +4,30 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Redirect from "/" to "/home"
+  // Retrieve the token from cookies
+  const token = request.cookies.get("access_token");
+
+  if (pathname.startsWith("/profile")) {
+    if (!token) {
+      // Redirect to login if token is missing
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Allow access to the profile/dashboard if the token exists
+    if (pathname === "/profile") {
+      return NextResponse.redirect(new URL("/profile/dashboard", request.url));
+    }
+  }
+
+  // Default redirect for root path
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  // Redirect from "/profile" to "/dashboard"
-  if (pathname === "/profile") {
-    return NextResponse.redirect(new URL("/profile/dashboard", request.url));
-  }
-
-  // Continue with the request if no redirection is needed
+  // Continue processing if no redirection is needed
   return NextResponse.next();
 }
 
-// Specify the paths where the middleware should run
 export const config = {
-  matcher: ["/", "/profile"], // Middleware will run on both "/" and "/profile"
+  matcher: ["/", "/profile/:path*"],
 };
