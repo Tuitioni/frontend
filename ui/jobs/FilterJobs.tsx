@@ -11,16 +11,7 @@ import {
 export default function FilterJobs() {
   return (
     <div className="flex flex-col w-1/4 px-2 py-2 gap-3 bg-bluishGrey ml-2 rounded-lg">
-      <Select>
-        <SelectTrigger className="lg:w-[180px] w-[60px] sm:w-[150px] ">
-          <SelectValue placeholder="Select Gender" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="light">Light</SelectItem>
-          <SelectItem value="dark">Dark</SelectItem>
-          <SelectItem value="system">System</SelectItem>
-        </SelectContent>
-      </Select>
+      
       <Select>
         <SelectTrigger className="lg:w-[180px] w-[60px] sm:w-[150px] ">
           <SelectValue placeholder="Select Area" />
