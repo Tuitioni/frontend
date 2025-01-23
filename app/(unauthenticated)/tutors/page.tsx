@@ -30,8 +30,9 @@ export default function Page() {
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const response = await fetch("/api/tutors"); // Update this path based on your API route
+        const response = await fetch("/api/tutors");
         const data = await response.json();
+        console.log(data);
         setTutors(data); // Set the fetched data to the state
       } catch (error) {
         console.error("Error fetching tutors:", error);
