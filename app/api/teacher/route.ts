@@ -1,14 +1,5 @@
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const response = await fetch(`${process.env.TUTIONI_API}/post`, {
-    method: "GET",
-  });
-
-  const res = await response.json();
-  return NextResponse.json(res);
-}
-
 export async function POST(request: Request) {
   try {
     // Parse the request body
@@ -37,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch data from the external API
-    const response = await fetch(`${process.env.TUTIONI_API}/post/filter`, {
+    const response = await fetch(`${process.env.TUTIONI_API}/teacher/filter`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,16 +38,16 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: "Failed to filter posts" },
+        { error: "Failed to filter teachers" },
         { status: response.status }
       );
     }
 
     const data = await response.json();
-    console.log("Filtered posts:", data);
+    console.log("Filtered Teachers:", data);
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error filtering post data:", error);
+    console.error("Error filtering teacher data:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

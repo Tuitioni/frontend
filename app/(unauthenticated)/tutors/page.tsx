@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Define the type for a tutor
 interface Tutor {
   id: string;
   firstName: string;
@@ -27,12 +26,12 @@ export default function Page() {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Fetch all tutors initially
   useEffect(() => {
     const fetchTutors = async () => {
       try {
         const response = await fetch("/api/teachers"); // Update this path based on your API route
         const data = await response.json();
-        console.log(data);
         setTutors(data); // Set the fetched data to the state
       } catch (error) {
         console.error("Error fetching tutors:", error);
@@ -47,7 +46,10 @@ export default function Page() {
   return (
     <>
       <div className="flex mt-4">
-        <FilterTutors />
+        {/* Pass the setTutors function to FilterTutors */}
+        <FilterTutors
+          onFilter={(filteredTutors: Tutor[]) => setTutors(filteredTutors)}
+        />
         <div className="w-3/4">
           <div className="flex justify-between px-4 mb-2">
             <div>Showing Results: {tutors.length}</div>
