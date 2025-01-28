@@ -8,124 +8,154 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Define the type for the onFilter prop
-interface FilterTutorsProps {
-  onFilter: (filteredTutors: any[]) => void; // Callback to send filtered tutors
+interface DistrictData {
+  district: string;
+  areas: string[];
 }
 
-export default function FilterTutors({ onFilter }: FilterTutorsProps) {
-  const [areas, setAreas] = useState<string[]>([]);
-  const [district, setDistrict] = useState<string>("Dhaka");
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedMedium, setSelectedMedium] = useState<string>("");
-  const [selectedLevel, setSelectedLevel] = useState<string>("");
-  const [allData, setAllData] = useState<any[]>([]);
+interface FilterTutorsProps {
+  onFilterChange: (filters: {
+    district: string;
+    area: string;
+    level: string;
+  }) => void;
+  onReset: () => void;
+}
 
-  // Fetch the JSON data
+export default function FilterTutors({
+  onFilterChange,
+  onReset,
+}: FilterTutorsProps) {
+  const [district, setDistrict] = React.useState("all");
+  const [area, setArea] = React.useState("all");
+  const [level, setLevel] = React.useState("all");
+  const [districtsData, setDistrictsData] = useState<DistrictData[]>([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDistrictsData = async () => {
       try {
         const response = await fetch(
           "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
         );
         const data = await response.json();
-        setAllData(data);
-
-        // Find and set areas for the default district
-        const defaultDistrict = data.find((d: any) => d.district === district);
-        if (defaultDistrict) {
-          setAreas(defaultDistrict.areas);
-        }
+        setDistrictsData(data);
       } catch (error) {
-        console.error("Error fetching areas data:", error);
+        console.error("Error fetching districts data:", error);
       }
     };
 
-    fetchData();
-  }, [district]); // Re-run if `district` changes
+    fetchDistrictsData();
+  }, []);
 
-  // Handle the "Search" button click
-  const handleSearch = async () => {
-    const filters = {
-      district,
-      area: selectedArea,
-      teachingLevel: selectedLevel,
-    };
-
-    try {
-      const response = await fetch("/api/teacher", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(filters),
-      });
-
-      const data = await response.json();
-      console.log("Filtered Tutors:", data);
-
-      // Pass the filtered data to the parent
-      onFilter(data);
-    } catch (error) {
-      console.error("Error fetching filtered tutors:", error);
+  useEffect(() => {
+    if (district && district !== "all") {
+      const selectedDistrict = districtsData.find(
+        (d) => d.district.toLowerCase() === district.toLowerCase()
+      );
+      setAvailableAreas(selectedDistrict?.areas || []);
+    } else {
+      setAvailableAreas([]);
     }
+    setArea("all"); // Reset area when district changes
+  }, [district, districtsData]);
+
+  const handleApplyFilters = () => {
+    onFilterChange({
+      district: district === "all" ? "" : district,
+      area: area === "all" ? "" : area,
+      level: level === "all" ? "" : level,
+    });
+  };
+
+  const handleReset = () => {
+    setDistrict("all");
+    setArea("all");
+    setLevel("all");
+    onReset();
   };
 
   return (
-    <div className="flex flex-col w-1/4 px-2 py-2 gap-3 bg-bluishGrey ml-2 rounded-lg">
-      {/* District Dropdown */}
-      <Select
-        onValueChange={(value) => {
-          setDistrict(value);
-          const selectedDistrict = allData.find(
-            (d: any) => d.district === value
-          );
-          setAreas(selectedDistrict ? selectedDistrict.areas : []);
-        }}
-      >
-        <SelectTrigger className="lg:w-[180px] w-[60px] sm:w-[150px]">
-          <SelectValue placeholder="District" />
-        </SelectTrigger>
-        <SelectContent>
-          {allData.map((d: any) => (
-            <SelectItem key={d.district} value={d.district}>
-              {d.district}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {/* Area Dropdown */}
-      <Select
-        onValueChange={(value) => {
-          setSelectedArea(value);
-        }}
-      >
-        <SelectTrigger className="lg:w-[180px] w-[60px] sm:w-[150px]">
-          <SelectValue placeholder="Area" />
-        </SelectTrigger>
-        <SelectContent>
-          {areas.map((area, index) => (
-            <SelectItem key={index} value={area}>
-              {area}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {/* Level Dropdown */}
-      <Select onValueChange={(value) => setSelectedLevel(value)}>
-        <SelectTrigger className="lg:w-[180px] w-[60px] sm:w-[150px]">
-          <SelectValue placeholder="Level" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="secondary">Secondary</SelectItem>
-          <SelectItem value="primary">Primary</SelectItem>
-        </SelectContent>
-      </Select>
-
+    <div className="flex flex-col gap-6 bg-card p-6 rounded-lg shadow-sm">
       <div>
-        <Button onClick={handleSearch}>Search</Button>
+        <h3 className="font-semibold mb-4">Filter Tutors</h3>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">District</label>
+            <Select value={district} onValueChange={setDistrict}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select District" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Districts</SelectItem>
+                {districtsData.map((d) => (
+                  <SelectItem key={d.district} value={d.district.toLowerCase()}>
+                    {d.district}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Area</label>
+            <Select
+              value={area}
+              onValueChange={setArea}
+              disabled={district === "all"}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    district !== "all" ? "Select Area" : "Select District First"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Areas</SelectItem>
+                {availableAreas.map((area) => (
+                  <SelectItem key={area} value={area.toLowerCase()}>
+                    {area}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Level of Study</label>
+            <Select value={level} onValueChange={setLevel}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Levels</SelectItem>
+                <SelectItem value="primary">Primary (Class 1-5)</SelectItem>
+                <SelectItem value="junior">
+                  Junior Secondary (Class 6-8)
+                </SelectItem>
+                <SelectItem value="secondary">
+                  Secondary (Class 9-10)
+                </SelectItem>
+                <SelectItem value="higher">
+                  Higher Secondary (Class 11-12)
+                </SelectItem>
+                <SelectItem value="admission">Admission Test</SelectItem>
+                <SelectItem value="university">University</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Button className="w-full" onClick={handleApplyFilters}>
+          Apply Filters
+        </Button>
+        <Button variant="outline" className="w-full" onClick={handleReset}>
+          Reset
+        </Button>
       </div>
     </div>
   );

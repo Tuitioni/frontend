@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const response = await fetch(`${process.env.TUTIONI_API}/teacher`, {
+  const response = await fetch(`${process.env.TUITIONI_API}/teacher`, {
     method: "GET",
   });
 

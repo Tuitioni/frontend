@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   console.log(identifier, password);
 
   const response = await fetch(
-    `${process.env.TUTIONI_API}/auth/login/teacher`,
+    `${process.env.TUITIONI_API}/auth/login/teacher`,
     {
       method: "POST",
       headers: {

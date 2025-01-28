@@ -27,7 +27,7 @@ export default function User() {
         <div className="mb-4 flex justify-center">
           <Image
             alt="dummy image"
-            src="https://via.placeholder.com/100"
+            src="https://picsum.photos/400/300"
             width={200}
             height={150}
           />

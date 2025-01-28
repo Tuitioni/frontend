@@ -1,33 +1,36 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const token = request.cookies.get('access_token');
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                     request.nextUrl.pathname.startsWith('/register');
+  const isLogoutPage = request.nextUrl.pathname.startsWith('/api/auth/logout');
 
-  // Retrieve the token from cookies
-  const token = request.cookies.get("access_token");
-
-  if (pathname.startsWith("/profile")) {
-    if (!token) {
-      // Redirect to login if token is missing
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    // Allow access to the profile/dashboard if the token exists
-    if (pathname === "/profile") {
-      return NextResponse.redirect(new URL("/profile/dashboard", request.url));
-    }
+  // Allow logout requests to proceed
+  if (isLogoutPage) {
+    return NextResponse.next();
   }
 
-  // Default redirect for root path
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/home", request.url));
+  if (!token && !isAuthPage) {
+    // Redirect to login if accessing protected route without token
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Continue processing if no redirection is needed
+  if (token && isAuthPage) {
+    // Redirect to dashboard if accessing auth pages with token
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/profile/:path*"],
-};
+  matcher: [
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/login',
+    '/register',
+    '/api/auth/logout'
+  ]
+}; 

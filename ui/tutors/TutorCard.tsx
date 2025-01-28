@@ -1,5 +1,7 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Adjust the import path as needed
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Define the type for the TutorCard props
 interface TutorCardProps {
@@ -22,39 +24,49 @@ export default function TutorCard({
   phone,
   medium,
   education,
-  subjects,
+  subjects = [], // provide default empty array
   yearsOfExperience,
 }: TutorCardProps) {
+  // Ensure subjects is always an array
+  const subjectList = Array.isArray(subjects) ? subjects : [];
+
   return (
-    <div className="w-full max-w-[250px] h-auto md:w-[250px] md:h-[280px] rounded-lg p-4 flex flex-col items-center gap-3 shadow-lg bg-white">
-      <Avatar className="w-16 h-16 md:w-20 md:h-20">
-        <AvatarImage src="https://github.com/shadcn.png" alt="Tutor Avatar" />
-        <AvatarFallback>
-          {firstName.charAt(0)}
-          {lastName.charAt(0)}
-        </AvatarFallback>
-      </Avatar>
-      <div className="text-center text-gray-800 font-semibold text-lg">
-        {firstName} {lastName}
-      </div>
-      <div className="text-center text-gray-600 text-sm md:text-base">
-        Location: {location}
-      </div>
-      <div className="text-center text-gray-600 text-sm md:text-base">
-        Medium: {medium}
-      </div>
-      <div className="text-center text-gray-600 text-sm md:text-base">
-        Education: {education}
-      </div>
-      <div className="text-center text-gray-600 text-sm md:text-base">
-        Subjects:{" "}
-        {subjects && subjects.length > 0
-          ? subjects.join(", ")
-          : "No subjects listed"}
-      </div>
-      <div className="text-center text-gray-600 text-sm md:text-base">
-        Experience: {yearsOfExperience} years
-      </div>
-    </div>
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold text-lg">
+              {firstName} {lastName}
+            </h3>
+            <span className="text-sm text-gray-500">{yearsOfExperience} yrs exp</span>
+          </div>
+          
+          <div className="text-sm text-gray-600">
+            <div>{education}</div>
+            <div>{location}</div>
+          </div>
+          
+          <div className="flex flex-wrap gap-1 mt-2">
+            {subjectList.slice(0, 3).map((subject, index) => (
+              <span
+                key={index}
+                className="bg-gray-100 px-2 py-1 rounded-full text-xs"
+              >
+                {subject}
+              </span>
+            ))}
+            {subjectList.length > 3 && (
+              <span className="text-xs text-gray-500">+{subjectList.length - 3} more</span>
+            )}
+          </div>
+
+          <Link href={`/tutors/${id}`}>
+            <Button className="w-full mt-2" variant="outline">
+              View Profile
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

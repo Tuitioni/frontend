@@ -13,9 +13,9 @@ export default function Navbar() {
         <Image
           src="/Logo.svg"
           alt="Logo"
-          width={50}
-          height={50}
-          layout="responsive"
+          width={100}
+          height={40}
+          style={{ objectFit: 'contain' }}
         />
       </Link>
       <div>
