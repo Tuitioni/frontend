@@ -6,19 +6,19 @@ const dummyTutors = [
     id: "1",
     subject: "Math",
     institute: "ABC Institute",
-    imageUrl: "https://via.placeholder.com/250x220?text=Tutor+1",
+    imageUrl: "https://picsum.photos/400/300",
   },
   {
     id: "2",
     subject: "Science",
     institute: "XYZ Academy",
-    imageUrl: "https://via.placeholder.com/250x220?text=Tutor+2",
+    imageUrl: "https://picsum.photos/400/300",
   },
   {
     id: "3",
     subject: "English",
     institute: "LMN School",
-    imageUrl: "https://via.placeholder.com/250x220?text=Tutor+3",
+    imageUrl: "https://picsum.photos/400/300",
   },
   // Add more tutor objects as needed
 ];
@@ -40,10 +40,10 @@ export default function TopTutors() {
           >
             <div className="relative h-[220px] w-full">
               <Image
+                fill
+                style={{ objectFit: 'cover' }}
                 src={tutor.imageUrl}
                 alt={`Tutor ${tutor.id}`}
-                layout="fill" // Fills the parent container
-                objectFit="cover" // Ensures the image covers the container without distortion
               />
             </div>
             <div className="p-4">

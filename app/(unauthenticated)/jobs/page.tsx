@@ -2,6 +2,13 @@
 import React, { useEffect, useState } from "react";
 import JobCard from "@/ui/jobs/JobCard";
 import FilterJobs from "@/ui/jobs/FilterJobs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Define the type for the job data
 interface Job {
@@ -30,44 +37,110 @@ interface Job {
 
 export default function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFilteredJobs = async (filters?: {
+    district: string;
+    area: string;
+    levelOfStudy: string;
+  }) => {
+    try {
+      setLoading(true);
+      
+      if (!filters) {
+        // Initial load or reset - fetch all jobs
+        const response = await fetch("/api/jobs");
+        const data = await response.json();
+        setJobs(data);
+        return;
+      }
+
+      // Fetch filtered jobs
+      const response = await fetch("/api/jobs/filter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filters),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch filtered jobs");
+      }
+
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch("/api/jobs"); // Replace with your actual API endpoint
-        const data = await response.json();
-        console.log(data); // Log the API response
-        setJobs(data); // Set the fetched jobs to state
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
-    fetchJobs();
+    fetchFilteredJobs();
   }, []);
 
+  const handleFilterChange = (filters: {
+    district: string;
+    area: string;
+    levelOfStudy: string;
+  }) => {
+    fetchFilteredJobs(filters);
+  };
+
+  const handleReset = () => {
+    fetchFilteredJobs();
+  };
+
   return (
-    <div className="flex mt-4">
-      <FilterJobs />
-      <div className="flex-1 w-3/4 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {jobs.length > 0 ? (
-            jobs.map((job) => (
-              <JobCard
-                key={job.id}
-                title={`${job.firstName} ${job.lastName}`}
-                description={job.note}
-                medium={job.medium}
-                subjects={job.subjects}
-                tutoringDays={`${job.numberOfDays} days per week`}
-                monthlySalary={`$${job.salary}`}
-              />
-            ))
+    <>
+      <div className="flex mt-4 h-[calc(100vh-6rem)]">
+        <div className="w-1/4 p-4">
+          <FilterJobs onFilterChange={handleFilterChange} onReset={handleReset} />
+        </div>
+        <div className="w-3/4 flex flex-col">
+          <div className="flex justify-between px-4 mb-2">
+            <div>Showing Results: {jobs.length}</div>
+            <div className="flex gap-1 items-center">
+              <div>Sort By:</div>
+              <Select>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">Date Posted</SelectItem>
+                  <SelectItem value="salary">Salary</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {loading ? (
+            <div className="text-center">Loading...</div>
           ) : (
-            <p>No jobs available</p>
+            <div className="overflow-y-auto flex-1 pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+                {jobs.length > 0 ? (
+                  jobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      title={`${job.firstName} ${job.lastName}`}
+                      description={job.note}
+                      medium={job.medium}
+                      subjects={job.subjects}
+                      tutoringDays={`${job.numberOfDays} days per week`}
+                      monthlySalary={`$${job.salary}`}
+                    />
+                  ))
+                ) : (
+                  <p>No jobs available</p>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
