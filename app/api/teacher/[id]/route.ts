@@ -16,7 +16,7 @@ export async function GET(
     }
 
     const token = authHeader.split(" ")[1];
-    const apiUrl = `${process.env.TUITIONI_API}/teacher-profile/${params.id}`;
+    const apiUrl = `${process.env.TUITIONI_API}/teacher/${params.id}`;
     console.log("Making request to:", apiUrl);
 
     const response = await fetch(apiUrl, {

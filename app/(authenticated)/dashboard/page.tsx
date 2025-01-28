@@ -1,11 +1,11 @@
-'use client';
-import { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useToken } from '@/hooks/useToken';
+"use client";
+import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToken } from "@/hooks/useToken";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import React from 'react';
+import React from "react";
 
 interface TeacherProfile {
   id: string;
@@ -31,22 +31,26 @@ export default function DashboardPage() {
   // Memoize fetchProfile to prevent recreation on every render
   const fetchProfile = useCallback(async () => {
     if (!decodedToken?.sub) {
-      setError('Authentication error - no user ID found');
+      setError("Authentication error - no user ID found");
       setLoading(false);
       return;
     }
-    
+
     try {
       setLoading(true);
-      const data = await makeAuthenticatedRequest(`/api/teacher-profile/${decodedToken.sub}`);
+      const data = await makeAuthenticatedRequest(
+        `/api/teacher/${decodedToken.sub}`
+      );
       setProfile(data);
     } catch (error) {
-      console.error('Dashboard Error:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
+      console.error("Dashboard Error:", {
+        message: error instanceof Error ? error.message : "Unknown error",
         userId: decodedToken.sub,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      setError(error instanceof Error ? error.message : 'Failed to load profile data');
+      setError(
+        error instanceof Error ? error.message : "Failed to load profile data"
+      );
     } finally {
       setLoading(false);
     }
@@ -80,11 +84,7 @@ export default function DashboardPage() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button 
-          variant="outline" 
-          onClick={logout}
-          className="hover:bg-red-100"
-        >
+        <Button variant="outline" onClick={logout} className="hover:bg-red-100">
           Logout
         </Button>
       </div>
@@ -99,7 +99,9 @@ export default function DashboardPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="font-medium text-gray-500">Name</h3>
-                <p className="text-lg">{profile?.firstName} {profile?.lastName}</p>
+                <p className="text-lg">
+                  {profile?.firstName} {profile?.lastName}
+                </p>
               </div>
               <div>
                 <h3 className="font-medium text-gray-500">Contact</h3>
@@ -129,7 +131,7 @@ export default function DashboardPage() {
                 <h3 className="font-medium text-gray-500">Subjects</h3>
                 <div className="flex flex-wrap gap-2">
                   {profile?.subjects.map((subject, index) => (
-                    <span 
+                    <span
                       key={index}
                       className="px-2 py-1 bg-primary/10 rounded-full text-sm"
                     >
@@ -218,4 +220,4 @@ function DashboardSkeleton() {
       </div>
     </div>
   );
-} 
+}
