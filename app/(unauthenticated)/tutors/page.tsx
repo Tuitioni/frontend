@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import TutorCard from "@/ui/tutors/TutorCard"; // Adjust the import path as needed
-import FilterTutors from "@/ui/tutors/FilterTutors";
+import TutorCard from "@/app/(unauthenticated)/tutors/components/tutors/TutorCard"; // Adjust the import path as needed
+import FilterTutors from "@/app/(unauthenticated)/tutors/components/tutors/FilterTutors";
 import {
   Select,
   SelectContent,

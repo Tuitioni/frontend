@@ -1,5 +1,5 @@
-import Footer from "@/ui/Footer";
-import Navbar from "@/ui/Navbar";
+import Footer from "@/app/components/Footer";
+import Navbar from "@/app/components/Navbar";
 export default function UnauthenticatedLayout({
   children,
 }: {

@@ -1,10 +1,10 @@
 import { Separator } from "@/components/ui/separator";
-import Footer from "@/ui/Footer";
-import Hero from "@/ui/Hero";
-import Navbar from "@/ui/Navbar";
-import SearchTutor from "@/ui/SearchTutor";
-import TopTutors from "@/ui/TopTutors";
-import YoutubePlayer from "@/ui/YoutubePlayer";
+import Footer from "@/app/components/Footer";
+import Hero from "@/app/components/Hero";
+import Navbar from "@/app/components/Navbar";
+import SearchTutor from "@/app/components/SearchTutor";
+import TopTutors from "@/app/components/TopTutors";
+import YoutubePlayer from "@/app/components/YoutubePlayer";
 
 export default function HomePage() {
   return (

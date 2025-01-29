@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobCard from "@/ui/jobs/JobCard";
-import FilterJobs from "@/ui/jobs/FilterJobs";
+import JobCard from "@/app/(unauthenticated)/jobs/components/jobs/JobCard";
+import FilterJobs from "@/app/(unauthenticated)/jobs/components/jobs/FilterJobs";
 import {
   Select,
   SelectContent,
