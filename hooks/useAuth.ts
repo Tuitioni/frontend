@@ -1,47 +1,42 @@
-import { useRouter } from 'next/navigation';
-import { tokenService } from '@/lib/auth/token';
+import { useToken } from "./useToken";
+import { tokenService } from "@/lib/auth/token";
+import { useRouter } from "next/navigation";
 
 export function useAuth() {
+  const token = useToken();
   const router = useRouter();
 
-  const logout = async () => {
-    try {
-      // Clear token from cookies
-      tokenService.removeToken();
-      
-      // Clear any other stored data if needed
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Force reload to clear any cached states
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Fallback to simple redirect
-      router.push('/login');
-    }
+  const logout = () => {
+    tokenService.removeToken();
+    router.push("/login");
+  };
+
+  const handleUnauthorized = () => {
+    console.log("Unauthorized - redirecting to login");
+    logout();
   };
 
   const makeAuthenticatedRequest = async (
-    endpoint: string, 
-    options: { 
-      method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    endpoint: string,
+    options: {
+      method?: "GET" | "POST" | "PATCH" | "DELETE" | "PUT";
       data?: any;
+      headers?: HeadersInit;
     } = {}
   ) => {
     try {
       const token = tokenService.getToken();
       if (!token) {
-        logout();
-        throw new Error('No authentication token found');
+        handleUnauthorized();
+        throw new Error("No authentication token found");
       }
 
-      const { method = 'GET', data } = options;
+      const { method = "GET", data } = options;
       const response = await fetch(endpoint, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: data ? JSON.stringify(data) : undefined,
       });
@@ -54,20 +49,28 @@ export function useAuth() {
         throw new Error(`Invalid JSON response: ${responseText}`);
       }
 
+      // Handle unauthorized responses
+      if (response.status === 401 || responseData?.statusCode === 401) {
+        handleUnauthorized();
+        throw new Error("Session expired");
+      }
+
       if (!response.ok) {
-        if (response.status === 401) {
-          logout();
-          throw new Error('Session expired');
-        }
-        throw new Error(responseData?.error || `Server error (${response.status}): ${response.statusText}`);
+        throw new Error(
+          responseData?.error ||
+            `Server error (${response.status}): ${response.statusText}`
+        );
       }
 
       if (!responseData) {
-        throw new Error('Empty response from server');
+        throw new Error("Empty response from server");
       }
 
       return responseData;
     } catch (error) {
+      if (error instanceof Error && error.message.includes("Session expired")) {
+        handleUnauthorized();
+      }
       throw error;
     }
   };
@@ -75,6 +78,6 @@ export function useAuth() {
   return {
     logout,
     makeAuthenticatedRequest,
-    isAuthenticated: !!tokenService.getToken(),
+    isAuthenticated: !!token,
   };
-} 
+}

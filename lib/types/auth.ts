@@ -12,4 +12,4 @@ export interface LoginFormData {
   password: string;
 }
 
-export type AuthMode = 'login' | 'register'; 
+export type AuthMode = "login" | "register";
