@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
 import { Button } from "@/components/ui/button";
-import { Teacher } from "@/types/Teacher";
+import { Teacher } from "@/types/teacher";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export default function TeacherDetailPage({
