@@ -24,7 +24,7 @@ export default function ReportDashboardByID({
         }
 
         const response = await fetch(
-          `http://localhost:8000/report/${params.id}`,
+          `${process.env.TUITIONI_API}/report/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

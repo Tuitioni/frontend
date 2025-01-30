@@ -44,7 +44,7 @@ export default function StudentEdit({ params }: StudentEditProps) {
       try {
         const token = localStorage.getItem("admin_token");
         const response = await fetch(
-          `http://localhost:8000/student/${params.id}`,
+          `${process.env.TUITIONI_API}/student/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function StudentEdit({ params }: StudentEditProps) {
     try {
       const token = localStorage.getItem("admin_token");
       const response = await fetch(
-        `http://localhost:8000/student/${params.id}`,
+        `${process.env.TUITIONI_API}/student/${params.id}`,
         {
           method: "PATCH",
           headers: {

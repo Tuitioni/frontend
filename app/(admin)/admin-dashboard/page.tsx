@@ -81,7 +81,7 @@ export default function AdminDashboard() {
     const fetchDashboardData = async () => {
       try {
         const response = await fetchWithAuth(
-          "http://localhost:8000/admin/dashboard/stats"
+          `${process.env.TUITIONI_API}/admin/dashboard/stats`
         );
         const data = await response.json();
         setStats(data);

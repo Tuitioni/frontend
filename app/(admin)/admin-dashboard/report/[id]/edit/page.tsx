@@ -32,7 +32,7 @@ export default function ReportEdit({ params }: ReportEditProps) {
       try {
         const token = localStorage.getItem("admin_token");
         const response = await fetch(
-          `http://localhost:8000/report/${params.id}`,
+          `${process.env.TUITIONI_API}/report/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ export default function ReportEdit({ params }: ReportEditProps) {
     try {
       const token = localStorage.getItem("admin_token");
       const response = await fetch(
-        `http://localhost:8000/report/${params.id}`,
+        `${process.env.TUITIONI_API}/report/${params.id}`,
         {
           method: "PATCH",
           headers: {

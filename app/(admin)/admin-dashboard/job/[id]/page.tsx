@@ -23,7 +23,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
     async function fetchPost() {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/post/${params.id}`
+          `${process.env.TUITIONI_API}/post/${params.id}`
         );
         const data = await response.json();
         setPost(data);
@@ -46,7 +46,7 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
 
     try {
       const response = await fetchWithAuth(
-        `http://localhost:8000/post/${params.id}`,
+        `${process.env.TUITIONI_API}/post/${params.id}`,
         {
           method: "DELETE",
         }

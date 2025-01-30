@@ -18,7 +18,9 @@ export default function ReportDashboard() {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetchWithAuth("http://localhost:8000/report");
+        const response = await fetchWithAuth(
+          `${process.env.TUITIONI_API}/report`
+        );
         const data = await response.json();
         setReports(data);
       } catch (error: any) {
@@ -36,7 +38,7 @@ export default function ReportDashboard() {
     if (!confirm("Are you sure you want to delete this report?")) return;
 
     try {
-      await fetchWithAuth(`http://localhost:8000/report/${id}`, {
+      await fetchWithAuth(`${process.env.TUITIONI_API}/report/${id}`, {
         method: "DELETE",
       });
 

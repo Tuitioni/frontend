@@ -23,7 +23,7 @@ export default function TeacherDetailPage({
     const fetchTeacher = async () => {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/teacher/${params.id}`
+          `${process.env.TUITIONI_API}/teacher/${params.id}`
         );
         const data = await response.json();
         setTeacher(data);
@@ -42,7 +42,7 @@ export default function TeacherDetailPage({
     if (!confirm("Are you sure you want to delete this teacher?")) return;
 
     try {
-      await fetchWithAuth(`http://localhost:8000/teacher/${params.id}`, {
+      await fetchWithAuth(`${process.env.TUITIONI_API}/teacher/${params.id}`, {
         method: "DELETE",
       });
       router.push("/admin-dashboard/teacher");

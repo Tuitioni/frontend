@@ -26,7 +26,7 @@ export default function AnnouncementDashboardByID({
         }
 
         const response = await fetch(
-          `http://localhost:8000/announcement/${params.id}`,
+          `${process.env.TUITIONI_API}/announcement/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

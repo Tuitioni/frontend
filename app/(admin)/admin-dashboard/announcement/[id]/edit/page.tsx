@@ -32,8 +32,12 @@ export default function AnnouncementEdit({ params }: AnnouncementEditProps) {
     const fetchAnnouncement = async () => {
       try {
         const token = localStorage.getItem("admin_token");
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
+
         const response = await fetch(
-          `http://localhost:8000/announcement/${params.id}`,
+          `${process.env.TUITIONI_API}/announcement/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -69,7 +73,7 @@ export default function AnnouncementEdit({ params }: AnnouncementEditProps) {
     try {
       const token = localStorage.getItem("admin_token");
       const response = await fetch(
-        `http://localhost:8000/announcement/${params.id}`,
+        `${process.env.TUITIONI_API}/announcement/${params.id}`,
         {
           method: "PATCH",
           headers: {

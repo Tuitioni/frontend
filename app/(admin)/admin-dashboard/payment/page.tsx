@@ -32,12 +32,15 @@ export default function PaymentDashboard() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch(`http://localhost:8000/payment/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.TUITIONI_API}/payment/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete payment");
@@ -57,7 +60,7 @@ export default function PaymentDashboard() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("http://localhost:8000/payment", {
+      const response = await fetch(`${process.env.TUITIONI_API}/payment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +95,7 @@ export default function PaymentDashboard() {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("admin_token");
-        const response = await fetch("http://localhost:8000/payment", {
+        const response = await fetch(`${process.env.TUITIONI_API}/payment`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

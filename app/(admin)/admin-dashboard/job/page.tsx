@@ -22,7 +22,7 @@ export default function PostPage() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch("http://localhost:8000/post", {
+      const response = await fetch(`${process.env.TUITIONI_API}/post`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -48,7 +48,7 @@ export default function PostPage() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch(`http://localhost:8000/post/${id}`, {
+      const response = await fetch(`${process.env.TUITIONI_API}/post/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

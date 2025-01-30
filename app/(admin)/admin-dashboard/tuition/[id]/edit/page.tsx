@@ -35,7 +35,7 @@ export default function EditTuitionPage({
     async function fetchTuition() {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/tuition/${params.id}`
+          `${process.env.TUITIONI_API}/tuition/${params.id}`
         );
         const data: Tuition = await response.json();
         setFormData({
@@ -65,7 +65,7 @@ export default function EditTuitionPage({
       }
 
       const response = await fetch(
-        `http://localhost:8000/tuition/${params.id}`,
+        `${process.env.TUITIONI_API}/tuition/${params.id}`,
         {
           method: "PATCH",
           headers: {

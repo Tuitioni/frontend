@@ -18,7 +18,9 @@ export default function TeacherDashboard() {
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await fetchWithAuth("http://localhost:8000/teacher");
+        const response = await fetchWithAuth(
+          `${process.env.TUITIONI_API}/teacher`
+        );
         const data = await response.json();
         setTeachers(data);
       } catch (error: any) {
@@ -36,7 +38,7 @@ export default function TeacherDashboard() {
     if (!confirm("Are you sure you want to delete this teacher?")) return;
 
     try {
-      await fetchWithAuth(`http://localhost:8000/teacher/${id}`, {
+      await fetchWithAuth(`${process.env.TUITIONI_API}/teacher/${id}`, {
         method: "DELETE",
       });
 

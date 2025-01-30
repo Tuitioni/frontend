@@ -63,7 +63,7 @@ export default function SettingsPage() {
 
     try {
       const response = await fetchWithAuth(
-        "http://localhost:8000/auth/change-password",
+        `${process.env.TUITIONI_API}/auth/change-password`,
         {
           method: "POST",
           headers: {

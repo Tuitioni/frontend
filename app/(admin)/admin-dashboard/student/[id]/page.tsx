@@ -24,7 +24,7 @@ export default function StudentDashboardByID({
         }
 
         const response = await fetch(
-          `http://localhost:8000/student/${params.id}`,
+          `${process.env.TUITIONI_API}/student/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

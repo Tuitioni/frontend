@@ -24,7 +24,7 @@ export default function PaymentDashboardByID({
         }
 
         const response = await fetch(
-          `http://localhost:8000/payment/${params.id}`,
+          `${process.env.TUITIONI_API}/payment/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -29,7 +29,7 @@ export default function TuitionDetailPage({
     async function fetchTuition() {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/tuition/${params.id}`
+          `${process.env.TUITIONI_API}/tuition/${params.id}`
         );
         const data = await response.json();
         setTuition(data);
@@ -54,7 +54,7 @@ export default function TuitionDetailPage({
       }
 
       const response = await fetch(
-        `http://localhost:8000/tuition/${params.id}`,
+        `${process.env.TUITIONI_API}/tuition/${params.id}`,
         {
           method: "DELETE",
           headers: {

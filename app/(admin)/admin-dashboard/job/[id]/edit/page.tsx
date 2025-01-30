@@ -38,7 +38,7 @@ export default function EditJobPage({ params }: { params: { id: string } }) {
     async function fetchPost() {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/job/${params.id}`
+          `${process.env.TUITIONI_API}/job/${params.id}`
         );
         const data = await response.json();
         setFormData(data);
@@ -58,14 +58,17 @@ export default function EditJobPage({ params }: { params: { id: string } }) {
     if (!formData) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/post/${params.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.TUITIONI_API}/post/${params.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to update post");
 

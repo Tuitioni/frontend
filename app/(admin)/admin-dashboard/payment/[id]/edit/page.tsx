@@ -37,7 +37,7 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
       try {
         const token = localStorage.getItem("admin_token");
         const response = await fetch(
-          `http://localhost:8000/payment/${params.id}`,
+          `${process.env.TUITIONI_API}/payment/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
     try {
       const token = localStorage.getItem("admin_token");
       const response = await fetch(
-        `http://localhost:8000/payment/${params.id}`,
+        `${process.env.TUITIONI_API}/payment/${params.id}`,
         {
           method: "PATCH",
           headers: {

@@ -48,7 +48,7 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
     const fetchTeacher = async () => {
       try {
         const response = await fetchWithAuth(
-          `http://localhost:8000/teacher/${params.id}`
+          `${process.env.TUITIONI_API}/teacher/${params.id}`
         );
         const data = await response.json();
         setFormData({
@@ -93,7 +93,7 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
 
     try {
       const response = await fetchWithAuth(
-        `http://localhost:8000/teacher/${params.id}`,
+        `${process.env.TUITIONI_API}/teacher/${params.id}`,
         {
           method: "PUT",
           headers: {

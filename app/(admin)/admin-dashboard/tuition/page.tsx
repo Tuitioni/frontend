@@ -18,7 +18,9 @@ export default function TuitionDashboard() {
   useEffect(() => {
     const fetchTuitions = async () => {
       try {
-        const response = await fetchWithAuth("http://localhost:8000/tuition");
+        const response = await fetchWithAuth(
+          `${process.env.TUITIONI_API}/tuition`
+        );
         const data = await response.json();
         setTuitions(data);
       } catch (error: any) {
@@ -36,7 +38,7 @@ export default function TuitionDashboard() {
     if (!confirm("Are you sure you want to delete this tuition?")) return;
 
     try {
-      await fetchWithAuth(`http://localhost:8000/tuition/${id}`, {
+      await fetchWithAuth(`${process.env.TUITIONI_API}/tuition/${id}`, {
         method: "DELETE",
       });
 

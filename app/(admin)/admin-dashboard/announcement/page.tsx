@@ -26,12 +26,15 @@ export default function AnnouncementDashboard() {
         throw new Error("No authentication token found");
       }
 
-      const response = await fetch(`http://localhost:8000/announcement/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.TUITIONI_API}/announcement/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete announcement");
@@ -54,7 +57,7 @@ export default function AnnouncementDashboard() {
       }
 
       const response = await fetch(
-        "http://localhost:8000/announcement/create",
+        `${process.env.TUITIONI_API}/announcement/create`,
         {
           method: "POST",
           headers: {
@@ -86,11 +89,14 @@ export default function AnnouncementDashboard() {
     const fetchAnnouncements = async () => {
       try {
         const token = localStorage.getItem("admin_token");
-        const response = await fetch("http://localhost:8000/announcement", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${process.env.TUITIONI_API}/announcement`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch announcements");
