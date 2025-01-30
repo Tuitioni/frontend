@@ -300,7 +300,7 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/dashboard/verify/nid`)}
+                      onClick={() => router.push(`/admin-dashboard/verify/nid`)}
                       className="text-sm sm:text-base"
                     >
                       Upload NID
@@ -308,7 +308,7 @@ export default function DashboardPage() {
                     <Button
                       variant="outline"
                       onClick={() =>
-                        router.push(`/dashboard/verify/birth-certificate`)
+                        router.push(`/admin-dashboard/verify/birth-certificate`)
                       }
                       className="text-sm sm:text-base"
                     >
@@ -316,7 +316,9 @@ export default function DashboardPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/dashboard/verify/passport`)}
+                      onClick={() =>
+                        router.push(`/admin-dashboard/verify/passport`)
+                      }
                       className="text-sm sm:text-base"
                     >
                       Upload Passport
