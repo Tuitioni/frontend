@@ -22,13 +22,16 @@ export default function AdminLogin() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:8000/auth/login/admin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ identifier: username, password }),
-      });
+      const response = await fetch(
+        `${process.env.TUITIONI_API}/auth/login/admin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ identifier: username, password }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Invalid credentials");
@@ -37,7 +40,7 @@ export default function AdminLogin() {
       const data = await response.json();
       console.log("Login successful:", data);
       login(data.access_token);
-      router.replace("/dashboard");
+      router.replace("/admin-dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message);

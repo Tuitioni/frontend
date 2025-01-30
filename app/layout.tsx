@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-
-import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/contexts/AuthContext";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Tuitioni",
+  description: "Find your perfect tutor",
+};
 
 export default function RootLayout({
   children,
@@ -10,12 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          "flex flex-col min-h-screen bg-background font-sans antialiased"
-        )}
-      >
-        {children}
+      <body className={inter.className}>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

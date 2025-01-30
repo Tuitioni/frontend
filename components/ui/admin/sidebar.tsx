@@ -34,7 +34,7 @@ export default function Sidebar() {
         <ul className="space-y-2">
           <li>
             <Link
-              href="/dashboard"
+              href="/admin-dashboard"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <LayoutDashboard size={20} />
@@ -43,7 +43,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/teacher"
+              href="/admin-dashboard/teacher"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <Users size={20} />
@@ -52,7 +52,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/student"
+              href="/admin-dashboard/student"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <GraduationCap size={20} />
@@ -61,7 +61,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/job"
+              href="/admin-dashboard/job"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <Briefcase size={20} />
@@ -70,7 +70,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/tuition"
+              href="/admin-dashboard/tuition"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <BookOpen size={20} />
@@ -79,7 +79,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/payment"
+              href="/admin-dashboard/payment"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <Wallet size={20} />
@@ -88,7 +88,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/announcement"
+              href="/admin-dashboard/announcement"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <Bell size={20} />
@@ -97,7 +97,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/report"
+              href="/admin-dashboard/report"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <LineChart size={20} />
@@ -106,7 +106,7 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/dashboard/setting"
+              href="/admin-dashboard/setting"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <Settings size={20} />
