@@ -98,15 +98,18 @@ export default function Page() {
 
   return (
     <>
-      <div className="flex mt-4 h-[calc(100vh-6rem)]">
-        <div className="w-1/4 p-4">
+      <div className="flex flex-col lg:flex-row mt-4 min-h-[calc(100vh-6rem)]">
+        {/* Filter section - hidden by default on mobile, shown in modal or sidebar */}
+        <div className="lg:w-1/4 p-4">
           <FilterTutors
             onFilterChange={handleFilterChange}
             onReset={handleReset}
           />
         </div>
-        <div className="w-3/4 flex flex-col">
-          <div className="flex justify-between px-4 mb-2">
+
+        {/* Main content section */}
+        <div className="w-full lg:w-3/4 flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between px-4 mb-2 gap-2">
             <div>Showing Results: {tutors.length}</div>
             <div className="flex gap-1 items-center">
               <div>Sort By:</div>
@@ -122,11 +125,12 @@ export default function Page() {
               </Select>
             </div>
           </div>
+
           {loading ? (
             <div className="text-center">Loading...</div>
           ) : (
-            <div className="overflow-y-auto flex-1 pr-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+            <div className="overflow-y-auto flex-1 px-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tutors.map((tutor) => (
                   <TutorCard
                     key={tutor.id}

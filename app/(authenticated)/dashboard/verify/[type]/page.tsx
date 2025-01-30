@@ -19,9 +19,13 @@ export default function VerifyDocumentPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const documentType = params.type as "nid" | "BIRTH_CERTIFICATE";
-  const documentTitle =
-    documentType === "nid" ? "National ID" : "Birth Certificate";
+  const documentType = params.type as "nid" | "birth-certificate" | "passport";
+  const documentTitles = {
+    nid: "National ID",
+    "birth-certificate": "Birth Certificate",
+    passport: "Passport",
+  };
+  const documentTitle = documentTitles[documentType] || "Document";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -51,15 +55,15 @@ export default function VerifyDocumentPage() {
     setError(null);
 
     try {
-      // Create FormData
       const formData = new FormData();
-      formData.append("NID", file);
+      formData.append("document", file);
 
       const response = await makeAuthenticatedRequest(
         `/api/teacher/${decodedToken.sub}/verify/${documentType}`,
         {
           method: "POST",
           data: formData,
+          isFormData: true,
         }
       );
 

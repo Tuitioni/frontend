@@ -5,53 +5,48 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <div className="relative mt-4 px-5 flex justify-between gap-2">
-      <div className="flex flex-col gap-5 w-1/2">
-        <div className="md:text-2xl text-xl xl:4xl font-semibold">
-          Best Tutoring Platform For Home Tuitions
-        </div>
-        <div className="md:text-base text-xs xl:text-lg">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur
-          vel porro perferendis et hic illum laborum enim, quam culpa facere?
-        </div>
-        <div className="flex md:gap-4 gap-2">
-          {/* Link for "Find Tutor" */}
-          <Link href="/tutors">
-            <Button variant="default" size="default">
-              Find Tutor
-            </Button>
-          </Link>
-          {/* Link for "Become A Tutor" */}
-          <Link href="/register">
-            <Button variant="default" size="default">
-              Become A Tutor
-            </Button>
-          </Link>
-        </div>
-        {/* <div className="flex gap-1 text-sm md:text-base">
-          <div className="border-r md:px-3 px-1 text-sm md:text-base">
-            <div>1234+</div>
-            <div>Tutors</div>
+    <section className="container mx-auto px-4 py-12 md:py-16">
+      <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 md:gap-12">
+        {/* Content Section */}
+        <div className="w-full md:w-1/2 space-y-6">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-gray-900">
+            Best Tutoring Platform For Home Tuitions
+          </h1>
+
+          <p className="text-base md:text-lg text-gray-600">
+            Connect with experienced tutors for personalized learning
+            experiences that help you achieve your academic goals from the
+            comfort of your home.
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <Link href="/tutors">
+              <Button variant="default" size="lg" className="font-semibold">
+                Find Tutor
+              </Button>
+            </Link>
+
+            <Link href="/register">
+              <Button variant="outline" size="lg" className="font-semibold">
+                Become A Tutor
+              </Button>
+            </Link>
           </div>
-          <div className="border-r md:px-3 px-1 text-sm md:text-base">
-            <div>1234+</div>
-            <div>Students</div>
+        </div>
+
+        {/* Image Section */}
+        <div className="w-full md:w-1/2">
+          <div className="relative aspect-video md:aspect-square max-w-[500px] mx-auto">
+            <Image
+              src="/images.jpg"
+              alt="Online tutoring illustration"
+              fill
+              className="object-cover rounded-xl shadow-lg"
+              priority
+            />
           </div>
-          <div className="md:px-3 px-1 text-sm md:text-base">
-            <div>4.8</div>
-            <div>Tutor Rating</div>
-          </div>
-        </div> */}
+        </div>
       </div>
-      <div className="px-4 mx-auto">
-        <Image
-          width={300}
-          height={300}
-          src="/images.jpg"
-          alt="Picture of the author"
-          className="rounded-lg md:w-[400px] md:h-[300px] mt-10"
-        />
-      </div>
-    </div>
+    </section>
   );
 }

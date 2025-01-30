@@ -38,14 +38,16 @@ export default function TutorCard({
             <h3 className="font-semibold text-lg">
               {firstName} {lastName}
             </h3>
-            <span className="text-sm text-gray-500">{yearsOfExperience} yrs exp</span>
+            <span className="text-sm text-gray-500">
+              {yearsOfExperience} yrs exp
+            </span>
           </div>
-          
+
           <div className="text-sm text-gray-600">
             <div>{education}</div>
             <div>{location}</div>
           </div>
-          
+
           <div className="flex flex-wrap gap-1 mt-2">
             {subjectList.slice(0, 3).map((subject, index) => (
               <span
@@ -56,7 +58,9 @@ export default function TutorCard({
               </span>
             ))}
             {subjectList.length > 3 && (
-              <span className="text-xs text-gray-500">+{subjectList.length - 3} more</span>
+              <span className="text-xs text-gray-500">
+                +{subjectList.length - 3} more
+              </span>
             )}
           </div>
 

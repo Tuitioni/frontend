@@ -5,11 +5,15 @@ import { Menu, X } from "lucide-react"; // Lucide icons
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function MobileMenu() {
+interface MobileMenuProps {
+  className?: string;
+}
+
+export default function MobileMenu({ className }: MobileMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="md:hidden flex items-center">
+    <div className={`md:hidden flex items-center ${className || ""}`}>
       {/* Hamburger Icon */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}

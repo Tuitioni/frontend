@@ -3,8 +3,16 @@ import { tokenService } from "@/lib/auth/token";
 import { useRouter } from "next/navigation";
 
 export function useAuth() {
-  const token = useToken();
+  const decodedToken = useToken();
   const router = useRouter();
+
+  const isTokenValid = () => {
+    if (!decodedToken) return false;
+
+    // Check if token has expired
+    const currentTime = Date.now() / 1000; // Convert to seconds
+    return decodedToken.exp ? decodedToken.exp > currentTime : false;
+  };
 
   const logout = () => {
     tokenService.removeToken();
@@ -22,23 +30,28 @@ export function useAuth() {
       method?: "GET" | "POST" | "PATCH" | "DELETE" | "PUT";
       data?: any;
       headers?: HeadersInit;
+      isFormData?: boolean;
     } = {}
   ) => {
     try {
       const token = tokenService.getToken();
-      if (!token) {
+      if (!token || !isTokenValid()) {
         handleUnauthorized();
-        throw new Error("No authentication token found");
+        throw new Error("Invalid or expired authentication token");
       }
 
-      const { method = "GET", data } = options;
+      const { method = "GET", data, isFormData = false } = options;
+
+      const headers: HeadersInit = {
+        Authorization: `Bearer ${token}`,
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...options.headers,
+      };
+
       const response = await fetch(endpoint, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: data ? JSON.stringify(data) : undefined,
+        headers,
+        body: isFormData ? data : data ? JSON.stringify(data) : undefined,
       });
 
       const responseText = await response.text();
@@ -68,7 +81,11 @@ export function useAuth() {
 
       return responseData;
     } catch (error) {
-      if (error instanceof Error && error.message.includes("Session expired")) {
+      if (
+        error instanceof Error &&
+        (error.message.includes("Session expired") ||
+          error.message.includes("Invalid or expired authentication token"))
+      ) {
         handleUnauthorized();
       }
       throw error;
@@ -78,6 +95,6 @@ export function useAuth() {
   return {
     logout,
     makeAuthenticatedRequest,
-    isAuthenticated: !!token,
+    isAuthenticated: !!decodedToken && isTokenValid(),
   };
 }

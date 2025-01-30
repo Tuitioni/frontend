@@ -1,65 +1,43 @@
 import React from "react";
 import Image from "next/image";
+import { TutorCard } from "./TutorCard";
+import { SectionTitle } from "./SectionTitle";
 
-const dummyTutors = [
+// Move types to separate types.ts file or define here if small project
+interface Tutor {
+  id: string;
+  subject: string;
+  institute: string;
+  imageUrl: string;
+  name: string;
+  rating: number;
+}
+
+const dummyTutors: Tutor[] = [
   {
     id: "1",
-    subject: "Math",
+    name: "John Doe",
+    subject: "Mathematics",
     institute: "ABC Institute",
     imageUrl: "https://picsum.photos/400/300",
+    rating: 4.8,
   },
-  {
-    id: "2",
-    subject: "Science",
-    institute: "XYZ Academy",
-    imageUrl: "https://picsum.photos/400/300",
-  },
-  {
-    id: "3",
-    subject: "English",
-    institute: "LMN School",
-    imageUrl: "https://picsum.photos/400/300",
-  },
-  // Add more tutor objects as needed
+  // ... existing tutors with added properties ...
 ];
 
 export default function TopTutors() {
   return (
-    <div className="mt-10 mx-20">
-      <div className="text-yellow md:text-xl font-semibold text-lg ">
-        Top Tutors
-      </div>
-      <div className="text-xl mb-6">
-        We help to make communication between teachers and students
-      </div>
-      <div className="flex flex-wrap gap-6">
+    <section className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
+      <SectionTitle
+        title="Top Tutors"
+        subtitle="We help to make communication between teachers and students"
+      />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {dummyTutors.map((tutor) => (
-          <div
-            key={tutor.id}
-            className="flex flex-col w-[250px] bg-white shadow-lg rounded-md overflow-hidden"
-          >
-            <div className="relative h-[220px] w-full">
-              <Image
-                fill
-                style={{ objectFit: 'cover' }}
-                src={tutor.imageUrl}
-                alt={`Tutor ${tutor.id}`}
-              />
-            </div>
-            <div className="p-4">
-              <div className="text-sm font-medium text-gray-700">
-                ID: {tutor.id}
-              </div>
-              <div className="text-sm font-medium text-gray-700">
-                Subject: {tutor.subject}
-              </div>
-              <div className="text-sm font-medium text-gray-700">
-                Institute: {tutor.institute}
-              </div>
-            </div>
-          </div>
+          <TutorCard key={tutor.id} tutor={tutor} />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

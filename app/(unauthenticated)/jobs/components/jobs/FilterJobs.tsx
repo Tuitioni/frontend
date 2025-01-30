@@ -69,15 +69,15 @@ export default function FilterJobs({
   };
 
   return (
-    <div className="flex flex-col gap-6 bg-card p-6 rounded-lg shadow-sm">
+    <div className="flex flex-col gap-4 bg-card p-4 lg:p-6 rounded-lg shadow-sm">
       <div>
-        <h3 className="font-semibold mb-4">Filter Jobs</h3>
+        <h3 className="font-semibold mb-3 lg:mb-4">Filter Jobs</h3>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
+        <div className="space-y-3 lg:space-y-4">
+          <div className="space-y-1 lg:space-y-2">
             <label className="text-sm font-medium">District</label>
             <Select value={district} onValueChange={setDistrict}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-sm">
                 <SelectValue placeholder="Select District" />
               </SelectTrigger>
               <SelectContent>
@@ -91,14 +91,14 @@ export default function FilterJobs({
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1 lg:space-y-2">
             <label className="text-sm font-medium">Area</label>
             <Select
               value={area}
               onValueChange={setArea}
               disabled={district === "all"}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-sm">
                 <SelectValue
                   placeholder={
                     district !== "all" ? "Select Area" : "Select District First"
@@ -116,10 +116,10 @@ export default function FilterJobs({
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1 lg:space-y-2">
             <label className="text-sm font-medium">Level of Study</label>
             <Select value={level} onValueChange={setLevel}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-sm">
                 <SelectValue placeholder="Select Level" />
               </SelectTrigger>
               <SelectContent>
@@ -136,7 +136,7 @@ export default function FilterJobs({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col sm:flex-row lg:flex-col gap-2">
         <Button className="w-full" onClick={handleApplyFilters}>
           Apply Filters
         </Button>

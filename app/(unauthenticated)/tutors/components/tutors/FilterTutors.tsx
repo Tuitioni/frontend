@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 interface DistrictData {
   district: string;
@@ -75,7 +77,7 @@ export default function FilterTutors({
     onReset();
   };
 
-  return (
+  const FilterContent = () => (
     <div className="flex flex-col gap-6 bg-card p-6 rounded-lg shadow-sm">
       <div>
         <h3 className="font-semibold mb-4">Filter Tutors</h3>
@@ -158,5 +160,32 @@ export default function FilterTutors({
         </Button>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* Mobile View */}
+      <div className="lg:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="fixed bottom-4 right-4 h-12 w-12 rounded-full"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <FilterContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop View */}
+      <div className="hidden lg:block">
+        <FilterContent />
+      </div>
+    </>
   );
 }

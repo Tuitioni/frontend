@@ -15,7 +15,15 @@ export async function POST(
 
     const token = authHeader.split(" ")[1];
     const formData = await request.formData();
-    console.log("FormData received:", formData);
+
+    // Validate document type
+    const validTypes = ["nid", "birth-certificate", "passport"];
+    if (!validTypes.includes(params.type)) {
+      return NextResponse.json(
+        { error: "Invalid document type" },
+        { status: 400 }
+      );
+    }
 
     const apiUrl = `${process.env.TUITIONI_API}/teacher/${params.id}/verify/${params.type}`;
     console.log("Making request to:", apiUrl);
