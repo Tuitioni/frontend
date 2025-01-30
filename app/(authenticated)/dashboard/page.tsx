@@ -18,30 +18,8 @@ import {
 import React from "react";
 import { ProfileEditModal } from "./components/ProfileEditModal";
 import { useRouter } from "next/navigation";
-
-interface TeacherProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  location: string;
-  profile_pic: string | null;
-  profile: {
-    district: string;
-    area: string;
-    gender: string;
-    age: number;
-    medium: string;
-    education: string;
-    yearsOfExperience: number;
-    subjects: string[];
-    specialization: string;
-    teachingLevel: string;
-    availability: string;
-    monthlySalary: number;
-  };
-}
+import { TeacherProfile } from "@/types/teacher";
+import Image from "next/image";
 
 export default function DashboardPage() {
   const { makeAuthenticatedRequest, logout } = useAuth();
@@ -156,9 +134,11 @@ export default function DashboardPage() {
             <div className="flex flex-col items-center mb-6">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 {profile?.profile_pic ? (
-                  <img
+                  <Image
                     src={profile.profile_pic}
                     alt="Profile"
+                    width={96}
+                    height={96}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (

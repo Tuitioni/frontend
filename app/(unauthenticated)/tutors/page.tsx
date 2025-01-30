@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import TutorCard from "@/app/(unauthenticated)/tutors/components/tutors/TutorCard"; // Adjust the import path as needed
 import FilterTutors from "@/app/(unauthenticated)/tutors/components/tutors/FilterTutors";
 import {
@@ -23,7 +23,7 @@ interface Tutor {
   yearsOfExperience: number;
 }
 
-export default function Page() {
+function TutorsContent() {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const searchParams = useSearchParams();
@@ -151,5 +151,13 @@ export default function Page() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function TutorsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TutorsContent />
+    </Suspense>
   );
 }

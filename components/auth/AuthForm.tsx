@@ -8,19 +8,20 @@ interface AuthFormProps {
   isLoading?: boolean;
 }
 
-export function AuthForm({ children, onSubmit, submitText, isLoading }: AuthFormProps) {
+export function AuthForm({
+  children,
+  onSubmit,
+  submitText,
+  isLoading,
+}: AuthFormProps) {
   return (
     <Form onSubmit={onSubmit}>
       <div className="space-y-4">
         {children}
-        <Button 
-          type="submit" 
-          className="w-full" 
-          disabled={isLoading}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Please wait..." : submitText}
         </Button>
       </div>
     </Form>
   );
-} 
+}

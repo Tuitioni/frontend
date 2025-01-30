@@ -1,5 +1,6 @@
 import React from "react";
 import YouTube, { YouTubeProps } from "react-youtube";
+import type { YouTubeEvent } from "react-youtube";
 
 interface VideoSectionProps {
   videoId: string;
@@ -21,7 +22,7 @@ export const VideoSection: React.FC<VideoSectionProps> = ({
             height: "100%",
           }}
           className="absolute top-0 left-0 w-full h-full"
-          onReady={(event) => event.target.pauseVideo()} // Prevent autoplay on mobile
+          onReady={(event: YouTubeEvent) => event.target.pauseVideo()}
         />
       </div>
     </div>

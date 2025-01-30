@@ -33,7 +33,7 @@ export default function SearchTutor() {
             </h2>
             <p className="text-gray-600">
               Join our community of 500+ verified tutoring opportunities.
-              Whether youre starting your teaching journey or you're an
+              Whether youre starting your teaching journey or you&apos;re an
               experienced educator, find the perfect match for your expertise.
             </p>
           </div>

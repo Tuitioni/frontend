@@ -42,14 +42,13 @@ export function ProfileEditModal({
     setError(null);
 
     try {
-      console.log("Starting profile update...");
-
-      // Create a deep copy of the profile for comparison
       const originalProfile = JSON.parse(JSON.stringify(profile));
       const currentFormData = JSON.parse(JSON.stringify(formData));
 
-      // Initialize changed fields object
-      const changedFields: Partial<TeacherProfile> = {};
+      // Initialize changed fields object with correct type
+      const changedFields: Partial<TeacherProfile> & {
+        profile?: TeacherProfile["profile"];
+      } = {};
 
       // Compare and collect only changed basic fields
       (Object.keys(currentFormData) as Array<keyof TeacherProfile>).forEach(
@@ -66,19 +65,22 @@ export function ProfileEditModal({
 
       // Compare and collect only changed profile fields
       const changedProfileFields: Partial<TeacherProfile["profile"]> = {};
-      Object.keys(currentFormData.profile).forEach((key) => {
-        const typedKey = key as keyof TeacherProfile["profile"];
+      (
+        Object.keys(currentFormData.profile) as Array<
+          keyof TeacherProfile["profile"]
+        >
+      ).forEach((key) => {
         if (
-          JSON.stringify(originalProfile.profile[typedKey]) !==
-          JSON.stringify(currentFormData.profile[typedKey])
+          JSON.stringify(originalProfile.profile[key]) !==
+          JSON.stringify(currentFormData.profile[key])
         ) {
-          changedProfileFields[typedKey] = currentFormData.profile[typedKey];
+          changedProfileFields[key] = currentFormData.profile[key] as any;
         }
       });
 
       // Only include profile in changedFields if there are actual changes
       if (Object.keys(changedProfileFields).length > 0) {
-        changedFields.profile = changedProfileFields;
+        changedFields.profile = { ...profile.profile, ...changedProfileFields };
       }
 
       console.log("Changed fields to be sent:", changedFields);
@@ -110,7 +112,10 @@ export function ProfileEditModal({
     }
   };
 
-  const handleChange = (field: keyof TeacherProfile, value: any) => {
+  const handleChange = (
+    field: keyof Omit<TeacherProfile, "profile">,
+    value: TeacherProfile[keyof Omit<TeacherProfile, "profile">]
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -119,7 +124,7 @@ export function ProfileEditModal({
 
   const handleProfileChange = (
     field: keyof TeacherProfile["profile"],
-    value: any
+    value: TeacherProfile["profile"][keyof TeacherProfile["profile"]]
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -213,7 +218,7 @@ export function ProfileEditModal({
                     <SelectItem value="ENGLISH_MEDIUM">
                       English Medium
                     </SelectItem>
-                    <SelectItem value="HINDI_MEDIUM">Hindi Medium</SelectItem>
+                    <SelectItem value="BANGLA_MEDIUM">Bangla Medium</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
