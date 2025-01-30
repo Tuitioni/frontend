@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import Sidebar from "@/components/ui/admin/sideBar";
+import Sidebar from "@/components/ui/admin/sidebar";
 
 export default function AdminLayout({
   children,
