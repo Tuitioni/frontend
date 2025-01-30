@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect } from "react";
-import TutorCard from "@/ui/tutors/TutorCard"; // Adjust the import path as needed
-import FilterTutors from "@/ui/tutors/FilterTutors";
+import React, { useEffect, useState, Suspense } from "react";
+import TutorCard from "@/app/(unauthenticated)/tutors/components/tutors/TutorCard"; // Adjust the import path as needed
+import FilterTutors from "@/app/(unauthenticated)/tutors/components/tutors/FilterTutors";
 import {
   Select,
   SelectContent,
@@ -9,71 +9,155 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSearchParams } from "next/navigation";
 
-// Define the type for a tutor
 interface Tutor {
   id: string;
-  university: string;
-  subject: string;
+  firstName: string;
+  lastName: string;
+  location: string;
+  phone: string;
+  medium: string;
+  education: string;
+  subjects: string[];
+  yearsOfExperience: number;
 }
 
-export default function Page() {
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch("/api/tutors"); // Update this path based on your API route
+function TutorsContent() {
+  const [tutors, setTutors] = useState<Tutor[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const searchParams = useSearchParams();
+
+  const fetchFilteredTutors = async (filters?: {
+    district: string;
+    area: string;
+    level: string;
+  }) => {
+    try {
+      setLoading(true);
+
+      if (!filters) {
+        // Initial load or reset - fetch all teachers
+        const response = await fetch("/api/teachers");
         const data = await response.json();
-        console.log(data); // Log the API response
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
+        setTutors(data);
+        return;
       }
-    };
 
-    fetchJobs();
-  }, []);
+      // Fetch filtered teachers
+      const response = await fetch("/api/teachers/filter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filters),
+      });
 
-  const mockTutors: Tutor[] = [
-    { id: "T001", university: "Harvard", subject: "Mathematics" },
-    { id: "T002", university: "Stanford", subject: "Physics" },
-    { id: "T003", university: "MIT", subject: "Computer Science" },
-    { id: "T004", university: "Oxford", subject: "Literature" },
-    { id: "T005", university: "Cambridge", subject: "History" },
-    { id: "T006", university: "Yale", subject: "Biology" },
-  ];
+      if (!response.ok) {
+        throw new Error("Failed to fetch filtered teachers");
+      }
+
+      const data = await response.json();
+      setTutors(data);
+    } catch (error) {
+      console.error("Error fetching tutors:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Get initial filters from URL parameters
+    const district = searchParams.get("district") || "";
+    const area = searchParams.get("area") || "";
+    const level = searchParams.get("level") || "";
+
+    // If any filters are present in URL, apply them
+    if (district || area || level) {
+      fetchFilteredTutors({
+        district,
+        area,
+        level,
+      });
+    } else {
+      fetchFilteredTutors();
+    }
+  }, [searchParams]); // Add searchParams to dependency array
+
+  const handleFilterChange = (filters: {
+    district: string;
+    area: string;
+    level: string;
+  }) => {
+    fetchFilteredTutors(filters);
+  };
+
+  const handleReset = () => {
+    fetchFilteredTutors();
+  };
 
   return (
     <>
-      <div className="flex mt-4 ">
-        <FilterTutors />
-        <div className="w-3/4">
-          <div className="flex justify-between px-4 mb-2">
-            <div>Showing Results: 40</div>
+      <div className="flex flex-col lg:flex-row mt-4 min-h-[calc(100vh-6rem)]">
+        {/* Filter section - hidden by default on mobile, shown in modal or sidebar */}
+        <div className="lg:w-1/4 p-4">
+          <FilterTutors
+            onFilterChange={handleFilterChange}
+            onReset={handleReset}
+          />
+        </div>
+
+        {/* Main content section */}
+        <div className="w-full lg:w-3/4 flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between px-4 mb-2 gap-2">
+            <div>Showing Results: {tutors.length}</div>
             <div className="flex gap-1 items-center">
-              <div> Sort By: </div>
+              <div>Sort By:</div>
               <Select>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Area" />
+                  <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="experience">Experience</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="location">Location</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 flex-1 mx-auto p-2">
-            {mockTutors.map((tutor, index) => (
-              <TutorCard
-                key={index}
-                id={tutor.id}
-                university={tutor.university}
-                subject={tutor.subject}
-              />
-            ))}
-          </div>
+
+          {loading ? (
+            <div className="text-center">Loading...</div>
+          ) : (
+            <div className="overflow-y-auto flex-1 px-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {tutors.map((tutor) => (
+                  <TutorCard
+                    key={tutor.id}
+                    id={tutor.id}
+                    firstName={tutor.firstName}
+                    lastName={tutor.lastName}
+                    location={tutor.location}
+                    phone={tutor.phone}
+                    medium={tutor.medium}
+                    education={tutor.education}
+                    subjects={tutor.subjects}
+                    yearsOfExperience={tutor.yearsOfExperience}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
+  );
+}
+
+export default function TutorsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TutorsContent />
+    </Suspense>
   );
 }
