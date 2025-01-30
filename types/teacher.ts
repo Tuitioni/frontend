@@ -1,5 +1,7 @@
 import { Gender, Medium } from "./index";
 
+//to use in the public page
+
 export interface TeacherPreview {
   id: string;
   firstName: string;
@@ -12,6 +14,8 @@ export interface TeacherPreview {
     medium: Medium;
   };
 }
+
+//to use in the admin page and dashboard page
 
 export interface TeacherDetail {
   id: string;
@@ -38,6 +42,8 @@ export interface TeacherDetail {
     monthlySalary: number;
   };
 }
+
+//to use in the admin page and dashboard page
 
 export interface UpdateTeacherProfileDto {
   district?: string;
@@ -74,30 +80,4 @@ export interface Teacher {
   address: string;
   createdAt: string;
   updatedAt: string;
-}
-
-//for frontend
-
-export interface TeacherProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  location: string;
-  profile_pic: string | null;
-  profile: {
-    education: string;
-    yearsOfExperience: number;
-    medium: "ENGLISH_MEDIUM" | "BANGLA_MEDIUM";
-    monthlySalary: number;
-    district: string;
-    area: string;
-    gender: string;
-    age: number;
-    subjects: string[];
-    specialization: string;
-    teachingLevel: string;
-    availability: string;
-  };
 }

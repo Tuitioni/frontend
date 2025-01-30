@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { TeacherProfile } from "@/types/teacher";
+import { TeacherDetail } from "@/types/teacher";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Select,
@@ -17,12 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: TeacherProfile;
-  onProfileUpdate: (updatedProfile: TeacherProfile) => void;
+  profile: TeacherDetail;
+  onProfileUpdate: (updatedProfile: TeacherDetail) => void;
 }
 
 export function ProfileEditModal({
@@ -32,7 +33,8 @@ export function ProfileEditModal({
   onProfileUpdate,
 }: ProfileEditModalProps) {
   const { makeAuthenticatedRequest } = useAuth();
-  const [formData, setFormData] = useState<TeacherProfile>(profile);
+  const { toast } = useToast();
+  const [formData, setFormData] = useState<TeacherDetail>(profile);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,12 +48,12 @@ export function ProfileEditModal({
       const currentFormData = JSON.parse(JSON.stringify(formData));
 
       // Initialize changed fields object with correct type
-      const changedFields: Partial<TeacherProfile> & {
-        profile?: TeacherProfile["profile"];
+      const changedFields: Partial<TeacherDetail> & {
+        profile?: TeacherDetail["profile"];
       } = {};
 
       // Compare and collect only changed basic fields
-      (Object.keys(currentFormData) as Array<keyof TeacherProfile>).forEach(
+      (Object.keys(currentFormData) as Array<keyof TeacherDetail>).forEach(
         (key) => {
           if (
             key !== "profile" &&
@@ -64,23 +66,28 @@ export function ProfileEditModal({
       );
 
       // Compare and collect only changed profile fields
-      const changedProfileFields: Partial<TeacherProfile["profile"]> = {};
+      const changedProfileFields: Partial<TeacherDetail["profile"]> = {};
       (
         Object.keys(currentFormData.profile) as Array<
-          keyof TeacherProfile["profile"]
+          keyof TeacherDetail["profile"]
         >
       ).forEach((key) => {
         if (
           JSON.stringify(originalProfile.profile[key]) !==
           JSON.stringify(currentFormData.profile[key])
         ) {
-          changedProfileFields[key] = currentFormData.profile[key] as any;
+          changedProfileFields[key] = currentFormData.profile![
+            key
+          ] as TeacherDetail["profile"][keyof TeacherDetail["profile"]];
         }
       });
 
       // Only include profile in changedFields if there are actual changes
-      if (Object.keys(changedProfileFields).length > 0) {
-        changedFields.profile = { ...profile.profile, ...changedProfileFields };
+      if (Object.keys(changedProfileFields).length > 0 && profile.profile) {
+        changedFields.profile = {
+          ...profile.profile,
+          ...changedProfileFields,
+        } as TeacherDetail["profile"];
       }
 
       console.log("Changed fields to be sent:", changedFields);
@@ -97,6 +104,13 @@ export function ProfileEditModal({
 
         console.log("Update successful:", updatedProfile);
         onProfileUpdate(updatedProfile);
+
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been successfully updated.",
+          variant: "default",
+        });
+
         onClose();
       } else {
         console.log("No changes detected");
@@ -107,14 +121,21 @@ export function ProfileEditModal({
       setError(
         error instanceof Error ? error.message : "Failed to update profile"
       );
+
+      toast({
+        title: "Update Failed",
+        description:
+          error instanceof Error ? error.message : "Failed to update profile",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (
-    field: keyof Omit<TeacherProfile, "profile">,
-    value: TeacherProfile[keyof Omit<TeacherProfile, "profile">]
+    field: keyof Omit<TeacherDetail, "profile">,
+    value: TeacherDetail[keyof Omit<TeacherDetail, "profile">]
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -123,15 +144,15 @@ export function ProfileEditModal({
   };
 
   const handleProfileChange = (
-    field: keyof TeacherProfile["profile"],
-    value: TeacherProfile["profile"][keyof TeacherProfile["profile"]]
+    field: keyof NonNullable<TeacherDetail["profile"]>,
+    value: any
   ) => {
     setFormData((prev) => ({
       ...prev,
       profile: {
-        ...prev.profile,
+        ...(prev.profile || {}),
         [field]: value,
-      },
+      } as TeacherDetail["profile"],
     }));
   };
 
@@ -184,7 +205,7 @@ export function ProfileEditModal({
               <div>
                 <Label>Education</Label>
                 <Input
-                  value={formData.profile.education}
+                  value={formData.profile?.education ?? ""}
                   onChange={(e) =>
                     handleProfileChange("education", e.target.value)
                   }
@@ -194,7 +215,7 @@ export function ProfileEditModal({
                 <Label>Experience (years)</Label>
                 <Input
                   type="number"
-                  value={formData.profile.yearsOfExperience}
+                  value={formData.profile?.yearsOfExperience}
                   onChange={(e) =>
                     handleProfileChange(
                       "yearsOfExperience",
@@ -206,7 +227,7 @@ export function ProfileEditModal({
               <div>
                 <Label>Medium</Label>
                 <Select
-                  value={formData.profile.medium}
+                  value={formData.profile?.medium}
                   onValueChange={(value) =>
                     handleProfileChange("medium", value)
                   }
@@ -226,7 +247,7 @@ export function ProfileEditModal({
                 <Label>Monthly Salary (₹)</Label>
                 <Input
                   type="number"
-                  value={formData.profile.monthlySalary}
+                  value={formData.profile?.monthlySalary}
                   onChange={(e) =>
                     handleProfileChange(
                       "monthlySalary",

@@ -18,12 +18,13 @@ import {
 import React from "react";
 import { ProfileEditModal } from "./components/ProfileEditModal";
 import { useRouter } from "next/navigation";
-import { TeacherProfile } from "@/types/teacher";
+import { TeacherDetail } from "@/types/teacher";
 import Image from "next/image";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function DashboardPage() {
   const { makeAuthenticatedRequest, logout } = useAuth();
-  const [profile, setProfile] = useState<TeacherProfile | null>(null);
+  const [profile, setProfile] = useState<TeacherDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const decodedToken = useToken();
@@ -71,7 +72,7 @@ export default function DashboardPage() {
     }
   }, [fetchProfile]);
 
-  const handleProfileUpdate = (updatedProfile: TeacherProfile) => {
+  const handleProfileUpdate = (updatedProfile: TeacherDetail) => {
     setProfile(updatedProfile);
   };
 
@@ -87,6 +88,7 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <Toaster />
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold">Teacher Dashboard</h1>
@@ -133,26 +135,16 @@ export default function DashboardPage() {
           <CardContent>
             <div className="flex flex-col items-center mb-6">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                {profile?.profile_pic ? (
-                  <Image
-                    src={profile.profile_pic}
-                    alt="Profile"
-                    width={96}
-                    height={96}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="text-xl sm:text-2xl font-bold">
-                    {profile?.firstName?.[0]}
-                    {profile?.lastName?.[0]}
-                  </span>
-                )}
+                <span className="text-xl sm:text-2xl font-bold">
+                  {profile?.firstName?.[0]}
+                  {profile?.lastName?.[0]}
+                </span>
               </div>
               <h2 className="text-lg sm:text-xl font-semibold text-center">
                 {profile?.firstName} {profile?.lastName}
               </h2>
               <p className="text-sm sm:text-base text-gray-500">
-                {profile?.profile.teachingLevel} Teacher
+                {profile?.profile?.teachingLevel} Teacher
               </p>
             </div>
 
@@ -170,7 +162,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
                 <span className="text-sm sm:text-base">
-                  {profile?.profile.district}, {profile?.profile.area}
+                  {profile?.profile?.district}, {profile?.profile?.area}
                 </span>
               </div>
             </div>
@@ -202,7 +194,7 @@ export default function DashboardPage() {
                       </h3>
                     </div>
                     <p className="text-sm sm:text-base">
-                      {profile?.profile.education}
+                      {profile?.profile?.education}
                     </p>
                   </div>
                   <div>
@@ -213,7 +205,7 @@ export default function DashboardPage() {
                       </h3>
                     </div>
                     <p className="text-sm sm:text-base">
-                      {profile?.profile.yearsOfExperience} years
+                      {profile?.profile?.yearsOfExperience} years
                     </p>
                   </div>
                 </div>
@@ -223,7 +215,7 @@ export default function DashboardPage() {
                       Subjects
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {profile?.profile.subjects.map((subject, index) => (
+                      {profile?.profile?.subjects.map((subject, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-primary/10 rounded-full text-sm sm:text-base"
@@ -241,7 +233,7 @@ export default function DashboardPage() {
                       </h3>
                     </div>
                     <p className="text-sm sm:text-base">
-                      {profile?.profile.availability}
+                      {profile?.profile?.availability}
                     </p>
                   </div>
                 </div>
@@ -263,7 +255,7 @@ export default function DashboardPage() {
                     Medium
                   </h3>
                   <p className="font-semibold text-sm sm:text-base">
-                    {profile?.profile.medium.replace("_", " ")}
+                    {profile?.profile?.medium.replace("_", " ")}
                   </p>
                 </div>
                 <div className="p-4 bg-primary/5 rounded-lg">
@@ -271,7 +263,7 @@ export default function DashboardPage() {
                     Specialization
                   </h3>
                   <p className="font-semibold text-sm sm:text-base line-clamp-1">
-                    {profile?.profile.specialization}
+                    {profile?.profile?.specialization}
                   </p>
                 </div>
                 <div className="p-4 bg-primary/5 rounded-lg">
@@ -279,7 +271,7 @@ export default function DashboardPage() {
                     Expected Salary
                   </h3>
                   <p className="font-semibold text-sm sm:text-base">
-                    ₹{profile?.profile.monthlySalary.toLocaleString()}/month
+                    ₹{profile?.profile?.monthlySalary.toLocaleString()}/month
                   </p>
                 </div>
               </div>
