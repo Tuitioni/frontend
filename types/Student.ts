@@ -1,25 +1,22 @@
 import { Gender, Medium } from "./index";
-
-export interface TeacherPreview {
+export interface StudentPreview {
   id: string;
   firstName: string;
   lastName: string;
-  location: string;
   profile: {
     district: string;
     area: string;
     gender: Gender;
     medium: Medium;
+    levelOfStudy: string;
   };
 }
 
-export interface TeacherDetail {
+export interface StudentDetail {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  location: string;
-  phone: string;
   createdAt: Date;
   updatedAt: Date;
   profile?: {
@@ -29,43 +26,36 @@ export interface TeacherDetail {
     gender: Gender;
     age: number;
     medium: Medium;
-    education: string;
-    yearsOfExperience: number;
+    levelOfStudy: string;
+    school?: string;
+    college?: string;
+    university?: string;
     subjects: string[];
-    specialization: string | null;
-    teachingLevel: string;
-    availability: string;
-    monthlySalary: number;
   };
 }
 
-export interface UpdateTeacherProfileDto {
+export interface UpdateStudentProfileDto {
   district?: string;
   area?: string;
   gender?: Gender;
   age?: number;
   medium?: Medium;
-  education?: string;
-  yearsOfExperience?: number;
+  levelOfStudy?: string;
+  school?: string;
+  college?: string;
+  university?: string;
   subjects?: string[];
-  specialization?: string;
-  teachingLevel?: string;
-  availability?: string;
-  monthlySalary?: number;
-  teacherId?: string;
 }
 
-export interface UpdateTeacherDto {
+export interface UpdateStudentDto {
   firstName?: string;
   lastName?: string;
   email?: string;
   password?: string;
-  location?: string;
-  phone?: string;
-  profile?: UpdateTeacherProfileDto;
+  profile?: UpdateStudentProfileDto;
 }
 
-export interface Teacher {
+export interface Student {
   id: string;
   firstName: string;
   lastName: string;
