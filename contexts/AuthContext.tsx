@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = localStorage.getItem("admin_token");
       if (!token) {
         setIsAuthenticated(false);
-        if (window.location.pathname.startsWith("/admin/dashboard")) {
+        if (window.location.pathname.startsWith("/admin-dashboard")) {
           router.replace("/signin");
         }
         return;
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         document.cookie =
           "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
         setIsAuthenticated(false);
-        if (window.location.pathname.startsWith("/admin/dashboard")) {
+        if (window.location.pathname.startsWith("/admin-dashboard")) {
           router.replace("/signin");
         }
         return;
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } samesite=strict; max-age=${decodedToken.exp - Date.now() / 1000}`; // Set max-age to remaining time
 
       setIsAuthenticated(true);
-      router.push("/admin/dashboard");
+      router.push("/admin-dashboard");
     } catch (error) {
       console.error("Invalid token:", error);
       logout();

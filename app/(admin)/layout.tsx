@@ -32,9 +32,9 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 overflow-auto p-8">{children}</div>
+      <main className="flex-1 overflow-y-auto bg-gray-50">{children}</main>
     </div>
   );
 }

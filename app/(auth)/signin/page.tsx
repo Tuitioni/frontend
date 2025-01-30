@@ -37,7 +37,7 @@ export default function AdminLogin() {
       const data = await response.json();
       console.log("Login successful:", data);
       login(data.access_token);
-      router.replace("/dashboard");
+      router.replace("/admin-dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message);
