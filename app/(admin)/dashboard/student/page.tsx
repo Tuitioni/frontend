@@ -1,72 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import DataTable from "@/components/ui/admin/dataTable";
+import { useRouter } from "next/navigation";
 import { StudentPreview } from "@/types/Student";
+import DataTable from "@/components/ui/admin/dataTable";
+import { Notification } from "@/components/ui/Notification";
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export default function StudentDashboard() {
+  const router = useRouter();
+  const { fetchWithAuth } = useAuthFetch();
   const [students, setStudents] = useState<StudentPreview[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const handleDelete = async (id: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(`http://localhost:8000/student/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete student");
-      }
-
-      setStudents((prevStudents) =>
-        prevStudents.filter((student) => student.id !== id)
-      );
-    } catch (err: any) {
-      console.error("Delete error:", err);
-      setError(err.message);
-    }
-  };
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch("http://localhost:8000/student", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch students");
-        }
-
+        const response = await fetchWithAuth("http://localhost:8000/student");
         const data = await response.json();
         setStudents(data);
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
+      } catch (error: any) {
+        console.error("Error fetching students:", error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchStudents();
-  }, []);
+  }, [fetchWithAuth]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this student?")) return;
+
+    try {
+      await fetchWithAuth(`http://localhost:8000/student/${id}`, {
+        method: "DELETE",
+      });
+
+      setStudents((prev) => prev.filter((student) => student.id !== id));
+    } catch (error: any) {
+      console.error("Error deleting student:", error);
+      setError(error.message);
+    }
+  };
 
   if (loading) {
-    return <LoadingSpinner size="lg" />;
+    return <LoadingSpinnerCenter />;
   }
 
   if (error) {
@@ -97,11 +79,11 @@ export default function StudentDashboard() {
   }));
 
   const handleView = (id: string) => {
-    window.location.href = `/dashboard/student/${id}`;
+    router.push(`/dashboard/student/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    window.location.href = `/dashboard/student/${id}/edit`;
+    router.push(`/dashboard/student/${id}/edit`);
   };
 
   return (

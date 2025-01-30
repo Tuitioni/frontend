@@ -1,72 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useRouter } from "next/navigation";
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
 import DataTable from "@/components/ui/admin/dataTable";
 import { ReportPreview } from "@/types/Report";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 
 export default function ReportDashboard() {
+  const router = useRouter();
+  const { fetchWithAuth } = useAuthFetch();
   const [reports, setReports] = useState<ReportPreview[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const handleDelete = async (id: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(`http://localhost:8000/report/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete report");
-      }
-
-      setReports((prevReports) =>
-        prevReports.filter((report) => report.id !== id)
-      );
-    } catch (err: any) {
-      console.error("Delete error:", err);
-      setError(err.message);
-    }
-  };
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch("http://localhost:8000/report", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch reports");
-        }
-
+        const response = await fetchWithAuth("http://localhost:8000/report");
         const data = await response.json();
         setReports(data);
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
+      } catch (error: any) {
+        console.error("Error fetching reports:", error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReports();
-  }, []);
+  }, [fetchWithAuth]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this report?")) return;
+
+    try {
+      await fetchWithAuth(`http://localhost:8000/report/${id}`, {
+        method: "DELETE",
+      });
+
+      setReports((prev) => prev.filter((report) => report.id !== id));
+    } catch (error: any) {
+      console.error("Error deleting report:", error);
+      setError(error.message);
+    }
+  };
 
   if (loading) {
-    return <LoadingSpinner size="lg" />;
+    return <LoadingSpinnerCenter />;
   }
 
   if (error) {
@@ -103,11 +85,11 @@ export default function ReportDashboard() {
   }));
 
   const handleView = (id: string) => {
-    window.location.href = `/dashboard/report/${id}`;
+    router.push(`/dashboard/report/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    window.location.href = `/dashboard/report/${id}/edit`;
+    router.push(`/dashboard/report/${id}/edit`);
   };
 
   return (

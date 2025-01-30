@@ -64,3 +64,14 @@ export interface UpdateTeacherDto {
   phone?: string;
   profile?: UpdateTeacherProfileDto;
 }
+
+export interface Teacher {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+}

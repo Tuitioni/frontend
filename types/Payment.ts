@@ -7,6 +7,7 @@ export interface PaymentPreview {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   paymentDate: Date;
+  tuitionId: string;
   teacher: {
     firstName: string;
     lastName: string;
@@ -22,6 +23,7 @@ export interface PaymentDetail {
   paymentDate: Date;
   paymentStatus: PaymentStatus;
   transactionId: string;
+  tuitionId: string;
   createdAt: Date;
   updatedAt: Date;
   teacher: {
@@ -40,6 +42,7 @@ export interface CreatePaymentDto {
   paymentDate: Date;
   paymentStatus: PaymentStatus;
   transactionId: string;
+  tuitionId: string;
 }
 
 export interface UpdatePaymentDto {
@@ -50,4 +53,5 @@ export interface UpdatePaymentDto {
   paymentDate: Date;
   paymentStatus: PaymentStatus;
   transactionId: string;
+  tuitionId: string;
 }

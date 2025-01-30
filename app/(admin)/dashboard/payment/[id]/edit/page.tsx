@@ -23,6 +23,7 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
 
   const [formData, setFormData] = useState<UpdatePaymentDto>({
     amount: 0,
+    tuitionId: "",
     status: "",
     teacherId: "",
     paymentMethod: PaymentMethod.BKASH,
@@ -51,6 +52,7 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
         const payment: PaymentDetail = await response.json();
         setFormData({
           amount: payment.amount,
+          tuitionId: payment.tuitionId,
           status: payment.status,
           teacherId: payment.teacherId,
           paymentMethod: payment.paymentMethod,
