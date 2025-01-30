@@ -9,7 +9,7 @@ export default function NavbarButtons() {
   const pathname = usePathname();
 
   const buttons = [
-    { name: "Home", path: "/home" },
+    { name: "Home", path: "/" },
     { name: "Jobs", path: "/jobs" },
     { name: "Tutors", path: "/tutors" },
     { name: "How we work", path: "/aboutUs" },
