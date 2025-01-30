@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -7,8 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -29,60 +27,53 @@ interface DistrictData {
   areas: string[];
 }
 
-interface FilterTutorsProps {
+interface FilterJobsProps {
   onFilterChange: (filters: {
     district: string;
     area: string;
-    level: string;
+    levelOfStudy: string;
   }) => void;
   onReset: () => void;
 }
 
-export default function FilterTutors({
+export default function FilterJobs({
   onFilterChange,
   onReset,
-}: FilterTutorsProps) {
-  const [district, setDistrict] = React.useState("all");
-  const [area, setArea] = React.useState("all");
-  const [level, setLevel] = React.useState("all");
-  const [districtsData, setDistrictsData] = useState<DistrictData[]>([]);
+}: FilterJobsProps) {
+  const [districts, setDistricts] = useState<DistrictData[]>([]);
+  const [district, setDistrict] = useState("all");
+  const [area, setArea] = useState("all");
+  const [level, setLevel] = useState("all");
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [openDistrict, setOpenDistrict] = useState(false);
   const [openArea, setOpenArea] = useState(false);
 
   useEffect(() => {
-    const fetchDistrictsData = async () => {
-      try {
-        const response = await fetch(
-          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
-        );
-        const data = await response.json();
-        setDistrictsData(data);
-      } catch (error) {
-        console.error("Error fetching districts data:", error);
-      }
-    };
-
-    fetchDistrictsData();
+    fetch(
+      "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+    )
+      .then((response) => response.json())
+      .then((data) => setDistricts(data))
+      .catch((error) => console.error("Error fetching districts:", error));
   }, []);
 
   useEffect(() => {
     if (district && district !== "all") {
-      const selectedDistrict = districtsData.find(
+      const selectedDistrict = districts.find(
         (d) => d.district.toLowerCase() === district.toLowerCase()
       );
       setAvailableAreas(selectedDistrict?.areas || []);
     } else {
       setAvailableAreas([]);
     }
-    setArea("all"); // Reset area when district changes
-  }, [district, districtsData]);
+    setArea("all");
+  }, [district, districts]);
 
   const handleApplyFilters = () => {
     onFilterChange({
       district: district === "all" ? "" : district,
       area: area === "all" ? "" : area,
-      level: level === "all" ? "" : level,
+      levelOfStudy: level === "all" ? "" : level,
     });
   };
 
@@ -93,11 +84,11 @@ export default function FilterTutors({
     onReset();
   };
 
-  const FilterContent = () => (
+  return (
     <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 bg-card p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm">
       <div>
         <h3 className="font-semibold text-base sm:text-lg lg:text-xl mb-2 sm:mb-3 lg:mb-4">
-          Filter Tutors
+          Filter Jobs
         </h3>
 
         <div className="space-y-2 sm:space-y-3 lg:space-y-4">
@@ -115,7 +106,7 @@ export default function FilterTutors({
                 >
                   {district === "all"
                     ? "Select District"
-                    : districtsData.find(
+                    : districts.find(
                         (d) =>
                           d.district.toLowerCase() === district.toLowerCase()
                       )?.district || "Select District"}
@@ -142,7 +133,7 @@ export default function FilterTutors({
                       />
                       All Districts
                     </CommandItem>
-                    {districtsData.map((d) => (
+                    {districts.map((d) => (
                       <CommandItem
                         key={d.district}
                         value={d.district}
@@ -245,17 +236,11 @@ export default function FilterTutors({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="primary">Primary (Class 1-5)</SelectItem>
-                <SelectItem value="junior">
-                  Junior Secondary (Class 6-8)
+                <SelectItem value="primary">Primary</SelectItem>
+                <SelectItem value="secondary">Secondary</SelectItem>
+                <SelectItem value="higher-secondary">
+                  Higher Secondary
                 </SelectItem>
-                <SelectItem value="secondary">
-                  Secondary (Class 9-10)
-                </SelectItem>
-                <SelectItem value="higher">
-                  Higher Secondary (Class 11-12)
-                </SelectItem>
-                <SelectItem value="admission">Admission Test</SelectItem>
                 <SelectItem value="university">University</SelectItem>
               </SelectContent>
             </Select>
@@ -263,7 +248,7 @@ export default function FilterTutors({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col sm:flex-row lg:flex-col gap-2">
         <Button
           className="w-full text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
           onClick={handleApplyFilters}
@@ -279,32 +264,5 @@ export default function FilterTutors({
         </Button>
       </div>
     </div>
-  );
-
-  return (
-    <>
-      {/* Mobile View */}
-      <div className="lg:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="fixed bottom-4 right-4 h-12 w-12 rounded-full"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <FilterContent />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Desktop View */}
-      <div className="hidden lg:block">
-        <FilterContent />
-      </div>
-    </>
   );
 }
