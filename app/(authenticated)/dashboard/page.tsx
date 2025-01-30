@@ -18,7 +18,7 @@ import {
 import React from "react";
 import { ProfileEditModal } from "./components/ProfileEditModal";
 import { useRouter } from "next/navigation";
-import { TeacherProfile } from "@/types/teacher";
+import { TeacherProfile } from "@/types/Teacher";
 import Image from "next/image";
 
 export default function DashboardPage() {

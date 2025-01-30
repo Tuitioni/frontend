@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TeacherPreview } from "@/types/teacher";
+import { TeacherPreview } from "@/types/Teacher";
 import DataTable from "@/components/ui/admin/dataTable";
 import { Notification } from "@/components/ui/Notification";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";

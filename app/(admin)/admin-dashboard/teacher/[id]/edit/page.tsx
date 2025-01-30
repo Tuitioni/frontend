@@ -6,7 +6,7 @@ import { Input, Select } from "@/components/ui/admin/Form";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import { TeacherDetail, UpdateTeacherDto } from "@/types/teacher";
+import { TeacherDetail, UpdateTeacherDto } from "@/types/Teacher";
 import { Gender, Medium } from "@/types";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
