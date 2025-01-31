@@ -8,7 +8,7 @@ import AuthButtons from "./navbar/AuthButtons";
 
 export default function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-background border-b">
+    <nav className="sticky top-0 z-50 bg-bluishGrey border-b shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
         <Logo />
 

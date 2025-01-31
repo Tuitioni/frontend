@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { SectionWrapper } from "./SectionWrapper";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 export default function Hero() {
   return (
-    <section className="container mx-auto px-4 py-12 md:py-16">
+    <SectionWrapper className="bg-bluishGrey mt-12" >
       <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 md:gap-12">
         {/* Content Section */}
         <div className="w-full md:w-1/2 space-y-6">
@@ -13,7 +14,7 @@ export default function Hero() {
             Best Tutoring Platform For Home Tuitions
           </h1>
 
-          <p className="text-base md:text-lg text-gray-600">
+          <p className="text-base md:text-lg text-gray-700">
             Connect with experienced tutors for personalized learning
             experiences that help you achieve your academic goals from the
             comfort of your home.
@@ -47,6 +48,6 @@ export default function Hero() {
           </div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

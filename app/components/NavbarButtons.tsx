@@ -22,7 +22,7 @@ export default function NavbarButtons() {
           <Button
             variant={pathname === button.path ? "activeOutline" : "outline"}
             size="sm"
-            className="text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 h-7 sm:h-8 md:h-9"
+            className="text-xs bg-transparent sm:text-sm md:text-base px-2 sm:px-3 md:px-4 h-7 sm:h-8 md:h-9"
           >
             {button.name}
           </Button>
