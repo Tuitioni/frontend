@@ -1,7 +1,7 @@
 import React from "react";
-import Image from "next/image";
 import { TutorCard } from "./TutorCard";
 import { SectionTitle } from "./SectionTitle";
+import { SectionWrapper } from "./SectionWrapper";
 
 // Move types to separate types.ts file or define here if small project
 interface Tutor {
@@ -27,17 +27,16 @@ const dummyTutors: Tutor[] = [
 
 export default function TopTutors() {
   return (
-    <section className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
+    <SectionWrapper className="bg-bluishGrey">
       <SectionTitle
         title="Top Tutors"
         subtitle="We help to make communication between teachers and students"
       />
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {dummyTutors.map((tutor) => (
           <TutorCard key={tutor.id} tutor={tutor} />
         ))}
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

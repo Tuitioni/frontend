@@ -12,11 +12,11 @@ export default function AuthButtons() {
       {isAuthenticated ? (
         <>
           <Link href="/dashboard">
-            <Button variant="default" className="px-4 py-2">
+            <Button variant="default" className="px-4 py-2 bg-transparent">
               Dashboard
             </Button>
           </Link>
-          <Button variant="default" className="px-4 py-2" onClick={logout}>
+          <Button variant="default" className="px-4 py-2 bg-transparent" onClick={logout}>
             Logout
           </Button>
         </>

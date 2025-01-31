@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SectionWrapper } from "./SectionWrapper";
 
 export default function SearchTutor() {
   const router = useRouter();
@@ -45,8 +46,8 @@ export default function SearchTutor() {
   };
 
   return (
-    <section className="container mx-auto px-4 py-12">
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg">
+    <SectionWrapper className="bg-white">
+      <div className="bg-bluishGrey rounded-2xl shadow-lg">
         <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
           {/* Content Section */}
           <div className="space-y-4">
@@ -220,6 +221,6 @@ export default function SearchTutor() {
           </div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
