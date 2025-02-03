@@ -6,7 +6,7 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <SectionWrapper className="bg-bluishGrey mt-12" >
+    <SectionWrapper>
       <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 md:gap-12">
         {/* Content Section */}
         <div className="w-full md:w-1/2 space-y-6">

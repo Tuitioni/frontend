@@ -27,7 +27,7 @@ const dummyTutors: Tutor[] = [
 
 export default function TopTutors() {
   return (
-    <SectionWrapper className="bg-bluishGrey">
+    <SectionWrapper>
       <SectionTitle
         title="Top Tutors"
         subtitle="We help to make communication between teachers and students"
