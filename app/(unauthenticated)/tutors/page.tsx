@@ -109,7 +109,7 @@ function TutorsContent() {
         <div className="w-full lg:w-3/4 flex flex-col">
           <div className="flex flex-col sm:flex-row justify-between px-2 sm:px-3 lg:px-4 mb-2 gap-2">
             <div className="text-sm sm:text-base lg:text-lg">
-              Showing Results: {tutors.length}
+              Showing Results: {tutors.length || 0}
             </div>
             <div className="flex gap-1 items-center">
               <div className="text-sm sm:text-base lg:text-lg">Sort By:</div>
@@ -137,7 +137,7 @@ function TutorsContent() {
           ) : (
             <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-                {tutors.map((tutor) => (
+                {Array.isArray(tutors) ? tutors.map((tutor) => (
                   <TutorCard
                     key={tutor.id}
                     id={tutor.id}
@@ -150,7 +150,7 @@ function TutorsContent() {
                     subjects={tutor.subjects}
                     yearsOfExperience={tutor.yearsOfExperience}
                   />
-                ))}
+                )) : null}
               </div>
             </div>
           )}

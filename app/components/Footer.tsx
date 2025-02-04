@@ -6,7 +6,7 @@ import { FaFacebook, FaYoutube, FaTiktok } from "react-icons/fa";
 // Separate components for better organization
 const Logo = () => (
   <Link
-    href="/home"
+    href="/"
     className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
   >
     <Image
