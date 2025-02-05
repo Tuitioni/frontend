@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { AuthMode } from "@/lib/types/auth";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { tokenService } from '@/lib/auth/token';
-import axiosInstance from '@/lib/axios';
 import { jwtDecode } from "jwt-decode";
 
 interface AuthFormContainerProps {
@@ -217,14 +215,14 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     <Card className="w-full max-w-md mx-auto mt-8 p-6 shadow-lg rounded-lg">
       <div className="mb-4 flex space-x-4 justify-center">
         <Button
-          variant={userType === 'teacher' ? "default" : "outline"}
+          variant={userType === 'teacher' ? "defaultv2" : "outline"}
           onClick={() => setUserType('teacher')}
           className="w-1/2"
         >
           Teacher
         </Button>
         <Button
-          variant={userType === 'student' ? "default" : "outline"}
+          variant={userType === 'student' ? "defaultv2" : "outline"}
           onClick={() => setUserType('student')}
           className="w-1/2"
         >
@@ -259,11 +257,11 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       <div className="mt-4 text-center">
         {mode === 'login' ? (
           <span>
-            Dont have an account? <a href="/register" className="text-blue-500">Register here</a>
+            Dont have an account? <a href="/register" style={{ color: '#3B82F6' }}>Register here</a>
           </span>
         ) : (
           <span>
-            Already have an account? <a href="/login" className="text-blue-500">Login here</a>
+            Already have an account? <a href="/login" style={{ color: '#3B82F6' }}>Login here</a>
           </span>
         )}
       </div>

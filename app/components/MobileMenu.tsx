@@ -12,6 +12,22 @@ interface MobileMenuProps {
 export default function MobileMenu({ className }: MobileMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Function to handle clicks outside the menu
+  const handleClickOutside = (event: MouseEvent) => {
+    const menu = document.getElementById("mobile-menu");
+    if (menu && !menu.contains(event.target as Node)) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  // Effect to add/remove event listener
+  React.useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className={`md:hidden flex items-center ${className || ""}`}>
       {/* Hamburger Icon */}
@@ -24,7 +40,7 @@ export default function MobileMenu({ className }: MobileMenuProps) {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="absolute top-14 right-0 bg-white shadow-md p-4 w-48 rounded-lg z-10">
+        <div id="mobile-menu" className="absolute top-14 right-0 bg-white shadow-md p-4 w-48 rounded-lg z-10">
           <div className="flex flex-col gap-2">
             <Link href="/login">
               <Button variant="default" className="w-full">

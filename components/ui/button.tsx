@@ -13,6 +13,8 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-background text-xs px-1 md:text-base text-grey border border-yellow hover:bg-gradient-to-r hover:from-yellow hover:via-red hover:text-white hover:to-pink ",
+           defaultv2:
+          "bg-background text-xs px-1 md:text-base text-grey border border-yellow ",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border-input bg-background hover:text-yellow",
