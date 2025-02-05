@@ -16,14 +16,70 @@ interface AuthFormContainerProps {
 
 interface TokenPayload {
   sub: string;
-  // add other token payload properties if needed
 }
+
+const AuthFormFields = ({ mode, userType, formData, handleInputChange }: { mode: string, userType: string, formData: any, handleInputChange: any }) => (
+  <div className="space-y-4">
+    {mode === 'register' && (
+      <>
+        <Input
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          required
+        />
+        <Input
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          required
+        />
+        <Input
+          name="phone"
+          type="tel"
+          placeholder="Phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+        />
+        <Input
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleInputChange}
+          required
+        />
+      </>
+    )}
+
+    <Input
+      name={mode === 'login' ? "username" : "email"}
+      type={mode === 'login' ? "text" : "email"}
+      placeholder={mode === 'login' ? "Username or Email" : "Email"}
+      value={mode === 'login' ? formData.username : formData.email}
+      onChange={handleInputChange}
+      required
+    />
+
+    <Input
+      name="password"
+      type="password"
+      placeholder="Password"
+      value={formData.password}
+      onChange={handleInputChange}
+      required
+    />
+  </div>
+);
 
 export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<AuthMode>(defaultMode);
+  const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [userType, setUserType] = useState<'teacher' | 'student'>('teacher');
 
   // Form states
   const [formData, setFormData] = useState({
@@ -89,8 +145,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       setIsLoading(true);
       setError("");
       
-      // 1. Register the user
-      const registerResponse = await fetch("/api/register/teacher", {
+      const endpoint = userType === 'teacher' ? "/api/register/teacher" : "/api/register/student";
+      const registerResponse = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,36 +164,10 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
         throw new Error(errorData.error || "Registration failed");
       }
 
-      // 2. Automatically login after registration
-      const loginResponse = await fetch("/api/login/teacher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.email, // Use email as username
-          password: formData.password,
-        }),
-      });
-
-      if (!loginResponse.ok) {
-        throw new Error("Auto-login failed after registration");
-      }
-
-      const loginData = await loginResponse.json();
-      
-      if (!loginData.access_token) {
-        throw new Error("No access token received");
-      }
-
-      // 3. Store the token
-      tokenService.setToken(loginData.access_token);
-
-      // 4. Create teacher profile
-      await createTeacherProfile(loginData.access_token);
-
-      // 5. Redirect to dashboard
-      router.push('/dashboard');
+      // Automatically login after registration
+      await handleLogin();
     } catch (err) {
-      console.error('Registration/Login error:', err);
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);
@@ -149,7 +179,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       setIsLoading(true);
       setError("");
 
-      const response = await fetch("/api/login/teacher", {
+      const endpoint = "/api/login/" + userType; // Adjusted endpoint for login
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -183,21 +214,21 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-8 p-6">
-      <div className="mb-6 flex space-x-4 justify-center">
+    <Card className="w-full max-w-md mx-auto mt-8 p-6 shadow-lg rounded-lg">
+      <div className="mb-4 flex space-x-4 justify-center">
         <Button
-          variant={mode === 'login' ? "default" : "outline"}
-          onClick={() => setMode('login')}
+          variant={userType === 'teacher' ? "default" : "outline"}
+          onClick={() => setUserType('teacher')}
           className="w-1/2"
         >
-          Login
+          Teacher
         </Button>
         <Button
-          variant={mode === 'register' ? "default" : "outline"}
-          onClick={() => setMode('register')}
+          variant={userType === 'student' ? "default" : "outline"}
+          onClick={() => setUserType('student')}
           className="w-1/2"
         >
-          Register
+          Student
         </Button>
       </div>
 
@@ -205,72 +236,37 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
         e.preventDefault();
         mode === 'login' ? handleLogin() : handleRegister();
       }}>
-        <div className="space-y-4">
-          {mode === 'register' && (
-            <>
-              <Input
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="phone"
-                type="tel"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="location"
-                placeholder="Location"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-            </>
-          )}
+        <AuthFormFields 
+          mode={mode} 
+          userType={userType} 
+          formData={formData} 
+          handleInputChange={handleInputChange} 
+        />
 
-          <Input
-            name={mode === 'login' ? "username" : "email"}
-            type={mode === 'login' ? "text" : "email"}
-            placeholder={mode === 'login' ? "Username or Email" : "Email"}
-            value={mode === 'login' ? formData.username : formData.email}
-            onChange={handleInputChange}
-            required
-          />
+        {error && (
+          <div className="text-sm text-red-500 mt-2">{error}</div>
+        )}
 
-          <Input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-
-          {error && (
-            <div className="text-sm text-red-500 mt-2">{error}</div>
-          )}
-
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "Please wait..." : mode === 'login' ? "Login" : "Register"}
-          </Button>
-        </div>
+        <Button 
+          type="submit" 
+          className="w-full mt-4"
+          disabled={isLoading}
+        >
+          {isLoading ? "Please wait..." : mode === 'login' ? "Login" : "Register"}
+        </Button>
       </form>
+
+      <div className="mt-4 text-center">
+        {mode === 'login' ? (
+          <span>
+            Dont have an account? <a href="/register" className="text-blue-500">Register here</a>
+          </span>
+        ) : (
+          <span>
+            Already have an account? <a href="/login" className="text-blue-500">Login here</a>
+          </span>
+        )}
+      </div>
     </Card>
   );
 } 
