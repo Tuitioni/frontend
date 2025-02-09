@@ -24,7 +24,7 @@ interface Tutor {
   yearsOfExperience: number;
 }
 
-function TutorsContent() {
+export default function Page() {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const searchParams = useSearchParams();
@@ -137,33 +137,27 @@ function TutorsContent() {
           ) : (
             <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-                {Array.isArray(tutors) ? tutors.map((tutor) => (
-                  <TutorCard
-                    key={tutor.id}
-                    id={tutor.id}
-                    firstName={tutor.firstName}
-                    lastName={tutor.lastName}
-                    location={tutor.location}
-                    phone={tutor.phone}
-                    medium={tutor.medium}
-                    education={tutor.education}
-                    subjects={tutor.subjects}
-                    yearsOfExperience={tutor.yearsOfExperience}
-                  />
-                )) : null}
+                {Array.isArray(tutors)
+                  ? tutors.map((tutor) => (
+                      <TutorCard
+                        key={tutor.id}
+                        id={tutor.id}
+                        firstName={tutor.firstName}
+                        lastName={tutor.lastName}
+                        location={tutor.location}
+                        phone={tutor.phone}
+                        medium={tutor.medium}
+                        education={tutor.education}
+                        subjects={tutor.subjects}
+                        yearsOfExperience={tutor.yearsOfExperience}
+                      />
+                    ))
+                  : null}
               </div>
             </div>
           )}
         </div>
       </div>
     </>
-  );
-}
-
-export default function TutorsPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <TutorsContent />
-    </Suspense>
   );
 }

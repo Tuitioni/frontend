@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SkeletonJobCard from "@/app/(unauthenticated)/jobs/components/SkeletonJobCard";
+import ApplyJobModal from "@/app/(unauthenticated)/jobs/components/ApplyJobModal";
 
 // Define the type for the job data
 interface Job {
@@ -39,6 +40,9 @@ interface Job {
 export default function Page() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isApplyJobModalOpen, setApplyJobModalOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [selectedJobTitle, setSelectedJobTitle] = useState<string>("");
 
   const fetchFilteredJobs = async (filters?: {
     district: string;
@@ -94,6 +98,12 @@ export default function Page() {
     fetchFilteredJobs();
   };
 
+  const openApplyJobModal = (postId: string, jobTitle: string) => {
+    setSelectedPostId(postId);
+    setSelectedJobTitle(jobTitle);
+    setApplyJobModalOpen(true);
+  };
+
   return (
     <>
       <div className="flex flex-col lg:flex-row mt-2 sm:mt-3 lg:mt-4 min-h-[calc(100vh-6rem)]">
@@ -137,12 +147,29 @@ export default function Page() {
                   jobs.map((job) => (
                     <JobCard
                       key={job.id}
-                      title={`${job.firstName} ${job.lastName}`}
-                      description={job.note}
+                      id={job.id}
+                      firstName={job.firstName}
+                      lastName={job.lastName}
+                      district={job.district}
+                      area={job.area}
+                      age={job.age}
                       medium={job.medium}
+                      levelOfStudy={job.levelOfStudy}
+                      school={job.school}
+                      college={job.college}
+                      university={job.university}
                       subjects={job.subjects}
-                      tutoringDays={`${job.numberOfDays} days per week`}
-                      monthlySalary={`$${job.salary}`}
+                      gender={job.gender}
+                      salary={job.salary}
+                      numberOfDays={job.numberOfDays}
+                      duration={job.duration}
+                      tuitionType={job.tuitionType}
+                      class={job.class}
+                      note={job.note}
+                      createdAt={job.createdAt}
+                      updatedAt={job.updatedAt}
+                      jobTitle={`${job.firstName} ${job.lastName}`}
+                      onApply={openApplyJobModal}
                     />
                   ))
                 ) : (
@@ -155,6 +182,12 @@ export default function Page() {
           )}
         </div>
       </div>
+      <ApplyJobModal
+        isOpen={isApplyJobModalOpen}
+        onClose={() => setApplyJobModalOpen(false)}
+        jobTitle={selectedJobTitle}
+        id={selectedPostId!}
+      />
     </>
   );
 }

@@ -13,19 +13,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
 import { tokenService } from "@/lib/auth/token";
 
-interface HireModalProps {
+interface ApplyJobModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tutorName: string;
-  tutorId: string;
+  jobTitle: string;
+  id: string;
 }
 
-export default function HireModal({
+export default function ApplyJobModal({
   isOpen,
   onClose,
-  tutorName,
-  tutorId,
-}: HireModalProps) {
+  jobTitle,
+  id,
+}: ApplyJobModalProps) {
   const { makeAuthenticatedRequest } = useAuth();
   const decodedToken = useToken();
   const studentId = decodedToken?.sub;
@@ -36,7 +36,7 @@ export default function HireModal({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [location, setLocation] = useState("");
-  const [fee, setFee] = useState(10000);
+  const [expectedSalary, setExpectedSalary] = useState(10000);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -45,7 +45,7 @@ export default function HireModal({
     setLoading(true);
 
     try {
-      const registerResponse = await fetch("/api/register/student", {
+      const registerResponse = await fetch("/api/register/teacher", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,14 +61,13 @@ export default function HireModal({
       });
 
       if (!registerResponse.ok) {
-        throw new Error("Failed to register student");
+        throw new Error("Failed to register teacher");
       }
 
       const registerData = await registerResponse.json();
-      const studentId = registerData.id;
-      console.log(studentId);
+      const teacherId = registerData.id;
 
-      const loginResponse = await fetch("/api/login/student", {
+      const loginResponse = await fetch("/api/login/teacher", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,38 +82,36 @@ export default function HireModal({
 
       if (loginData.access_token) {
         tokenService.setToken(loginData.access_token);
-        const token = tokenService.getToken();
-        console.log("Token stored:", token ? "Yes" : "No");
       } else {
         throw new Error("No access token received");
       }
 
       if (!loginResponse.ok) {
-        throw new Error("Failed to login student");
+        throw new Error("Failed to login teacher");
       }
 
       const token = tokenService.getToken();
-      const hireResponse = await fetch("/api/hire", {
+      const applyResponse = await fetch("/api/job", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          teacherId: tutorId,
-          studentId,
-          fee,
+          teacherId,
+          postId: id,
+          expected_salary: expectedSalary,
         }),
       });
 
-      if (!hireResponse.ok) {
-        throw new Error("Failed to hire tutor");
+      if (!applyResponse.ok) {
+        throw new Error("Failed to apply for job");
       }
 
       toast({
         title: "Success!",
         description:
-          "Your account has been created, logged in, and the tutor has been hired.",
+          "Your account has been created, logged in, and the job application has been submitted.",
       });
       onClose();
     } catch (error) {
@@ -132,10 +129,9 @@ export default function HireModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] p-6">
         <DialogHeader>
-          <DialogTitle>Hire {tutorName}</DialogTitle>
+          <DialogTitle>Apply for {jobTitle}</DialogTitle>
           <DialogDescription>
-            Fill in your details below. This will automatically create an
-            account for you and hire the tutor.
+            Fill in your details below to apply for the job.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -165,32 +161,6 @@ export default function HireModal({
               placeholder="Enter your last name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="location" className="text-sm font-medium">
-              Location
-            </label>
-            <Input
-              id="location"
-              type="text"
-              placeholder="Enter your location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2 col-span-1 sm:col-span-2">
-            <label htmlFor="fee" className="text-sm font-medium">
-              Proposed Fee
-            </label>
-            <Input
-              id="fee"
-              type="number"
-              placeholder="Enter the proposed fee"
-              value={fee}
-              onChange={(e) => setFee(Number(e.target.value))}
               required
             />
           </div>
@@ -233,12 +203,38 @@ export default function HireModal({
               required
             />
           </div>
+          <div className="space-y-2">
+            <label htmlFor="location" className="text-sm font-medium">
+              Location
+            </label>
+            <Input
+              id="location"
+              type="text"
+              placeholder="Enter your location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2 col-span-1 sm:col-span-2">
+            <label htmlFor="expectedSalary" className="text-sm font-medium">
+              Expected Salary
+            </label>
+            <Input
+              id="expectedSalary"
+              type="number"
+              placeholder="Enter your expected salary"
+              value={expectedSalary}
+              onChange={(e) => setExpectedSalary(Number(e.target.value))}
+              required
+            />
+          </div>
           <Button
             type="submit"
             className="col-span-1 sm:col-span-2 w-full"
             disabled={loading}
           >
-            {loading ? "Processing..." : "Hire Tutor"}
+            {loading ? "Processing..." : "Apply for Job"}
           </Button>
         </form>
       </DialogContent>

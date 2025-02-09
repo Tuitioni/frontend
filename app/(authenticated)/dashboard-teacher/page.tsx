@@ -42,11 +42,11 @@ export default function DashboardPage() {
 
     try {
       setLoading(true);
-      const data = await makeAuthenticatedRequest(
+      const response = await makeAuthenticatedRequest(
         `/api/teacher/${decodedToken.sub}`
       );
+      const data: TeacherDetail = await response.json();
       setProfile(data);
-      console.log(data);
     } catch (error) {
       console.error("Dashboard Error:", {
         message: error instanceof Error ? error.message : "Unknown error",

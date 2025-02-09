@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    // Parse the request body
     const body = await request.json();
 
     // Validate the body: Ensure at least one of the allowed properties is present

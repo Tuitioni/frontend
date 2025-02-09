@@ -1,8 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const response = await fetch(`${process.env.TUITIONI_API}/teacher`, {
       method: "GET",
@@ -16,7 +14,7 @@ export async function GET(request: Request) {
     }
 
     const data = await response.json();
-    console.log("Fetched teachers:", data);
+    console.log("Fetched teacherssss:", data[1]);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching teachers:", error);

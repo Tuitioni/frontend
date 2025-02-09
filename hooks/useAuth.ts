@@ -9,8 +9,7 @@ export function useAuth() {
   const isTokenValid = () => {
     if (!decodedToken) return false;
 
-    // Check if token has expired
-    const currentTime = Date.now() / 1000; // Convert to seconds
+    const currentTime = Date.now() / 1000;
     return decodedToken.exp ? decodedToken.exp > currentTime : false;
   };
 
@@ -35,6 +34,7 @@ export function useAuth() {
   ) => {
     try {
       const token = tokenService.getToken();
+      console.log(token);
       if (!token || !isTokenValid()) {
         handleUnauthorized();
         throw new Error("Invalid or expired authentication token");
@@ -54,32 +54,15 @@ export function useAuth() {
         body: isFormData ? data : data ? JSON.stringify(data) : undefined,
       });
 
-      const responseText = await response.text();
-      let responseData;
-      try {
-        responseData = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {
-        throw new Error(`Invalid JSON response: ${responseText}`);
-      }
-
-      // Handle unauthorized responses
-      if (response.status === 401 || responseData?.statusCode === 401) {
-        handleUnauthorized();
-        throw new Error("Session expired");
-      }
+      console.log(response);
 
       if (!response.ok) {
         throw new Error(
-          responseData?.error ||
-            `Server error (${response.status}): ${response.statusText}`
+          `Server error (${response.status}): ${response.statusText}`
         );
       }
 
-      if (!responseData) {
-        throw new Error("Empty response from server");
-      }
-
-      return responseData;
+      return response;
     } catch (error) {
       if (
         error instanceof Error &&
