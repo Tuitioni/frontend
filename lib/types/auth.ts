@@ -4,7 +4,8 @@ export interface RegisterFormData {
   email: string;
   password: string;
   phone: string;
-  location: string;
+  district: string;
+  area: string;
 }
 
 export interface LoginFormData {

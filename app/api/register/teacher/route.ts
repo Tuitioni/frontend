@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    
+
     // Make request to external API
     const response = await fetch(`${process.env.TUITIONI_API}/teacher/signup`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         firstName: data.firstName,
@@ -16,30 +16,34 @@ export async function POST(request: NextRequest) {
         email: data.email,
         password: data.password,
         phone: data.phone,
-        location: data.location,
+        district: data.district,
+        area: data.area,
+        expectedSalary: data.expectedSalary,
       }),
     });
 
     const responseText = await response.text();
-    console.log('Signup Response:', {
+    console.log("Signup Response:", {
       status: response.status,
-      body: responseText
+      body: responseText,
     });
 
     let responseData;
     try {
       responseData = responseText ? JSON.parse(responseText) : null;
     } catch (e) {
-      console.error('Failed to parse response:', responseText);
+      console.error("Failed to parse response:", responseText);
       return NextResponse.json(
-        { error: 'Invalid response from signup API' },
+        { error: "Invalid response from signup API" },
         { status: 502 }
       );
     }
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: responseData?.error || `Signup failed: ${response.statusText}` },
+        {
+          error: responseData?.error || `Signup failed: ${response.statusText}`,
+        },
         { status: response.status }
       );
     }
@@ -47,9 +51,9 @@ export async function POST(request: NextRequest) {
     // Return the response from the external API
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     return NextResponse.json(
-      { error: 'Failed to register teacher' },
+      { error: "Failed to register teacher" },
       { status: 500 }
     );
   }

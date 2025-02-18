@@ -35,7 +35,8 @@ export default function ApplyJobModal({
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [location, setLocation] = useState("");
+  const [district, setDistrict] = useState("");
+  const [area, setArea] = useState("");
   const [expectedSalary, setExpectedSalary] = useState(10000);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -56,7 +57,8 @@ export default function ApplyJobModal({
           email,
           password,
           phone,
-          location,
+          district,
+          area,
         }),
       });
 
@@ -101,6 +103,8 @@ export default function ApplyJobModal({
           teacherId,
           postId: id,
           expected_salary: expectedSalary,
+          district,
+          area,
         }),
       });
 
@@ -127,7 +131,7 @@ export default function ApplyJobModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] p-6">
+      <DialogContent className="sm:max-w-[600px] p-6 max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Apply for {jobTitle}</DialogTitle>
           <DialogDescription>
@@ -136,7 +140,7 @@ export default function ApplyJobModal({
         </DialogHeader>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 max-h-[70vh] overflow-y-auto px-1"
         >
           <div className="space-y-2">
             <label htmlFor="firstName" className="text-sm font-medium">
@@ -204,15 +208,28 @@ export default function ApplyJobModal({
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="location" className="text-sm font-medium">
-              Location
+            <label htmlFor="district" className="text-sm font-medium">
+              District
             </label>
             <Input
-              id="location"
+              id="district"
               type="text"
-              placeholder="Enter your location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter your district"
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="area" className="text-sm font-medium">
+              Area
+            </label>
+            <Input
+              id="area"
+              type="text"
+              placeholder="Enter your area"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
               required
             />
           </div>

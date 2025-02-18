@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
 
     console.log("Registering student:", data);
-    
+
     // Make request to external API
     const response = await fetch(`${process.env.TUITIONI_API}/student/signup`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         firstName: data.firstName,
@@ -18,27 +18,29 @@ export async function POST(request: NextRequest) {
         email: data.email,
         password: data.password,
         phone: data.phone,
-        location: data.location,
+        district: data.district,
+        area: data.area,
       }),
     });
-console.log("Response:", response);
+    console.log("Response:", response);
     const responseText = await response.text();
- 
 
     let responseData;
     try {
       responseData = responseText ? JSON.parse(responseText) : null;
     } catch (e) {
-      console.error('Failed to parse response:', responseText);
+      console.error("Failed to parse response:", responseText);
       return NextResponse.json(
-        { error: 'Invalid response from signup API' },
+        { error: "Invalid response from signup API" },
         { status: 502 }
       );
     }
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: responseData?.error || `Signup failed: ${response.statusText}` },
+        {
+          error: responseData?.error || `Signup failed: ${response.statusText}`,
+        },
         { status: response.status }
       );
     }
@@ -46,9 +48,9 @@ console.log("Response:", response);
     // Return the response from the external API
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     return NextResponse.json(
-      { error: 'Failed to register student' },
+      { error: "Failed to register student" },
       { status: 500 }
     );
   }

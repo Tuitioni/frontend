@@ -1,24 +1,39 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { AuthMode } from "@/lib/types/auth";
 import { useRouter } from "next/navigation";
-import { tokenService } from '@/lib/auth/token';
+import { tokenService } from "@/lib/auth/token";
 import { jwtDecode } from "jwt-decode";
+
+import DistrictAreaSelector from "@/app/(unauthenticated)/jobs/components/DistrictAreaSelector";
 
 interface AuthFormContainerProps {
   defaultMode?: AuthMode;
 }
 
-interface TokenPayload {
-  sub: string;
-}
-
-const AuthFormFields = ({ mode, userType, formData, handleInputChange }: { mode: string, userType: string, formData: any, handleInputChange: any }) => (
+const AuthFormFields = ({
+  mode,
+  formData,
+  handleInputChange,
+  selectedDistrict,
+  setSelectedDistrict,
+  selectedArea,
+  setSelectedArea,
+}: {
+  mode: string;
+  userType: string;
+  formData: any;
+  handleInputChange: any;
+  selectedDistrict: string;
+  setSelectedDistrict: (district: string) => void;
+  selectedArea: string;
+  setSelectedArea: (area: string) => void;
+}) => (
   <div className="space-y-4">
-    {mode === 'register' && (
+    {mode === "register" && (
       <>
         <Input
           name="firstName"
@@ -42,21 +57,27 @@ const AuthFormFields = ({ mode, userType, formData, handleInputChange }: { mode:
           onChange={handleInputChange}
           required
         />
-        <Input
-          name="location"
-          placeholder="Location"
-          value={formData.location}
-          onChange={handleInputChange}
-          required
+
+        <DistrictAreaSelector
+          onDistrictChange={(district) => {
+            setSelectedDistrict(district);
+            setFormData((prev) => ({ ...prev, district }));
+          }}
+          onAreaChange={(area) => {
+            setSelectedArea(area);
+            setFormData((prev) => ({ ...prev, area }));
+          }}
+          selectedDistrict={selectedDistrict}
+          selectedArea={selectedArea}
         />
       </>
     )}
 
     <Input
-      name={mode === 'login' ? "username" : "email"}
-      type={mode === 'login' ? "text" : "email"}
-      placeholder={mode === 'login' ? "Username or Email" : "Email"}
-      value={mode === 'login' ? formData.username : formData.email}
+      name={mode === "login" ? "username" : "email"}
+      type={mode === "login" ? "text" : "email"}
+      placeholder={mode === "login" ? "Username or Email" : "Email"}
+      value={mode === "login" ? formData.username : formData.email}
       onChange={handleInputChange}
       required
     />
@@ -72,12 +93,14 @@ const AuthFormFields = ({ mode, userType, formData, handleInputChange }: { mode:
   </div>
 );
 
-export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerProps) {
+export function AuthFormContainer({
+  defaultMode = "login",
+}: AuthFormContainerProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
+  const [mode, setMode] = useState<"login" | "register">(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [userType, setUserType] = useState<'teacher' | 'student'>('teacher');
+  const [userType, setUserType] = useState<"teacher" | "student">("teacher");
 
   // Form states
   const [formData, setFormData] = useState({
@@ -86,64 +109,31 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     email: "",
     password: "",
     phone: "",
-    location: "",
+    district: "",
+    area: "",
     username: "",
   });
 
+  // Remove districts state since it's handled by DistrictAreaSelector
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [selectedArea, setSelectedArea] = useState<string>("");
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
-  };
-
-  const createTeacherProfile = async (token: string) => {
-    try {
-      const decoded = jwtDecode<TokenPayload>(token);
-      const teacherId = decoded.sub;
-
-      const profileData = {
-        district: "Not Specified",
-        area: "Not Specified",
-        gender: "MALE",
-        age: 25,
-        medium: "ENGLISH_MEDIUM",
-        education: "Not Specified",
-        yearsOfExperience: 0,
-        subjects: ["Not Specified"],
-        specialization: "Not Specified",
-        teachingLevel: "Not Specified",
-        availability: "Not Specified",
-        monthlySalary: 0,
-        teacherId: teacherId
-      };
-
-      const response = await fetch("/api/teacher-profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create teacher profile");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error creating teacher profile:", error);
-      throw error;
-    }
   };
 
   const handleRegister = async () => {
     try {
       setIsLoading(true);
       setError("");
-      
-      const endpoint = userType === 'teacher' ? "/api/register/teacher" : "/api/register/student";
+
+      const endpoint =
+        userType === "teacher"
+          ? "/api/register/teacher"
+          : "/api/register/student";
       const registerResponse = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -153,7 +143,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
-          location: formData.location,
+          district: selectedDistrict,
+          area: selectedArea,
         }),
       });
 
@@ -165,7 +156,7 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       // Automatically login after registration
       await handleLogin();
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error("Registration error:", err);
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setIsLoading(false);
@@ -193,18 +184,24 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       }
 
       const data = await response.json();
-      console.log('Login response:', data);
+      console.log("Login response:", data);
 
       if (data.access_token) {
         tokenService.setToken(data.access_token);
         const token = tokenService.getToken();
-        console.log('Token stored:', token ? 'Yes' : 'No');
-        router.push('/dashboard');
+        console.log("Token stored:", token ? "Yes" : "No");
+
+        // Redirect based on user type
+        if (userType === "teacher") {
+          router.push("/dashboard-teacher");
+        } else {
+          router.push("/dashboard-student");
+        }
       } else {
-        throw new Error('No access token received');
+        throw new Error("No access token received");
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoading(false);
@@ -215,56 +212,66 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     <Card className="w-full max-w-md mx-auto mt-8 p-6 shadow-lg rounded-lg">
       <div className="mb-4 flex space-x-4 justify-center">
         <Button
-          variant={userType === 'teacher' ? "defaultv2" : "outline"}
-          onClick={() => setUserType('teacher')}
+          variant={userType === "teacher" ? "defaultv2" : "outline"}
+          onClick={() => setUserType("teacher")}
           className="w-1/2"
         >
           Teacher
         </Button>
         <Button
-          variant={userType === 'student' ? "defaultv2" : "outline"}
-          onClick={() => setUserType('student')}
+          variant={userType === "student" ? "defaultv2" : "outline"}
+          onClick={() => setUserType("student")}
           className="w-1/2"
         >
           Student
         </Button>
       </div>
 
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        mode === 'login' ? handleLogin() : handleRegister();
-      }}>
-        <AuthFormFields 
-          mode={mode} 
-          userType={userType} 
-          formData={formData} 
-          handleInputChange={handleInputChange} 
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          mode === "login" ? handleLogin() : handleRegister();
+        }}
+      >
+        <AuthFormFields
+          mode={mode}
+          userType={userType}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          selectedDistrict={selectedDistrict}
+          setSelectedDistrict={setSelectedDistrict}
+          selectedArea={selectedArea}
+          setSelectedArea={setSelectedArea}
         />
 
-        {error && (
-          <div className="text-sm text-red-500 mt-2">{error}</div>
-        )}
+        {error && <div className="text-sm text-red-500 mt-2">{error}</div>}
 
-        <Button 
-          type="submit" 
-          className="w-full mt-4"
-          disabled={isLoading}
-        >
-          {isLoading ? "Please wait..." : mode === 'login' ? "Login" : "Register"}
+        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+          {isLoading
+            ? "Please wait..."
+            : mode === "login"
+            ? "Login"
+            : "Register"}
         </Button>
       </form>
 
       <div className="mt-4 text-center">
-        {mode === 'login' ? (
+        {mode === "login" ? (
           <span>
-            Dont have an account? <a href="/register" style={{ color: '#3B82F6' }}>Register here</a>
+            Dont have an account?{" "}
+            <a href="/register" style={{ color: "#3B82F6" }}>
+              Register here
+            </a>
           </span>
         ) : (
           <span>
-            Already have an account? <a href="/login" style={{ color: '#3B82F6' }}>Login here</a>
+            Already have an account?{" "}
+            <a href="/login" style={{ color: "#3B82F6" }}>
+              Login here
+            </a>
           </span>
         )}
       </div>
     </Card>
   );
-} 
+}

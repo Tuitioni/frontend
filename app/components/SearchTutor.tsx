@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useDistrictsData } from "@/app/hooks/useDistrictsData";
+import { useDistrictsData } from "@/hooks/useDistrictsData";
 import { EDUCATION_LEVELS } from "@/app/constants/data";
 import { Button } from "@/components/ui/button";
 import {

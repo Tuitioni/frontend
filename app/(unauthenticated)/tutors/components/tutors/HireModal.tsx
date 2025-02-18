@@ -7,11 +7,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
 import { tokenService } from "@/lib/auth/token";
+import DistrictAreaSelector, {
+  DistrictData,
+} from "@/app/(unauthenticated)/jobs/components/DistrictAreaSelector";
 
 interface HireModalProps {
   isOpen: boolean;
@@ -35,10 +38,19 @@ export default function HireModal({
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [location, setLocation] = useState("");
   const [fee, setFee] = useState(10000);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [selectedArea, setSelectedArea] = useState<string>("");
+
+  const handleDistrictChange = (district: string) => {
+    setSelectedDistrict(district);
+  };
+
+  const handleAreaChange = (area: string) => {
+    setSelectedArea(area);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +68,8 @@ export default function HireModal({
           email,
           password,
           phone,
-          location,
+          district: selectedDistrict,
+          area: selectedArea,
         }),
       });
 
@@ -104,6 +117,8 @@ export default function HireModal({
           teacherId: tutorId,
           studentId,
           fee,
+          district: selectedDistrict,
+          area: selectedArea,
         }),
       });
 
@@ -130,7 +145,7 @@ export default function HireModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] p-6">
+      <DialogContent className="sm:max-w-[600px] p-6 max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Hire {tutorName}</DialogTitle>
           <DialogDescription>
@@ -140,7 +155,7 @@ export default function HireModal({
         </DialogHeader>
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 max-h-[70vh] overflow-y-auto px-1"
         >
           <div className="space-y-2">
             <label htmlFor="firstName" className="text-sm font-medium">
@@ -168,17 +183,12 @@ export default function HireModal({
               required
             />
           </div>
-          <div className="space-y-2">
-            <label htmlFor="location" className="text-sm font-medium">
-              Location
-            </label>
-            <Input
-              id="location"
-              type="text"
-              placeholder="Enter your location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              required
+          <div className="col-span-1 sm:col-span-2">
+            <DistrictAreaSelector
+              onDistrictChange={handleDistrictChange}
+              onAreaChange={handleAreaChange}
+              selectedDistrict={selectedDistrict}
+              selectedArea={selectedArea}
             />
           </div>
           <div className="space-y-2 col-span-1 sm:col-span-2">

@@ -6,6 +6,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 interface FormData {
   name: string;
   email: string;
+  phone: string;
   message: string;
 }
 
@@ -13,6 +14,7 @@ const Contact: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
+    phone: "",
     message: "",
   });
 
@@ -23,11 +25,33 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Thank you for your query. We will get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+
+    const body = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      message: formData.message,
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      console.log("Response from API:", data);
+      alert("Thank you for your query. We will get back to you soon.");
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("There was an error submitting your query. Please try again.");
+    }
   };
 
   return (
@@ -66,6 +90,22 @@ const Contact: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Phone
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             />
           </div>

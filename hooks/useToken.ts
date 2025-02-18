@@ -5,7 +5,9 @@ import { jwtDecode } from "jwt-decode";
 interface TokenPayload {
   sub: string;
   exp?: number; // Expiration time
-  // add other token payload properties if needed
+  iat?: number; // Issued at time
+  email?: string; // User email
+  role?: string; // User role
 }
 
 export function useToken() {

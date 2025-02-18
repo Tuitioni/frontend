@@ -153,7 +153,7 @@ export default function Page() {
                       district={job.district}
                       area={job.area}
                       age={job.age}
-                      medium={job.medium}
+                      medium={job.medium as Medium}
                       levelOfStudy={job.levelOfStudy}
                       school={job.school}
                       college={job.college}
