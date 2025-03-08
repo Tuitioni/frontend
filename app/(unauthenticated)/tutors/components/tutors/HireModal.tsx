@@ -12,9 +12,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
 import { tokenService } from "@/lib/auth/token";
-import DistrictAreaSelector, {
-  DistrictData,
-} from "@/app/(unauthenticated)/jobs/components/DistrictAreaSelector";
 
 interface HireModalProps {
   isOpen: boolean;
@@ -43,14 +40,6 @@ export default function HireModal({
   const { toast } = useToast();
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedArea, setSelectedArea] = useState<string>("");
-
-  const handleDistrictChange = (district: string) => {
-    setSelectedDistrict(district);
-  };
-
-  const handleAreaChange = (area: string) => {
-    setSelectedArea(area);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,12 +173,32 @@ export default function HireModal({
             />
           </div>
           <div className="col-span-1 sm:col-span-2">
-            <DistrictAreaSelector
-              onDistrictChange={handleDistrictChange}
-              onAreaChange={handleAreaChange}
-              selectedDistrict={selectedDistrict}
-              selectedArea={selectedArea}
-            />
+            <div className="space-y-2">
+              <label htmlFor="district" className="text-sm font-medium">
+                District
+              </label>
+              <Input
+                id="district"
+                type="text"
+                placeholder="Enter your district"
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="area" className="text-sm font-medium">
+                Area
+              </label>
+              <Input
+                id="area"
+                type="text"
+                placeholder="Enter your area"
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+                required
+              />
+            </div>
           </div>
           <div className="space-y-2 col-span-1 sm:col-span-2">
             <label htmlFor="fee" className="text-sm font-medium">

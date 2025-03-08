@@ -207,7 +207,17 @@ export default function ApplyJobModal({
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="col-span-1 sm:col-span-2">
+            {/* Remove DistrictAreaSelector */}
+            {/* <DistrictAreaSelector
+              onDistrictChange={handleDistrictChange}
+              onAreaChange={handleAreaChange}
+              selectedDistrict={district}
+              selectedArea={area}
+            /> */}
+          </div>
+          {/* Add input for District */}
+          <div className="space-y-2 col-span-1 sm:col-span-2">
             <label htmlFor="district" className="text-sm font-medium">
               District
             </label>
@@ -220,7 +230,8 @@ export default function ApplyJobModal({
               required
             />
           </div>
-          <div className="space-y-2">
+          {/* Add input for Area */}
+          <div className="space-y-2 col-span-1 sm:col-span-2">
             <label htmlFor="area" className="text-sm font-medium">
               Area
             </label>
