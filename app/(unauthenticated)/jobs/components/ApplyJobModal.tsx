@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
@@ -42,6 +42,58 @@ export default function ApplyJobModal({
   const [lastName, setLastName] = useState("");
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
+
+  const [districts, setDistricts] = useState<string[]>([]);
+  const [areas, setAreas] = useState<{ [key: string]: string[] }>({});
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+        );
+        const data = await response.json();
+
+        const districtList = data.map((item: any) => item.district);
+        const areaMap: { [key: string]: string[] } = {};
+        data.forEach((item: any) => {
+          // Ensure areas are deduplicated to avoid key warnings
+          areaMap[item.district] = Array.from(new Set(item.areas));
+        });
+
+        setDistricts(districtList);
+        setAreas(areaMap);
+      } catch (error) {
+        console.error("Failed to fetch districts and areas:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load districts and areas.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
+  }, [toast]);
+
+  // Update available areas when district changes
+  useEffect(() => {
+    if (district && areas[district]) {
+      setAvailableAreas(areas[district]);
+      setArea("");
+    } else {
+      setAvailableAreas([]);
+    }
+  }, [district, areas]);
+
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDistrict(e.target.value);
+  };
+
+  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setArea(e.target.value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,41 +284,48 @@ export default function ApplyJobModal({
                 />
               </div>
               <div className="col-span-1 sm:col-span-2">
-                {/* Remove DistrictAreaSelector */}
-                {/* <DistrictAreaSelector
-                  onDistrictChange={handleDistrictChange}
-                  onAreaChange={handleAreaChange}
-                  selectedDistrict={district}
-                  selectedArea={area}
-                /> */}
-              </div>
-              {/* Add input for District */}
-              <div className="space-y-2 col-span-1 sm:col-span-2">
-                <label htmlFor="district" className="text-sm font-medium">
-                  District
-                </label>
-                <Input
-                  id="district"
-                  type="text"
-                  placeholder="Enter your district"
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                  required
-                />
-              </div>
-              {/* Add input for Area */}
-              <div className="space-y-2 col-span-1 sm:col-span-2">
-                <label htmlFor="area" className="text-sm font-medium">
-                  Area
-                </label>
-                <Input
-                  id="area"
-                  type="text"
-                  placeholder="Enter your area"
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  required
-                />
+                <div className="space-y-2">
+                  <label htmlFor="district" className="text-sm font-medium">
+                    District
+                  </label>
+                  <select
+                    id="district"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={district}
+                    onChange={handleDistrictChange}
+                    required
+                  >
+                    <option value="">Select District</option>
+                    {districts.map((dist) => (
+                      <option key={dist} value={dist}>
+                        {dist}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2 mt-2">
+                  <label htmlFor="area" className="text-sm font-medium">
+                    Area
+                  </label>
+                  <select
+                    id="area"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={area}
+                    onChange={handleAreaChange}
+                    disabled={!district}
+                    required
+                  >
+                    <option value="">Select Area</option>
+                    {availableAreas.map((areaItem, index) => (
+                      <option
+                        key={`${district}-${areaItem}-${index}`}
+                        value={areaItem}
+                      >
+                        {areaItem}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </>
           ) : (

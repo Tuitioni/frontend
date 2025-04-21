@@ -43,6 +43,58 @@ export default function HireModal({
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedArea, setSelectedArea] = useState("");
 
+  const [districts, setDistricts] = useState<string[]>([]);
+  const [areas, setAreas] = useState<{ [key: string]: string[] }>({});
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+        );
+        const data = await response.json();
+
+        const districtList = data.map((item: any) => item.district);
+        const areaMap: { [key: string]: string[] } = {};
+        data.forEach((item: any) => {
+          // Ensure areas are deduplicated to avoid key warnings
+          areaMap[item.district] = Array.from(new Set(item.areas));
+        });
+
+        setDistricts(districtList);
+        setAreas(areaMap);
+      } catch (error) {
+        console.error("Failed to fetch districts and areas:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load districts and areas.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
+  }, [toast]);
+
+  // Update available areas when district changes
+  useEffect(() => {
+    if (selectedDistrict && areas[selectedDistrict]) {
+      setAvailableAreas(areas[selectedDistrict]);
+      setSelectedArea("");
+    } else {
+      setAvailableAreas([]);
+    }
+  }, [selectedDistrict, areas]);
+
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDistrict(e.target.value);
+  };
+
+  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedArea(e.target.value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -204,27 +256,43 @@ export default function HireModal({
                   <label htmlFor="district" className="text-sm font-medium">
                     District
                   </label>
-                  <Input
+                  <select
                     id="district"
-                    type="text"
-                    placeholder="Enter your district"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={selectedDistrict}
-                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    onChange={handleDistrictChange}
                     required
-                  />
+                  >
+                    <option value="">Select District</option>
+                    {districts.map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 mt-2">
                   <label htmlFor="area" className="text-sm font-medium">
                     Area
                   </label>
-                  <Input
+                  <select
                     id="area"
-                    type="text"
-                    placeholder="Enter your area"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={selectedArea}
-                    onChange={(e) => setSelectedArea(e.target.value)}
+                    onChange={handleAreaChange}
+                    disabled={!selectedDistrict}
                     required
-                  />
+                  >
+                    <option value="">Select Area</option>
+                    {availableAreas.map((areaItem, index) => (
+                      <option
+                        key={`${selectedDistrict}-${areaItem}-${index}`}
+                        value={areaItem}
+                      >
+                        {areaItem}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="space-y-2">

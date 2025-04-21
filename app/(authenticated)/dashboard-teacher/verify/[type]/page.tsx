@@ -68,7 +68,7 @@ export default function VerifyDocumentPage() {
       );
 
       console.log("Document uploaded successfully:", response);
-      router.push("/dashboard?verification=success");
+      router.push("/dashboard-teacher?verification=success");
     } catch (error) {
       console.error("Failed to upload document:", error);
       setError(
