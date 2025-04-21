@@ -4,11 +4,22 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
+import { useEffect, useState } from "react";
 
 export default function AuthButtons() {
   const { isAuthenticated, logout } = useAuth();
   const decodedToken = useToken();
   const role = decodedToken?.role;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Don't render anything during SSR to prevent hydration errors
+  if (!isClient) {
+    return <div className="hidden md:flex gap-2"></div>;
+  }
 
   return (
     <div className="hidden md:flex gap-2">

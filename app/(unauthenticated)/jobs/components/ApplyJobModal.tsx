@@ -7,11 +7,150 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useToken } from "@/hooks/useToken";
 import { tokenService } from "@/lib/auth/token";
+import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { ChevronDown } from "lucide-react";
+
+// Define types for our component
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface SearchableSelectProps {
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+// Custom searchable select component
+const SearchableSelect = ({
+  options,
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+  required = false,
+}: SearchableSelectProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [displayValue, setDisplayValue] = useState("");
+  const inputRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Filter options based on search term
+  const filteredOptions = options.filter((option: SelectOption) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Update display value when selected value changes
+  useEffect(() => {
+    const selected = options.find(
+      (option: SelectOption) => option.value === value
+    );
+    setDisplayValue(selected ? selected.label : "");
+    setSearchTerm("");
+  }, [value, options]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | any) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearchTerm("");
+        // Restore display value
+        const selected = options.find(
+          (option: SelectOption) => option.value === value
+        );
+        setDisplayValue(selected ? selected.label : "");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [value, options]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setDisplayValue(e.target.value);
+    setIsOpen(true);
+  };
+
+  const handleOptionClick = (optionValue: string, optionLabel: string) => {
+    onChange(optionValue);
+    setDisplayValue(optionLabel);
+    setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  return (
+    <div className="relative">
+      <div
+        className={`flex items-center relative ${
+          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        }`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        ref={inputRef}
+      >
+        <input
+          type="text"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder={placeholder}
+          value={displayValue}
+          onChange={handleInputChange}
+          onClick={(e) => e.stopPropagation()}
+          disabled={disabled}
+          onFocus={() => !disabled && setIsOpen(true)}
+          required={required}
+          autoComplete="off"
+        />
+        <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+      </div>
+      {isOpen && !disabled && (
+        <div
+          ref={dropdownRef}
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover py-1 text-popover-foreground shadow-md"
+        >
+          {filteredOptions.length === 0 ? (
+            <div className="px-2 py-1.5 text-sm text-muted-foreground">
+              No options found
+            </div>
+          ) : (
+            filteredOptions.map((option: SelectOption) => (
+              <div
+                key={option.value}
+                className={`px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                  option.value === value
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }`}
+                onClick={() => handleOptionClick(option.value, option.label)}
+              >
+                {option.label}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+      <input type="hidden" value={value || ""} />
+    </div>
+  );
+};
 
 interface ApplyJobModalProps {
   isOpen: boolean;
@@ -43,9 +182,21 @@ export default function ApplyJobModal({
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
 
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [areas, setAreas] = useState<{ [key: string]: string[] }>({});
+  const [districtsData, setDistrictsData] = useState<
+    Array<{ district: string; areas: string[] }>
+  >([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  // Convert data for the searchable select component
+  const districtOptions = districtsData.map((d) => ({
+    value: d.district.toLowerCase(),
+    label: d.district,
+  }));
+
+  const areaOptions = availableAreas.map((area) => ({
+    value: area.toLowerCase(),
+    label: area,
+  }));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,16 +205,7 @@ export default function ApplyJobModal({
           "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
         );
         const data = await response.json();
-
-        const districtList = data.map((item: any) => item.district);
-        const areaMap: { [key: string]: string[] } = {};
-        data.forEach((item: any) => {
-          // Ensure areas are deduplicated to avoid key warnings
-          areaMap[item.district] = Array.from(new Set(item.areas));
-        });
-
-        setDistricts(districtList);
-        setAreas(areaMap);
+        setDistrictsData(data);
       } catch (error) {
         console.error("Failed to fetch districts and areas:", error);
         toast({
@@ -79,21 +221,16 @@ export default function ApplyJobModal({
 
   // Update available areas when district changes
   useEffect(() => {
-    if (district && areas[district]) {
-      setAvailableAreas(areas[district]);
-      setArea("");
+    if (district && district !== "") {
+      const selectedDistrict = districtsData.find(
+        (d) => d.district.toLowerCase() === district.toLowerCase()
+      );
+      setAvailableAreas(selectedDistrict?.areas || []);
     } else {
       setAvailableAreas([]);
     }
-  }, [district, areas]);
-
-  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setDistrict(e.target.value);
-  };
-
-  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setArea(e.target.value);
-  };
+    setArea(""); // Reset area when district changes
+  }, [district, districtsData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,6 +326,7 @@ export default function ApplyJobModal({
             "Your account has been created, logged in, and the job application has been submitted.",
         });
       }
+      window.location.reload();
       onClose();
     } catch (error) {
       toast({
@@ -244,6 +382,31 @@ export default function ApplyJobModal({
                   required
                 />
               </div>
+              <div className="col-span-1 sm:col-span-2">
+                <div className="space-y-2">
+                  <Label htmlFor="district">District</Label>
+                  <SearchableSelect
+                    options={districtOptions}
+                    value={district}
+                    onChange={setDistrict}
+                    placeholder="Select district"
+                    required={true}
+                  />
+                </div>
+                <div className="space-y-2 mt-2">
+                  <Label htmlFor="area">Area</Label>
+                  <SearchableSelect
+                    options={areaOptions}
+                    value={area}
+                    onChange={setArea}
+                    placeholder={
+                      !district ? "Select district first" : "Select area"
+                    }
+                    disabled={!district || areaOptions.length === 0}
+                    required={true}
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
                   Email
@@ -282,50 +445,6 @@ export default function ApplyJobModal({
                   onChange={(e) => setPhone(e.target.value)}
                   required
                 />
-              </div>
-              <div className="col-span-1 sm:col-span-2">
-                <div className="space-y-2">
-                  <label htmlFor="district" className="text-sm font-medium">
-                    District
-                  </label>
-                  <select
-                    id="district"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={district}
-                    onChange={handleDistrictChange}
-                    required
-                  >
-                    <option value="">Select District</option>
-                    {districts.map((dist) => (
-                      <option key={dist} value={dist}>
-                        {dist}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2 mt-2">
-                  <label htmlFor="area" className="text-sm font-medium">
-                    Area
-                  </label>
-                  <select
-                    id="area"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={area}
-                    onChange={handleAreaChange}
-                    disabled={!district}
-                    required
-                  >
-                    <option value="">Select Area</option>
-                    {availableAreas.map((areaItem, index) => (
-                      <option
-                        key={`${district}-${areaItem}-${index}`}
-                        value={areaItem}
-                      >
-                        {areaItem}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </>
           ) : (

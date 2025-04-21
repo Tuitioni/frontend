@@ -1,9 +1,7 @@
-import TokenDisplayPage from "./components/TokenDisplay";
+import StudentDashboard from "./components/StudentDashboard";
 
 const DashboardStudentPage = () => {
-  return (
-    <TokenDisplayPage />
-  );
+  return <StudentDashboard />;
 };
 
 export default DashboardStudentPage;

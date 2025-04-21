@@ -6,31 +6,45 @@ import { Card } from "@/components/ui/card";
 import { AuthMode } from "@/lib/types/auth";
 import { useRouter } from "next/navigation";
 import { tokenService } from "@/lib/auth/token";
-import { jwtDecode } from "jwt-decode";
-
-import DistrictAreaSelector from "@/app/(unauthenticated)/jobs/components/DistrictAreaSelector";
-
-interface AuthFormContainerProps {
-  defaultMode?: AuthMode;
-}
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const AuthFormFields = ({
   mode,
+  userType,
   formData,
   handleInputChange,
-  selectedDistrict,
-  setSelectedDistrict,
-  selectedArea,
-  setSelectedArea,
+  districtsData,
+  availableAreas,
+  openDistrict,
+  setOpenDistrict,
+  openArea,
+  setOpenArea,
+  setFormData,
 }: {
   mode: string;
   userType: string;
   formData: any;
   handleInputChange: any;
-  selectedDistrict: string;
-  setSelectedDistrict: (district: string) => void;
-  selectedArea: string;
-  setSelectedArea: (area: string) => void;
+  districtsData: Array<{ district: string; areas: string[] }>;
+  availableAreas: string[];
+  openDistrict: boolean;
+  setOpenDistrict: (open: boolean) => void;
+  openArea: boolean;
+  setOpenArea: (open: boolean) => void;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }) => (
   <div className="space-y-4">
     {mode === "register" && (
@@ -58,18 +72,125 @@ const AuthFormFields = ({
           required
         />
 
-        <DistrictAreaSelector
-          onDistrictChange={(district) => {
-            setSelectedDistrict(district);
-            setFormData((prev) => ({ ...prev, district }));
-          }}
-          onAreaChange={(area) => {
-            setSelectedArea(area);
-            setFormData((prev) => ({ ...prev, area }));
-          }}
-          selectedDistrict={selectedDistrict}
-          selectedArea={selectedArea}
-        />
+        <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
+          <label htmlFor="district" className="text-sm font-medium">
+            District
+          </label>
+          <Popover open={openDistrict} onOpenChange={setOpenDistrict}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openDistrict}
+                className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+              >
+                {formData.district === ""
+                  ? "Select District"
+                  : districtsData.find(
+                      (d) => d.district.toLowerCase() === formData.district
+                    )?.district || "Select District"}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-full p-0 z-[9999]"
+              align="start"
+              side="bottom"
+              sideOffset={5}
+            >
+              <Command>
+                <CommandInput placeholder="Search district..." />
+                <CommandEmpty>No district found.</CommandEmpty>
+                <CommandGroup>
+                  {districtsData.map((d) => (
+                    <CommandItem
+                      key={d.district}
+                      value={d.district}
+                      onSelect={(value) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          district: d.district.toLowerCase(),
+                          area: "",
+                        }));
+                        setOpenDistrict(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          formData.district === d.district.toLowerCase()
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {d.district}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
+          <label htmlFor="area" className="text-sm font-medium">
+            Area
+          </label>
+          <Popover open={openArea} onOpenChange={setOpenArea}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openArea}
+                className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+                disabled={!formData.district}
+              >
+                {formData.area === ""
+                  ? formData.district !== ""
+                    ? "Select Area"
+                    : "Select District First"
+                  : formData.area}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-full p-0 z-[9999]"
+              align="start"
+              side="bottom"
+              sideOffset={5}
+            >
+              <Command>
+                <CommandInput placeholder="Search area..." />
+                <CommandEmpty>No area found.</CommandEmpty>
+                <CommandGroup>
+                  {availableAreas.map((areaItem) => (
+                    <CommandItem
+                      key={areaItem}
+                      value={areaItem}
+                      onSelect={(value) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          area: areaItem.toLowerCase(),
+                        }));
+                        setOpenArea(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          formData.area === areaItem.toLowerCase()
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {areaItem}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </>
     )}
 
@@ -93,6 +214,18 @@ const AuthFormFields = ({
   </div>
 );
 
+// Define form data interface for proper typing
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone: string;
+  district: string;
+  area: string;
+  username: string;
+}
+
 export function AuthFormContainer({
   defaultMode = "login",
 }: AuthFormContainerProps) {
@@ -101,9 +234,11 @@ export function AuthFormContainer({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [userType, setUserType] = useState<"teacher" | "student">("teacher");
+  const [openDistrict, setOpenDistrict] = useState(false);
+  const [openArea, setOpenArea] = useState(false);
 
-  // Form states
-  const [formData, setFormData] = useState({
+  // Update FormData state with proper typing
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
@@ -114,9 +249,40 @@ export function AuthFormContainer({
     username: "",
   });
 
-  // Remove districts state since it's handled by DistrictAreaSelector
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
-  const [selectedArea, setSelectedArea] = useState<string>("");
+  // District and area data
+  const [districtsData, setDistrictsData] = useState<
+    Array<{ district: string; areas: string[] }>
+  >([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+        );
+        const data = await response.json();
+        setDistrictsData(data);
+      } catch (err) {
+        console.error("Failed to fetch districts and areas:", err);
+        setError("Failed to load districts and areas.");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Update available areas when district changes
+  useEffect(() => {
+    if (formData.district && formData.district !== "") {
+      const selectedDistrict = districtsData.find(
+        (d) => d.district.toLowerCase() === formData.district
+      );
+      setAvailableAreas(selectedDistrict?.areas || []);
+    } else {
+      setAvailableAreas([]);
+    }
+  }, [formData.district, districtsData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -143,8 +309,8 @@ export function AuthFormContainer({
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
-          district: selectedDistrict,
-          area: selectedArea,
+          district: formData.district,
+          area: formData.area,
         }),
       });
 
@@ -238,10 +404,13 @@ export function AuthFormContainer({
           userType={userType}
           formData={formData}
           handleInputChange={handleInputChange}
-          selectedDistrict={selectedDistrict}
-          setSelectedDistrict={setSelectedDistrict}
-          selectedArea={selectedArea}
-          setSelectedArea={setSelectedArea}
+          districtsData={districtsData}
+          availableAreas={availableAreas}
+          openDistrict={openDistrict}
+          setOpenDistrict={setOpenDistrict}
+          openArea={openArea}
+          setOpenArea={setOpenArea}
+          setFormData={setFormData}
         />
 
         {error && <div className="text-sm text-red-500 mt-2">{error}</div>}
@@ -274,4 +443,8 @@ export function AuthFormContainer({
       </div>
     </Card>
   );
+}
+
+interface AuthFormContainerProps {
+  defaultMode?: AuthMode;
 }
