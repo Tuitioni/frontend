@@ -6,7 +6,11 @@ import { Input, Select } from "@/components/ui/admin/Form";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import { TeacherDetail, UpdateTeacherDto } from "@/types/teacher";
+import {
+  TeacherDetail,
+  UpdateAdminTeacherDto,
+  UpdateTeacherDto,
+} from "@/types/teacher";
 import { Gender, Medium } from "@/types";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
@@ -20,8 +24,10 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{
     message: string;
-    type: "success" | "error";
+    type: "success" | "error" | "info";
   } | null>(null);
+  const [originalTeacherData, setOriginalTeacherData] =
+    useState<TeacherDetail | null>(null);
 
   const [formData, setFormData] = useState<UpdateTeacherDto>({
     firstName: "",
@@ -30,8 +36,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
     location: "",
     phone: "",
     profile: {
-      district: "",
-      area: "",
       gender: Gender.MALE,
       medium: Medium.BANGLA_MEDIUM,
       education: "",
@@ -47,29 +51,18 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
   useEffect(() => {
     const fetchTeacher = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/teacher/${params.id}`
-        );
-        const data = await response.json();
+        const response = await fetchWithAuth(`/api/admin/teacher/${params.id}`);
+        const data: TeacherDetail = await response.json();
+        setOriginalTeacherData(data);
         setFormData({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          location: data.location,
           phone: data.phone,
           profile: data.profile
             ? {
-                district: data.profile.district,
-                area: data.profile.area,
-                gender: data.profile.gender,
-                medium: data.profile.medium,
-                education: data.profile.education,
-                yearsOfExperience: Number(data.profile.yearsOfExperience) || 0,
-                subjects: data.profile.subjects,
-                specialization: data.profile.specialization || "",
-                teachingLevel: data.profile.teachingLevel,
-                availability: data.profile.availability,
-                monthlySalary: Number(data.profile.monthlySalary) || 0,
+                ...data.profile,
+                specialization: data.profile.specialization ?? "",
               }
             : undefined,
         });
@@ -89,33 +82,115 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!originalTeacherData) return;
     setLoading(true);
 
+    const updatePayload: Partial<UpdateTeacherDto> = {};
+    let profileChanged = false;
+    const profilePayload: Partial<UpdateTeacherDto["profile"]> = {};
+
+    if (formData.firstName !== originalTeacherData.firstName)
+      updatePayload.firstName = formData.firstName;
+    if (formData.lastName !== originalTeacherData.lastName)
+      updatePayload.lastName = formData.lastName;
+    if (formData.email !== originalTeacherData.email)
+      updatePayload.email = formData.email;
+    if (formData.phone !== originalTeacherData.phone)
+      updatePayload.phone = formData.phone;
+
+    if (formData.profile && originalTeacherData.profile) {
+      const currentProfile = formData.profile;
+      const originalProfile = originalTeacherData.profile;
+
+      if (currentProfile.gender !== originalProfile.gender) {
+        profilePayload.gender = currentProfile.gender;
+        profileChanged = true;
+      }
+      if (currentProfile.medium !== originalProfile.medium) {
+        profilePayload.medium = currentProfile.medium;
+        profileChanged = true;
+      }
+      if (currentProfile.education !== originalProfile.education) {
+        profilePayload.education = currentProfile.education;
+        profileChanged = true;
+      }
+      if (
+        currentProfile.yearsOfExperience !== originalProfile.yearsOfExperience
+      ) {
+        profilePayload.yearsOfExperience = currentProfile.yearsOfExperience;
+        profileChanged = true;
+      }
+      if (
+        JSON.stringify(currentProfile.subjects) !==
+        JSON.stringify(originalProfile.subjects)
+      ) {
+        profilePayload.subjects = currentProfile.subjects;
+        profileChanged = true;
+      }
+      if (currentProfile.specialization !== originalProfile.specialization) {
+        profilePayload.specialization = currentProfile.specialization;
+        profileChanged = true;
+      }
+      if (currentProfile.teachingLevel !== originalProfile.teachingLevel) {
+        profilePayload.teachingLevel = currentProfile.teachingLevel;
+        profileChanged = true;
+      }
+      if (currentProfile.availability !== originalProfile.availability) {
+        profilePayload.availability = currentProfile.availability;
+        profileChanged = true;
+      }
+      if (currentProfile.monthlySalary !== originalProfile.monthlySalary) {
+        profilePayload.monthlySalary = currentProfile.monthlySalary;
+        profileChanged = true;
+      }
+    }
+
+    if (profileChanged) {
+      updatePayload.profile = profilePayload;
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
+      setNotification({ message: "No changes detected.", type: "info" });
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetchWithAuth(
-        `${process.env.TUITIONI_API}/teacher/${params.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetchWithAuth(`/api/admin/teacher/${params.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatePayload),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to update teacher");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to update teacher");
       }
+
+      const updatedDataResponse = await fetchWithAuth(
+        `/api/admin/teacher/${params.id}`
+      );
+      const updatedData = await updatedDataResponse.json();
+      setOriginalTeacherData(updatedData);
+      setFormData({
+        firstName: updatedData.firstName,
+        lastName: updatedData.lastName,
+        email: updatedData.email,
+        location: updatedData.location,
+        phone: updatedData.phone,
+        profile: updatedData.profile ? { ...updatedData.profile } : undefined,
+      });
 
       setNotification({
         message: "Teacher updated successfully",
         type: "success",
       });
-      router.push("/admin-dashboard/teachers");
     } catch (error: any) {
       console.error("Error updating teacher:", error);
       setNotification({
-        message: "Failed to update teacher",
+        message: error.message || "Failed to update teacher",
         type: "error",
       });
     } finally {
@@ -183,14 +258,12 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
               name="firstName"
               value={formData.firstName}
               onChange={handleInputChange}
-              required
             />
             <Input
               label="Last Name"
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
-              required
             />
           </div>
 
@@ -200,7 +273,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            required
           />
 
           <Input
@@ -208,15 +280,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            label="Location"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            required
           />
 
           <h2 className="text-xl font-semibold mt-8 mb-4">
@@ -228,14 +291,12 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="profile.district"
             value={formData.profile?.district}
             onChange={handleInputChange}
-            required
           />
           <Input
             label="Area"
             name="profile.area"
             value={formData.profile?.area}
             onChange={handleInputChange}
-            required
           />
 
           <Select
@@ -247,7 +308,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
               { value: Gender.MALE, label: "Male" },
               { value: Gender.FEMALE, label: "Female" },
             ]}
-            required
           />
 
           <Select
@@ -260,7 +320,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
               { value: Medium.ENGLISH_MEDIUM, label: "English Medium" },
               { value: Medium.ENGLISH_VERSION, label: "English Version" },
             ]}
-            required
           />
 
           <Input
@@ -268,7 +327,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="profile.education"
             value={formData.profile?.education}
             onChange={handleInputChange}
-            required
           />
 
           <Input
@@ -277,7 +335,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="profile.yearsOfExperience"
             value={formData.profile?.yearsOfExperience}
             onChange={handleInputChange}
-            required
           />
 
           <Input
@@ -286,7 +343,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             name="profile.monthlySalary"
             value={formData.profile?.monthlySalary}
             onChange={handleInputChange}
-            required
           />
 
           <div className="flex justify-end space-x-2">

@@ -23,7 +23,7 @@ export default function AdminLogin() {
 
     try {
       const response = await fetch(
-        `${process.env.TUITIONI_API}/auth/login/admin`,
+        "https://api.tuitionibd.com/auth/login/admin",
         {
           method: "POST",
           headers: {

@@ -70,11 +70,11 @@ export default function Sidebar() {
           </li>
           <li>
             <Link
-              href="/admin-dashboard/tuition"
+              href="/admin-dashboard/hire"
               className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-gray-700/50 hover:text-white transition-all"
             >
               <BookOpen size={20} />
-              Tuition
+              Hire
             </Link>
           </li>
           <li>

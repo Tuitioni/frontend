@@ -22,14 +22,13 @@ export interface TeacherDetail {
   firstName: string;
   lastName: string;
   email: string;
-  location: string;
   phone: string;
+  district: string;
+  area: string;
   createdAt: Date;
   updatedAt: Date;
   profile?: {
     id: string;
-    district: string;
-    area: string;
     gender: Gender;
     age: number;
     medium: Medium;
@@ -69,6 +68,19 @@ export interface UpdateTeacherDto {
   location?: string;
   phone?: string;
   profile?: UpdateTeacherProfileDto;
+  district?: string;
+  area?: string;
+}
+
+export interface UpdateAdminTeacherDto {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  location?: string;
+  phone?: string;
+  profile?: UpdateTeacherProfileDto;
+  district?: string;
+  area?: string;
 }
 
 export interface Teacher {

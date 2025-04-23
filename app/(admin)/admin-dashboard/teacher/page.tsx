@@ -14,18 +14,20 @@ export default function TeacherDashboard() {
   const [teachers, setTeachers] = useState<TeacherPreview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
 
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/teacher`
-        );
+        const response = await fetchWithAuth("/api/admin/teacher");
         const data = await response.json();
         setTeachers(data);
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching teachers:", error);
-        setError(error.message);
+        setError("Failed to load teachers.");
       } finally {
         setLoading(false);
       }
@@ -38,14 +40,17 @@ export default function TeacherDashboard() {
     if (!confirm("Are you sure you want to delete this teacher?")) return;
 
     try {
-      await fetchWithAuth(`${process.env.TUITIONI_API}/teacher/${id}`, {
+      await fetchWithAuth(`/api/admin/teacher/${id}`, {
         method: "DELETE",
       });
-
       setTeachers((prev) => prev.filter((teacher) => teacher.id !== id));
-    } catch (error: any) {
+      setNotification({
+        message: "Teacher deleted successfully",
+        type: "success",
+      });
+    } catch (error) {
       console.error("Error deleting teacher:", error);
-      setError(error.message);
+      setError("Failed to delete teacher.");
     }
   };
 
@@ -102,6 +107,13 @@ export default function TeacherDashboard() {
           onDelete={handleDelete}
         />
       </div>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }

@@ -80,9 +80,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/admin/dashboard/stats`
-        );
+        const response = await fetchWithAuth("/api/admin/dashboard/stats");
         const data = await response.json();
         setStats(data);
       } catch (error) {

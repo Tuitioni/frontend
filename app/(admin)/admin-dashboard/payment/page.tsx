@@ -1,265 +1,202 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useState, useEffect } from "react";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/admin/Form";
 import DataTable from "@/components/ui/admin/dataTable";
 import { PaymentPreview } from "@/types/Payment";
-import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/admin/Modal";
-import { Input, Select } from "@/components/ui/admin/Form";
-import { PaymentMethod, PaymentStatus } from "@/types";
+
+interface PaymentFormData {
+  tuitionId: string;
+  amount: number;
+  paymentMethod: string;
+}
 
 export default function PaymentDashboard() {
+  const { fetchWithAuth } = useAuthFetch();
   const [payments, setPayments] = useState<PaymentPreview[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newPayment, setNewPayment] = useState({
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [formData, setFormData] = useState<PaymentFormData>({
+    tuitionId: "",
     amount: 0,
-    status: "",
-    teacherId: "",
-    paymentMethod: PaymentMethod.BKASH,
-    paymentDate: new Date().toISOString().split("T")[0],
-    paymentStatus: PaymentStatus.UNPAID,
-    transactionId: "",
+    paymentMethod: "",
   });
-
-  const handleDelete = async (id: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/payment/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete payment");
-      }
-
-      setPayments((prev) => prev.filter((payment) => payment.id !== id));
-    } catch (err: any) {
-      console.error("Delete error:", err);
-      setError(err.message);
-    }
-  };
-
-  const handleCreate = async () => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(`${process.env.TUITIONI_API}/payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newPayment),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create payment");
-      }
-
-      const data = await response.json();
-      setPayments((prev) => [...prev, data]);
-      setIsModalOpen(false);
-      setNewPayment({
-        amount: 0,
-        status: "",
-        teacherId: "",
-        paymentMethod: PaymentMethod.BKASH,
-        paymentDate: new Date().toISOString().split("T")[0],
-        paymentStatus: PaymentStatus.UNPAID,
-        transactionId: "",
-      });
-    } catch (err: any) {
-      console.error("Create error:", err);
-      setError(err.message);
-    }
-  };
 
   useEffect(() => {
     const fetchPayments = async () => {
+      setLoading(true);
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch(`${process.env.TUITIONI_API}/payment`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch payments");
-        }
-
+        const response = await fetchWithAuth("/api/admin/payment");
+        if (!response.ok) throw new Error("Failed to fetch payments");
         const data = await response.json();
         setPayments(data);
       } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
+        console.error("Error fetching payments:", err);
+        setError(err.message || "Could not load payments.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchPayments();
-  }, []);
+  }, [fetchWithAuth]);
 
-  if (loading) {
-    return <LoadingSpinner size="lg" />;
-  }
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this payment?")) return;
 
-  if (error) {
-    return (
-      <Notification
-        message={error}
-        type="error"
-        onClose={() => setError(null)}
-      />
-    );
+    try {
+      const response = await fetchWithAuth(`/api/admin/payment/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to delete payment");
+      }
+
+      setPayments((prev) => prev.filter((p) => p.id !== id));
+      setNotification({
+        message: "Payment deleted successfully",
+        type: "success",
+      });
+    } catch (err: any) {
+      console.error("Error deleting payment:", err);
+      setNotification({
+        message: err.message || "Failed to delete payment",
+        type: "error",
+      });
+    }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? parseFloat(value) || 0 : value,
+    }));
+  };
+
+  const handleAddPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetchWithAuth("/api/admin/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to add payment");
+      }
+
+      const newPayment = await response.json();
+      setPayments((prev) => [newPayment, ...prev]);
+      setNotification({
+        message: "Payment added successfully",
+        type: "success",
+      });
+      setShowAddForm(false);
+      setFormData({ tuitionId: "", amount: 0, paymentMethod: "" });
+    } catch (err: any) {
+      console.error("Error adding payment:", err);
+      setNotification({
+        message: err.message || "Failed to add payment",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading && payments.length === 0) {
+    return <LoadingSpinnerCenter />;
   }
 
   const columns = [
-    { key: "teacher", label: "Teacher" },
+    { key: "tuitionId", label: "Tuition ID" },
     { key: "amount", label: "Amount" },
-    { key: "paymentMethod", label: "Payment Method" },
-    { key: "paymentStatus", label: "Status" },
+    { key: "status", label: "Status" },
+    { key: "paymentMethod", label: "Method" },
     { key: "paymentDate", label: "Date" },
   ];
 
-  const tableData = payments.map((payment) => ({
-    id: payment.id,
-    teacher: `${payment.teacher.firstName} ${payment.teacher.lastName}`,
-    amount: `৳${payment.amount}`,
-    paymentMethod: payment.paymentMethod,
-    paymentStatus: payment.paymentStatus,
-    paymentDate: new Date(payment.paymentDate).toLocaleDateString(),
+  const tableData = payments.map((p) => ({
+    id: p.id,
+    tuitionId: p.tuitionId,
+    amount: `৳${p.amount.toLocaleString()}`,
+    status: p.paymentStatus,
+    paymentMethod: p.paymentMethod,
+    paymentDate: new Date(p.paymentDate).toLocaleDateString(),
   }));
 
-  const handleView = (id: string) => {
-    window.location.href = `/admin-dashboard/payment/${id}`;
-  };
-
-  const handleEdit = (id: string) => {
-    window.location.href = `/admin-dashboard/payment/${id}/edit`;
-  };
-
   return (
-    <div className="flex flex-col items-center p-6">
-      <div className="w-full flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Payment Dashboard</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Create Payment</Button>
-      </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Payments</h1>
 
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+      {error && (
+        <Notification
+          message={error}
+          type="error"
+          onClose={() => setError(null)}
         />
-      </div>
+      )}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create New Payment"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreate}>Create</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
+      <Button onClick={() => setShowAddForm(!showAddForm)} className="mb-4">
+        {showAddForm ? "Cancel" : "Add New Payment"}
+      </Button>
+
+      {showAddForm && (
+        <form
+          onSubmit={handleAddPayment}
+          className="mb-6 p-4 border rounded bg-gray-50 space-y-3"
+        >
+          <h2 className="text-lg font-semibold">Add Payment</h2>
+          <Input
+            label="Tuition ID"
+            name="tuitionId"
+            value={formData.tuitionId}
+            onChange={handleFormChange}
+            required
+          />
           <Input
             label="Amount"
+            name="amount"
             type="number"
-            value={newPayment.amount}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                amount: Number(e.target.value),
-              }))
-            }
+            value={formData.amount}
+            onChange={handleFormChange}
+            required
           />
           <Input
-            label="Teacher ID"
-            value={newPayment.teacherId}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                teacherId: e.target.value,
-              }))
-            }
-          />
-          <Select
             label="Payment Method"
-            value={newPayment.paymentMethod}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                paymentMethod: e.target.value as PaymentMethod,
-              }))
-            }
-            options={[
-              { value: PaymentMethod.BKASH, label: "Bkash" },
-              { value: PaymentMethod.NAGAD, label: "Nagad" },
-            ]}
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleFormChange}
+            required
           />
-          <Input
-            label="Transaction ID"
-            value={newPayment.transactionId}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                transactionId: e.target.value,
-              }))
-            }
-          />
-          <Input
-            type="date"
-            label="Payment Date"
-            value={newPayment.paymentDate}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                paymentDate: e.target.value,
-              }))
-            }
-          />
-          <Select
-            label="Payment Status"
-            value={newPayment.paymentStatus}
-            onChange={(e) =>
-              setNewPayment((prev) => ({
-                ...prev,
-                paymentStatus: e.target.value as PaymentStatus,
-              }))
-            }
-            options={[
-              { value: PaymentStatus.PAID, label: "Paid" },
-              { value: PaymentStatus.UNPAID, label: "Unpaid" },
-            ]}
-          />
-        </div>
-      </Modal>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Adding..." : "Add Payment"}
+          </Button>
+        </form>
+      )}
+
+      <DataTable data={tableData} columns={columns} onDelete={handleDelete} />
     </div>
   );
 }

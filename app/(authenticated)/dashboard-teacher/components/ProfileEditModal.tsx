@@ -119,7 +119,7 @@ export function ProfileEditModal({
           }
         );
 
-        const updatedProfile = response as TeacherDetail;
+        const updatedProfile = response as unknown as TeacherDetail;
         console.log("Update successful:", updatedProfile);
         onProfileUpdate(updatedProfile);
 

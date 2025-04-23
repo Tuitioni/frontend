@@ -14,18 +14,20 @@ export default function StudentDashboard() {
   const [students, setStudents] = useState<StudentPreview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/student`
-        );
+        const response = await fetchWithAuth("/api/admin/student");
         const data = await response.json();
         setStudents(data);
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching students:", error);
-        setError(error.message);
+        setError("Failed to load students.");
       } finally {
         setLoading(false);
       }
@@ -38,14 +40,18 @@ export default function StudentDashboard() {
     if (!confirm("Are you sure you want to delete this student?")) return;
 
     try {
-      await fetchWithAuth(`${process.env.TUITIONI_API}/student/${id}`, {
+      await fetchWithAuth(`/api/admin/student/${id}`, {
         method: "DELETE",
       });
-
       setStudents((prev) => prev.filter((student) => student.id !== id));
-    } catch (error: any) {
+      setNotification({
+        message: "Student deleted successfully",
+        type: "success",
+      });
+    } catch (error) {
       console.error("Error deleting student:", error);
-      setError(error.message);
+      setError("Failed to delete student.");
+      setNotification({ message: "Failed to delete student", type: "error" });
     }
   };
 

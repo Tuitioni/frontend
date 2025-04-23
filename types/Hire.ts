@@ -1,7 +1,7 @@
 import { Student } from "./Student";
-import { Teacher } from "./teacher";
+import { Teacher } from "./Teacher";
 
-export interface Tuition {
+export interface Hire {
   id: string;
   subject: string;
   level: string;
@@ -14,7 +14,7 @@ export interface Tuition {
   updatedAt: string;
 }
 
-export interface TuitionPreview {
+export interface HirePreview {
   id: string;
   subject: string;
   level: string;
@@ -30,14 +30,14 @@ export interface TuitionPreview {
   createdAt: string;
 }
 
-export interface CreateTuitionDto {
+export interface CreateHireDto {
   teacherId: string;
   studentId: string;
   fee: number;
   paymentId: string;
 }
 
-export interface UpdateTuitionDto {
+export interface UpdateHireDto {
   teacherId: string;
   studentId: string;
   fee: number;

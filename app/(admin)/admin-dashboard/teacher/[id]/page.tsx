@@ -18,13 +18,15 @@ export default function TeacherDetailPage({
   const [teacher, setTeacher] = useState<Teacher | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchTeacher = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/teacher/${params.id}`
-        );
+        const response = await fetchWithAuth(`/api/admin/teacher/${params.id}`);
         const data = await response.json();
         setTeacher(data);
       } catch (error: any) {
@@ -42,8 +44,12 @@ export default function TeacherDetailPage({
     if (!confirm("Are you sure you want to delete this teacher?")) return;
 
     try {
-      await fetchWithAuth(`${process.env.TUITIONI_API}/teacher/${params.id}`, {
+      await fetchWithAuth(`/api/admin/teacher/${params.id}`, {
         method: "DELETE",
+      });
+      setNotification({
+        message: "Teacher deleted successfully",
+        type: "success",
       });
       router.push("/admin-dashboard/teacher");
     } catch (error: any) {
