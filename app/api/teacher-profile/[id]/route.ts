@@ -42,3 +42,49 @@ export async function GET(
     );
   }
 }
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const authHeader = request.headers.get("authorization");
+    console.log("Auth header:", authHeader);
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "Unauthorized - Invalid or missing token" },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const body = await request.json();
+    const apiUrl = `${process.env.TUITIONI_API}/teacher-profile/${params.id}`;
+    console.log("Making request to:", apiUrl);
+
+    const response = await fetch(apiUrl, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const res = await response.json();
+    console.log(res);
+    return NextResponse.json(res);
+  } catch (error) {
+    console.error("API Route Error:", error);
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to update teacher profile",
+      },
+      { status: 500 }
+    );
+  }
+}

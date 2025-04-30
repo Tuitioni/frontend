@@ -8,17 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { TeacherDetail } from "@/types/teacher";
-import { useAuth } from "@/hooks/useAuth";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  TeacherDetail,
+  UpdateTeacherDto,
+  UpdateTeacherProfileDto,
+} from "@/types/teacher";
+import { useAuth } from "@/hooks/useAuth";
+
 import { useToast } from "@/components/ui/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 interface ProfileEditModalProps {
   isOpen: boolean;
@@ -35,115 +33,204 @@ export function ProfileEditModal({
 }: ProfileEditModalProps) {
   const { makeAuthenticatedRequest } = useAuth();
   const { toast } = useToast();
-  const [formData, setFormData] = useState<TeacherDetail>(profile);
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<UpdateTeacherDto>({
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    email: profile.email,
+    phone: profile.phone,
+    district: profile.district,
+    area: profile.area,
+    profile: {
+      gender: profile.profile?.gender,
+      age: profile.profile?.age,
+      medium: profile.profile?.medium,
+      education: profile.profile?.education,
+      yearsOfExperience: profile.profile?.yearsOfExperience,
+      subjects: profile.profile?.subjects || [],
+      specialization: profile.profile?.specialization || undefined,
+      teachingLevel: profile.profile?.teachingLevel,
+      availability: profile.profile?.availability,
+      monthlySalary: profile.profile?.monthlySalary,
+    },
+  });
+
+  // Track original values to compare changes
+  const [originalData] = useState<UpdateTeacherDto>({
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    email: profile.email,
+    phone: profile.phone,
+    district: profile.district,
+    area: profile.area,
+    profile: {
+      gender: profile.profile?.gender,
+      age: profile.profile?.age,
+      medium: profile.profile?.medium,
+      education: profile.profile?.education,
+      yearsOfExperience: profile.profile?.yearsOfExperience,
+      subjects: profile.profile?.subjects || [],
+      specialization: profile.profile?.specialization || undefined,
+      teachingLevel: profile.profile?.teachingLevel,
+      availability: profile.profile?.availability,
+      monthlySalary: profile.profile?.monthlySalary,
+    },
+  });
+
+  const [districtsData, setDistrictsData] = useState<
+    Array<{ district: string; areas: string[] }>
+  >([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  // Convert data for the searchable select component
+  const districtOptions = districtsData.map((d) => ({
+    value: d.district.toLowerCase(),
+    label: d.district,
+  }));
+
+  const areaOptions = availableAreas.map((area) => ({
+    value: area.toLowerCase(),
+    label: area,
+  }));
 
   useEffect(() => {
-    // Simulate loading state for form initialization
-    if (isOpen) {
-      setInitialLoading(true);
-      const timer = setTimeout(() => {
-        setFormData(profile);
-        setInitialLoading(false);
-      }, 500);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+        );
+        const data = await response.json();
+        setDistrictsData(data);
+      } catch (error) {
+        console.error("Failed to fetch districts and areas:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load districts and areas.",
+          variant: "destructive",
+        });
+      }
+    };
 
-      return () => clearTimeout(timer);
+    fetchData();
+  }, [toast]);
+
+  // Update available areas when district changes
+  useEffect(() => {
+    if (formData.district && formData.district !== "") {
+      const district = districtsData.find(
+        (d) => d.district.toLowerCase() === formData.district?.toLowerCase()
+      );
+      setAvailableAreas(district?.areas || []);
+    } else {
+      setAvailableAreas([]);
     }
-  }, [isOpen, profile]);
+  }, [formData.district, districtsData]);
+
+  // Function to get only changed fields
+  const getChangedFields = () => {
+    const changes: UpdateTeacherDto = {};
+
+    // Check root level fields
+    if (formData.firstName !== originalData.firstName)
+      changes.firstName = formData.firstName;
+    if (formData.lastName !== originalData.lastName)
+      changes.lastName = formData.lastName;
+    if (formData.email !== originalData.email) changes.email = formData.email;
+    if (formData.phone !== originalData.phone) changes.phone = formData.phone;
+    if (formData.district !== originalData.district)
+      changes.district = formData.district;
+    if (formData.area !== originalData.area) changes.area = formData.area;
+
+    // Check profile fields
+    const profileChanges: UpdateTeacherProfileDto = {};
+    if (formData.profile?.gender !== originalData.profile?.gender)
+      profileChanges.gender = formData.profile?.gender;
+    if (formData.profile?.age !== originalData.profile?.age)
+      profileChanges.age = formData.profile?.age;
+    if (formData.profile?.medium !== originalData.profile?.medium)
+      profileChanges.medium = formData.profile?.medium;
+    if (formData.profile?.education !== originalData.profile?.education)
+      profileChanges.education = formData.profile?.education;
+    if (
+      formData.profile?.yearsOfExperience !==
+      originalData.profile?.yearsOfExperience
+    )
+      profileChanges.yearsOfExperience = formData.profile?.yearsOfExperience;
+    if (
+      formData.profile?.subjects?.join(",") !==
+      originalData.profile?.subjects?.join(",")
+    )
+      profileChanges.subjects = formData.profile?.subjects;
+    if (
+      formData.profile?.specialization !== originalData.profile?.specialization
+    )
+      profileChanges.specialization = formData.profile?.specialization;
+    if (formData.profile?.teachingLevel !== originalData.profile?.teachingLevel)
+      profileChanges.teachingLevel = formData.profile?.teachingLevel;
+    if (formData.profile?.availability !== originalData.profile?.availability)
+      profileChanges.availability = formData.profile?.availability;
+    if (formData.profile?.monthlySalary !== originalData.profile?.monthlySalary)
+      profileChanges.monthlySalary = formData.profile?.monthlySalary;
+
+    // Only add profile if there are changes
+    if (Object.keys(profileChanges).length > 0) {
+      changes.profile = profileChanges;
+    }
+
+    return changes;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
-      const originalProfile = JSON.parse(JSON.stringify(profile));
-      const currentFormData = JSON.parse(JSON.stringify(formData));
+      const changedFields = getChangedFields();
 
-      // Initialize changed fields object with correct type
-      const changedFields: Partial<TeacherDetail> & {
-        profile?: TeacherDetail["profile"];
-      } = {};
+      // If no fields were changed, show a message and return
+      if (Object.keys(changedFields).length === 0) {
+        toast({
+          title: "No changes",
+          description: "No changes were made to the profile.",
+        });
+        onClose();
+        return;
+      }
 
-      // Compare and collect only changed basic fields
-      (Object.keys(currentFormData) as Array<keyof TeacherDetail>).forEach(
-        (key) => {
-          if (
-            key !== "profile" &&
-            JSON.stringify(originalProfile[key]) !==
-              JSON.stringify(currentFormData[key])
-          ) {
-            changedFields[key] = currentFormData[key];
-          }
+      const response = await makeAuthenticatedRequest(
+        `/api/teacher/${profile.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: changedFields,
         }
       );
 
-      // Compare and collect only changed profile fields
-      const changedProfileFields: Partial<TeacherDetail["profile"]> = {};
-      if (currentFormData.profile && originalProfile.profile) {
-        (
-          Object.keys(currentFormData.profile) as Array<
-            keyof TeacherDetail["profile"]
-          >
-        ).forEach((key) => {
-          if (
-            JSON.stringify(originalProfile.profile?.[key]) !==
-            JSON.stringify(currentFormData.profile[key])
-          ) {
-            changedProfileFields[key] = currentFormData.profile![
-              key
-            ] as TeacherDetail["profile"][keyof TeacherDetail["profile"]];
-          }
-        });
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Update failed with response:", errorData);
+        throw new Error(errorData.message || "Failed to update profile");
       }
 
-      // Only include profile in changedFields if there are actual changes
-      if (Object.keys(changedProfileFields).length > 0 && profile.profile) {
-        changedFields.profile = {
-          ...profile.profile,
-          ...changedProfileFields,
-        } as TeacherDetail["profile"];
-      }
+      const updatedProfile = await response.json();
+      console.log("Update successful, received profile:", updatedProfile);
 
-      console.log("Changed fields to be sent:", changedFields);
-
-      // Only make the request if there are changes
-      if (Object.keys(changedFields).length > 0) {
-        const response = await makeAuthenticatedRequest(
-          `/api/teacher/${profile.id}`,
-          {
-            method: "PUT",
-            data: changedFields,
-          }
-        );
-
-        const updatedProfile = response as unknown as TeacherDetail;
-        console.log("Update successful:", updatedProfile);
-        onProfileUpdate(updatedProfile);
-
-        toast({
-          title: "Profile Updated",
-          description: "Your profile has been successfully updated.",
-          variant: "default",
-        });
-
-        onClose();
-      } else {
-        console.log("No changes detected");
-        onClose();
-      }
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to update profile"
-      );
-
+      onProfileUpdate(updatedProfile);
       toast({
-        title: "Update Failed",
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+      onClose();
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast({
+        title: "Error",
         description:
-          error instanceof Error ? error.message : "Failed to update profile",
+          error instanceof Error
+            ? error.message
+            : "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -151,176 +238,167 @@ export function ProfileEditModal({
     }
   };
 
-  const handleChange = (
-    field: keyof Omit<TeacherDetail, "profile">,
-    value: TeacherDetail[keyof Omit<TeacherDetail, "profile">]
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleProfileChange = (
-    field: keyof NonNullable<TeacherDetail["profile"]>,
-    value: any
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      profile: {
-        ...(prev.profile || {}),
-        [field]: value,
-      } as TeacherDetail["profile"],
-    }));
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <div>
-                <Label>First Name</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    value={formData.firstName}
-                    onChange={(e) => handleChange("firstName", e.target.value)}
-                  />
-                )}
-              </div>
-              <div>
-                <Label>Last Name</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    value={formData.lastName}
-                    onChange={(e) => handleChange("lastName", e.target.value)}
-                  />
-                )}
-              </div>
-              <div>
-                <Label>Email</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                  />
-                )}
-              </div>
-              <div>
-                <Label>Phone</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    value={formData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
-                  />
-                )}
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                value={formData.firstName}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
+                required
+              />
             </div>
-
-            {/* Professional Information */}
-            <div className="space-y-4">
-              <div>
-                <Label>Education</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    value={formData.profile?.education ?? ""}
-                    onChange={(e) =>
-                      handleProfileChange("education", e.target.value)
-                    }
-                  />
-                )}
-              </div>
-              <div>
-                <Label>Experience (years)</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    type="number"
-                    value={formData.profile?.yearsOfExperience}
-                    onChange={(e) =>
-                      handleProfileChange(
-                        "yearsOfExperience",
-                        parseInt(e.target.value)
-                      )
-                    }
-                  />
-                )}
-              </div>
-              <div>
-                <Label>Medium</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Select
-                    value={formData.profile?.medium}
-                    onValueChange={(value) =>
-                      handleProfileChange("medium", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ENGLISH_MEDIUM">
-                        English Medium
-                      </SelectItem>
-                      <SelectItem value="BANGLA_MEDIUM">
-                        Bangla Medium
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-              <div>
-                <Label>Monthly Salary (₹)</Label>
-                {initialLoading ? (
-                  <Skeleton className="w-full h-10 mt-1" />
-                ) : (
-                  <Input
-                    type="number"
-                    value={formData.profile?.monthlySalary}
-                    onChange={(e) =>
-                      handleProfileChange(
-                        "monthlySalary",
-                        parseInt(e.target.value)
-                      )
-                    }
-                  />
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                value={formData.lastName}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
+                required
+              />
             </div>
           </div>
 
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={initialLoading || loading}
-            >
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="district">District</Label>
+              <SearchableSelect
+                options={districtOptions}
+                value={formData.district?.toLowerCase() || ""}
+                onChange={(value) =>
+                  setFormData({ ...formData, district: value })
+                }
+                placeholder="Select district"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="area">Area</Label>
+              <SearchableSelect
+                options={areaOptions}
+                value={formData.area?.toLowerCase() || ""}
+                onChange={(value) => setFormData({ ...formData, area: value })}
+                placeholder={
+                  !formData.district ? "Select district first" : "Select area"
+                }
+                disabled={!formData.district || areaOptions.length === 0}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="education">Education</Label>
+            <Input
+              id="education"
+              value={formData.profile?.education}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  profile: {
+                    ...formData.profile,
+                    education: e.target.value,
+                  },
+                })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="yearsOfExperience">Years of Experience</Label>
+            <Input
+              id="yearsOfExperience"
+              type="number"
+              value={formData.profile?.yearsOfExperience}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  profile: {
+                    ...formData.profile,
+                    yearsOfExperience: parseInt(e.target.value),
+                  },
+                })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="monthlySalary">Expected Monthly Salary</Label>
+            <Input
+              id="monthlySalary"
+              type="number"
+              value={formData.profile?.monthlySalary}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  profile: {
+                    ...formData.profile,
+                    monthlySalary: parseInt(e.target.value),
+                  },
+                })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="availability">Availability</Label>
+            <Input
+              id="availability"
+              value={formData.profile?.availability}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  profile: {
+                    ...formData.profile,
+                    availability: e.target.value,
+                  },
+                })
+              }
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 sticky bottom-0 bg-background pt-4 pb-2">
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={initialLoading || loading}>
+            <Button type="submit" disabled={loading}>
               {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>

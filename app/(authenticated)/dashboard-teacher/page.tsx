@@ -22,9 +22,153 @@ import { TeacherDetail } from "@/types/teacher";
 import Image from "next/image";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { tokenService } from "@/lib/auth/token";
+import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { ChevronDown } from "lucide-react";
+import { TeachingDetailsCard } from "./components/TeachingDetailsCard";
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface SearchableSelectProps {
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const SearchableSelect = ({
+  options,
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+  required = false,
+}: SearchableSelectProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [displayValue, setDisplayValue] = useState("");
+  const inputRef = React.useRef<HTMLDivElement>(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const filteredOptions = options.filter((option: SelectOption) =>
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  useEffect(() => {
+    const selected = options.find(
+      (option: SelectOption) => option.value === value
+    );
+    setDisplayValue(selected ? selected.label : "");
+    setSearchTerm("");
+  }, [value, options]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | any) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearchTerm("");
+        const selected = options.find(
+          (option: SelectOption) => option.value === value
+        );
+        setDisplayValue(selected ? selected.label : "");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [value, options]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setDisplayValue(e.target.value);
+    setIsOpen(true);
+  };
+
+  const handleOptionClick = (optionValue: string, optionLabel: string) => {
+    onChange(optionValue);
+    setDisplayValue(optionLabel);
+    setIsOpen(false);
+    setSearchTerm("");
+  };
+
+  return (
+    <div className="relative">
+      <div
+        className={`flex items-center relative ${
+          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        }`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        ref={inputRef}
+      >
+        <input
+          type="text"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder={placeholder}
+          value={displayValue}
+          onChange={handleInputChange}
+          onClick={(e) => e.stopPropagation()}
+          disabled={disabled}
+          onFocus={() => !disabled && setIsOpen(true)}
+          required={required}
+          autoComplete="off"
+        />
+        <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+      </div>
+      {isOpen && !disabled && (
+        <div
+          ref={dropdownRef}
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover py-1 text-popover-foreground shadow-md"
+        >
+          {filteredOptions.length === 0 ? (
+            <div className="px-2 py-1.5 text-sm text-muted-foreground">
+              No options found
+            </div>
+          ) : (
+            filteredOptions.map((option: SelectOption) => (
+              <div
+                key={option.value}
+                className={`px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                  option.value === value
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }`}
+                onClick={() => handleOptionClick(option.value, option.label)}
+              >
+                {option.label}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+      <input type="hidden" value={value || ""} />
+    </div>
+  );
+};
 
 export default function DashboardPage() {
-  const { makeAuthenticatedRequest, logout } = useAuth();
+  const { makeAuthenticatedRequest } = useAuth();
   const [profile, setProfile] = useState<TeacherDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -32,6 +176,55 @@ export default function DashboardPage() {
   console.log(decodedToken);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+  const [districtsData, setDistrictsData] = useState<
+    Array<{ district: string; areas: string[] }>
+  >([]);
+  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+
+  // Convert data for the searchable select component
+  const districtOptions = districtsData.map((d) => ({
+    value: d.district.toLowerCase(),
+    label: d.district,
+  }));
+
+  const areaOptions = availableAreas.map((area) => ({
+    value: area.toLowerCase(),
+    label: area,
+  }));
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+        );
+        const data = await response.json();
+        setDistrictsData(data);
+      } catch (error) {
+        console.error("Failed to fetch districts and areas:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load districts and areas.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchData();
+  }, [toast]);
+
+  // Update available areas when district changes
+  useEffect(() => {
+    if (profile?.district && profile.district !== "") {
+      const district = districtsData.find(
+        (d) => d.district.toLowerCase() === profile.district.toLowerCase()
+      );
+      setAvailableAreas(district?.areas || []);
+    } else {
+      setAvailableAreas([]);
+    }
+  }, [profile?.district, districtsData]);
 
   // Memoize fetchProfile to prevent recreation on every render
   const fetchProfile = useCallback(async () => {
@@ -47,6 +240,7 @@ export default function DashboardPage() {
         `/api/teacher/${decodedToken.sub}`
       );
       const data: TeacherDetail = await response.json();
+      console.log(data);
       setProfile(data);
     } catch (error) {
       console.error("Dashboard Error:", {
@@ -114,13 +308,6 @@ export default function DashboardPage() {
               <Clock className="h-4 w-4 mr-2" />
               View Applications
             </Button>
-            <Button
-              variant="outline"
-              onClick={logout}
-              className="flex-1 sm:flex-initial hover:bg-red-100 text-sm sm:text-base"
-            >
-              Logout
-            </Button>
           </div>
         </div>
 
@@ -176,7 +363,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
                     <span className="text-sm sm:text-base">
-                      {profile?.profile?.district}, {profile?.profile?.area}
+                      {profile?.district}, {profile?.area}
                     </span>
                   </div>
                 </div>
@@ -192,74 +379,45 @@ export default function DashboardPage() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.1 }}
             >
-              <Card>
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg sm:text-xl">
-                      Teaching Details
-                    </CardTitle>
-                    <Button variant="ghost" size="icon">
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <GraduationCap className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            Education
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {profile?.profile?.education}
-                        </p>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Briefcase className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            Experience
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {profile?.profile?.yearsOfExperience} years
-                        </p>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-medium text-sm sm:text-base mb-2">
-                          Subjects
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {profile?.profile?.subjects.map((subject, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-primary/10 rounded-full text-sm sm:text-base"
-                            >
-                              {subject}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Clock className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            Availability
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {profile?.profile?.availability}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <TeachingDetailsCard
+                details={{
+                  district: profile?.district || "",
+                  area: profile?.area || "",
+                  gender: profile?.profile?.gender || "",
+                  age: profile?.profile?.age || 0,
+                  education: profile?.profile?.education || "",
+                  yearsOfExperience: profile?.profile?.yearsOfExperience || 0,
+                  subjects: profile?.profile?.subjects || [],
+                  specialization: profile?.profile?.specialization || "",
+                  teachingLevel: profile?.profile?.teachingLevel || "",
+                  availability: profile?.profile?.availability || "",
+                  monthlySalary: profile?.profile?.monthlySalary || 0,
+                  medium: profile?.profile?.medium || "",
+                }}
+                teacherId={decodedToken?.sub || ""}
+                onUpdate={(updatedDetails) => {
+                  if (profile) {
+                    setProfile({
+                      ...profile,
+                      district: updatedDetails.district,
+                      area: updatedDetails.area,
+                      profile: {
+                        ...profile.profile,
+                        gender: updatedDetails.gender,
+                        age: updatedDetails.age,
+                        education: updatedDetails.education,
+                        yearsOfExperience: updatedDetails.yearsOfExperience,
+                        subjects: updatedDetails.subjects,
+                        specialization: updatedDetails.specialization,
+                        teachingLevel: updatedDetails.teachingLevel,
+                        availability: updatedDetails.availability,
+                        monthlySalary: updatedDetails.monthlySalary,
+                        medium: updatedDetails.medium,
+                      },
+                    });
+                  }
+                }}
+              />
             </motion.div>
 
             {/* Additional Details Card */}
