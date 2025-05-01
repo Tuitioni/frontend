@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
 import { TeachingDetailsCard } from "./components/TeachingDetailsCard";
+import { VerificationStatus } from "./components/VerificationStatus";
 
 interface SelectOption {
   value: string;
@@ -167,6 +168,21 @@ const SearchableSelect = ({
   );
 };
 
+interface VerificationStatus {
+  id: string;
+  teacherId: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  document: string;
+  teacher: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
 export default function DashboardPage() {
   const { makeAuthenticatedRequest } = useAuth();
   const [profile, setProfile] = useState<TeacherDetail | null>(null);
@@ -181,6 +197,13 @@ export default function DashboardPage() {
     Array<{ district: string; areas: string[] }>
   >([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus | null>(null);
+
+  // Add effect to monitor verification status
+  useEffect(() => {
+    console.log("Verification status changed:", verificationStatus);
+  }, [verificationStatus]);
 
   // Convert data for the searchable select component
   const districtOptions = districtsData.map((d) => ({
@@ -242,10 +265,20 @@ export default function DashboardPage() {
       const data: TeacherDetail = await response.json();
       console.log(data);
       setProfile(data);
+
+      // Fetch verification status
+      const verifyResponse = await makeAuthenticatedRequest(
+        `/api/verify/${data.id}`
+      );
+      if (verifyResponse.ok) {
+        const verifyData = await verifyResponse.json();
+        console.log("Setting verification status:", verifyData);
+        setVerificationStatus(verifyData);
+      }
     } catch (error) {
       console.error("Dashboard Error:", {
         message: error instanceof Error ? error.message : "Unknown error",
-        userId: decodedToken.sub,
+        userId: decodedToken?.sub,
         timestamp: new Date().toISOString(),
       });
       setError(
@@ -346,6 +379,11 @@ export default function DashboardPage() {
                     {profile?.profile?.teachingLevel} Teacher
                   </p>
                 </div>
+
+                {/* Verification Status Section */}
+                {verificationStatus && verificationStatus.status && (
+                  <VerificationStatus {...verificationStatus} />
+                )}
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">

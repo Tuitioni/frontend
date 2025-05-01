@@ -70,18 +70,14 @@ export function TeachingDetailsCard({
           onUpdate(editedDetails);
         }
       } else {
-        throw new Error(
-          responseData.message || "Failed to create teacher profile"
-        );
+        console.log(responseData.body);
+        throw new Error(responseData.body);
       }
     } catch (error) {
-      console.error("Error creating teacher profile:", error);
+      console.error(error);
       toast({
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to create teacher profile",
+        description: "Ensure all fields are filled correctly",
         variant: "destructive",
       });
     }
