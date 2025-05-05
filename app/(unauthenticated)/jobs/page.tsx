@@ -11,33 +11,18 @@ import {
 } from "@/components/ui/select";
 import SkeletonJobCard from "@/app/(unauthenticated)/jobs/components/SkeletonJobCard";
 import ApplyJobModal from "@/app/(unauthenticated)/jobs/components/ApplyJobModal";
+import { Medium, Gender, Post } from "@/types/Post";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Define the type for the job data
-interface Job {
-  id: string;
-  firstName: string;
-  lastName: string;
-  district: string;
-  area: string;
-  age: number;
-  medium: string;
-  levelOfStudy: string;
-  school: string | null;
-  college: string | null;
-  university: string | null;
-  subjects: string[];
-  gender: string;
-  salary: number;
-  numberOfDays: number;
-  duration: string;
-  tuitionType: string;
-  class: string;
-  note: string;
+interface Job extends Omit<Post, "createdAt" | "updatedAt"> {
   createdAt: string;
   updatedAt: string;
 }
 
 export default function Page() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [isApplyJobModalOpen, setApplyJobModalOpen] = useState(false);
@@ -52,25 +37,20 @@ export default function Page() {
     try {
       setLoading(true);
 
-      if (!filters) {
-        // Initial load or reset - fetch all jobs
-        const response = await fetch("/api/jobs");
-        const data = await response.json();
-        setJobs(data);
-        return;
-      }
-
-      // Fetch filtered jobs
       const response = await fetch("/api/jobs/filter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(filters),
+        body: JSON.stringify({
+          district: filters?.district || "",
+          area: filters?.area || "",
+          levelOfStudy: filters?.levelOfStudy || "",
+        }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch filtered jobs");
+        throw new Error("Failed to fetch jobs");
       }
 
       const data = await response.json();
@@ -83,19 +63,33 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchFilteredJobs();
-  }, []);
+    // Get initial filters from URL
+    const district = searchParams.get("district") || "";
+    const area = searchParams.get("area") || "";
+    const levelOfStudy = searchParams.get("levelOfStudy") || "";
+
+    // If any filter is present, fetch filtered jobs
+    if (district || area || levelOfStudy) {
+      fetchFilteredJobs({ district, area, levelOfStudy });
+    } else {
+      fetchFilteredJobs();
+    }
+  }, [searchParams]);
 
   const handleFilterChange = (filters: {
     district: string;
     area: string;
     levelOfStudy: string;
   }) => {
-    fetchFilteredJobs(filters);
+    const params = new URLSearchParams();
+    if (filters.district) params.set("district", filters.district);
+    if (filters.area) params.set("area", filters.area);
+    if (filters.levelOfStudy) params.set("levelOfStudy", filters.levelOfStudy);
+    router.push(`/jobs?${params.toString()}`);
   };
 
   const handleReset = () => {
-    fetchFilteredJobs();
+    router.push("/jobs");
   };
 
   const openApplyJobModal = (postId: string, jobTitle: string) => {
@@ -147,29 +141,15 @@ export default function Page() {
                   jobs.map((job) => (
                     <JobCard
                       key={job.id}
-                      id={job.id}
-                      firstName={job.firstName}
-                      lastName={job.lastName}
-                      district={job.district}
-                      area={job.area}
-                      age={job.age}
-                      medium={job.medium as Medium}
-                      levelOfStudy={job.levelOfStudy}
-                      school={job.school}
-                      college={job.college}
-                      university={job.university}
-                      subjects={job.subjects}
-                      gender={job.gender}
-                      salary={job.salary}
-                      numberOfDays={job.numberOfDays}
-                      duration={job.duration}
-                      tuitionType={job.tuitionType}
-                      class={job.class}
-                      note={job.note}
-                      createdAt={job.createdAt}
-                      updatedAt={job.updatedAt}
-                      jobTitle={`${job.firstName} ${job.lastName}`}
-                      onApply={openApplyJobModal}
+                      {...job}
+                      createdAt={new Date(job.createdAt)}
+                      updatedAt={new Date(job.updatedAt)}
+                      onApply={(id) =>
+                        openApplyJobModal(
+                          id,
+                          `${job.firstName} ${job.lastName}`
+                        )
+                      }
                     />
                   ))
                 ) : (

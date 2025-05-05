@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
-    const response = await fetch(`${process.env.TUITIONI_API}/posts/filter`, {
-      method: 'POST',
+
+    const response = await fetch(`${process.env.TUITIONI_API}/post/filter`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         area: body.area || "",
@@ -22,12 +22,11 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     return NextResponse.json(data);
-
   } catch (error) {
-    console.error('Error in /api/jobs/filter:', error);
+    console.error("Error in /api/jobs/filter:", error);
     return NextResponse.json(
-      { error: 'Failed to filter jobs' },
+      { error: "Failed to filter jobs" },
       { status: 500 }
     );
   }
-} 
+}

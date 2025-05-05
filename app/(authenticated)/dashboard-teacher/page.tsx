@@ -19,7 +19,6 @@ import React from "react";
 import { ProfileEditModal } from "./components/ProfileEditModal";
 import { useRouter } from "next/navigation";
 import { TeacherDetail } from "@/types/teacher";
-import Image from "next/image";
 import { Toaster } from "@/components/ui/toaster";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -176,6 +175,7 @@ interface VerificationStatus {
   createdAt: string;
   updatedAt: string;
   document: string;
+  statusCode?: number;
   teacher: {
     firstName: string;
     lastName: string;
@@ -267,13 +267,22 @@ export default function DashboardPage() {
       setProfile(data);
 
       // Fetch verification status
-      const verifyResponse = await makeAuthenticatedRequest(
-        `/api/verify/${data.id}`
-      );
-      if (verifyResponse.ok) {
+      try {
+        const verifyResponse = await makeAuthenticatedRequest(
+          `/api/verify/${data.id}`
+        );
         const verifyData = await verifyResponse.json();
-        console.log("Setting verification status:", verifyData);
-        setVerificationStatus(verifyData);
+
+        // If we get data back, set it regardless of status code
+        if (verifyData) {
+          setVerificationStatus(
+            verifyData.statusCode === 404 ? null : verifyData
+          );
+        }
+      } catch (verifyError) {
+        // Don't throw error for verification issues - just set to null
+        console.log("No verification status found");
+        setVerificationStatus(null);
       }
     } catch (error) {
       console.error("Dashboard Error:", {
@@ -381,8 +390,19 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Verification Status Section */}
-                {verificationStatus && verificationStatus.status && (
+                {verificationStatus ? (
                   <VerificationStatus {...verificationStatus} />
+                ) : (
+                  <div className="mb-6 p-4 bg-yellow-50/50 rounded-lg border border-yellow-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle className="h-4 w-4 text-yellow-500" />
+                      <span className="text-sm font-medium">Not Verified</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Your account is not verified yet. Please complete the
+                      verification process below.
+                    </p>
+                  </div>
                 )}
 
                 <div className="space-y-4">
@@ -463,91 +483,7 @@ export default function DashboardPage() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl">
-                    Additional Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-primary/5 rounded-lg">
-                      <h3 className="text-xs sm:text-sm text-gray-500 mb-1">
-                        Medium
-                      </h3>
-                      <p className="font-semibold text-sm sm:text-base">
-                        {profile?.profile?.medium.replace("_", " ")}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-primary/5 rounded-lg">
-                      <h3 className="text-xs sm:text-sm text-gray-500 mb-1">
-                        Specialization
-                      </h3>
-                      <p className="font-semibold text-sm sm:text-base line-clamp-1">
-                        {profile?.profile?.specialization}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-primary/5 rounded-lg">
-                      <h3 className="text-xs sm:text-sm text-gray-500 mb-1">
-                        Expected Salary
-                      </h3>
-                      <p className="font-semibold text-sm sm:text-base">
-                        ₹{profile?.profile?.monthlySalary.toLocaleString()}
-                        /month
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Verification Card */}
-                  <Card className="bg-yellow-50/50 mt-6">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                        <AlertCircle className="h-5 w-5 text-yellow-500" />
-                        Verify Your Account
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                        Please verify your account by uploading either your NID
-                        or Birth Certificate
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            router.push(`/dashboard-teacher/verify/nid`)
-                          }
-                          className="text-sm sm:text-base"
-                        >
-                          Upload NID
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            router.push(
-                              `/dashboard-teacher/verify/birth-certificate`
-                            )
-                          }
-                          className="text-sm sm:text-base"
-                        >
-                          Upload Birth Certificate
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() =>
-                            router.push(`/dashboard-teacher/verify/passport`)
-                          }
-                          className="text-sm sm:text-base"
-                        >
-                          Upload Passport
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CardContent>
-              </Card>
-            </motion.div>
+            ></motion.div>
           </div>
         </div>
 
