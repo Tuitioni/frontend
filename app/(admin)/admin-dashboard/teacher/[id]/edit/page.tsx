@@ -10,7 +10,7 @@ import {
   TeacherDetail,
   UpdateAdminTeacherDto,
   UpdateTeacherDto,
-} from "@/types/teacher";
+} from "@/types/Teacher";
 import { Gender, Medium } from "@/types";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 

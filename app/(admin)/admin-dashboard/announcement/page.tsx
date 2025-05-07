@@ -1,222 +1,246 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import DataTable from "@/components/ui/admin/dataTable";
-import { AnnouncementPreview } from "@/types/Announcement";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import DataTable from "@/components/ui/admin/dataTable"; // Use default import
+import { type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/admin/Modal";
-import { Input } from "@/components/ui/admin/Form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"; // Adjust path as needed
+import { Input, Select, Textarea } from "@/components/ui/admin/Form"; // Adjust path as needed
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
+import { Notification } from "@/components/ui/Notification";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { Announcement, CreateAnnouncementDto } from "@/types/Announcement";
 
-export default function AnnouncementDashboard() {
-  const [announcements, setAnnouncements] = useState<AnnouncementPreview[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newAnnouncement, setNewAnnouncement] = useState({
-    title: "",
-    content: "",
-  });
-
-  const handleDelete = async (id: string) => {
-    try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/announcement/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete announcement");
-      }
-
-      setAnnouncements((prev) =>
-        prev.filter((announcement) => announcement.id !== id)
-      );
-    } catch (err: any) {
-      console.error("Delete error:", err);
-      setError(err.message);
+export default function AnnouncementListPage() {
+  const router = useRouter();
+  const { fetchWithAuth } = useAuthFetch();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState<CreateAnnouncementDto>(
+    {
+      title: "",
+      content: "",
+      targetAudience: "ALL",
     }
-  };
+  );
 
-  const handleCreate = async () => {
+  const fetchAnnouncements = useCallback(async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem("admin_token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/announcement/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            ...newAnnouncement,
-            adminId: "current-admin-id", // Replace with actual admin ID
-          }),
-        }
-      );
-
+      const response = await fetchWithAuth("/api/admin/announcement");
       if (!response.ok) {
-        throw new Error("Failed to create announcement");
+        throw new Error("Failed to fetch announcements");
       }
-
-      const data = await response.json();
-      setAnnouncements((prev) => [...prev, data]);
-      setIsModalOpen(false);
-      setNewAnnouncement({ title: "", content: "" });
-    } catch (err: any) {
-      console.error("Create error:", err);
-      setError(err.message);
+      const data: Announcement[] = await response.json();
+      setAnnouncements(data);
+    } catch (error: any) {
+      console.error("Error fetching announcements:", error);
+      setNotification({ message: error.message, type: "error" });
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [fetchWithAuth]);
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch(
-          `${process.env.TUITIONI_API}/announcement`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch announcements");
-        }
-
-        const data = await response.json();
-        setAnnouncements(data);
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAnnouncements();
-  }, []);
-
-  if (loading) {
-    return <LoadingSpinner size="lg" />;
-  }
-
-  if (error) {
-    return (
-      <Notification
-        message={error}
-        type="error"
-        onClose={() => setError(null)}
-      />
-    );
-  }
-
-  const columns = [
-    { key: "title", label: "Title" },
-    { key: "content", label: "Content" },
-    { key: "admin", label: "Created By" },
-    { key: "createdAt", label: "Created At" },
-  ];
-
-  const tableData = announcements.map((announcement) => ({
-    id: announcement.id,
-    title: announcement.title,
-    content: announcement.content,
-    admin: announcement.admin.name,
-    createdAt: new Date(announcement.createdAt).toLocaleDateString(),
-  }));
+  }, [fetchAnnouncements]);
 
   const handleView = (id: string) => {
-    window.location.href = `/admin-dashboard/announcement/${id}`;
+    router.push(`/admin-dashboard/announcement/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    window.location.href = `/admin-dashboard/announcement/${id}/edit`;
+    router.push(`/admin-dashboard/announcement/${id}/edit`);
   };
 
-  return (
-    <div className="flex flex-col items-center p-6">
-      <div className="w-full flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Announcement Dashboard
-        </h1>
-        <Button onClick={() => setIsModalOpen(true)}>
-          Create Announcement
-        </Button>
-      </div>
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this announcement?")) return;
+    setLoading(true);
+    try {
+      const response = await fetchWithAuth(`/api/admin/announcement/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorData = await response.text(); // Read text in case it's not JSON
+        throw new Error(errorData || "Failed to delete announcement");
+      }
+      setNotification({
+        message: "Announcement deleted successfully",
+        type: "success",
+      });
+      fetchAnnouncements(); // Refresh the list
+    } catch (error: any) {
+      console.error("Error deleting announcement:", error);
+      setNotification({ message: error.message, type: "error" });
+      setLoading(false); // Only stop loading on error, success refreshes
+    }
+  };
 
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      </div>
+  const handleCreateInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setNewAnnouncement((prev) => ({ ...prev, [name]: value }));
+  };
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create New Announcement"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreate}>Create</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input
-            label="Title"
-            value={newAnnouncement.title}
-            onChange={(e) =>
-              setNewAnnouncement((prev) => ({
-                ...prev,
-                title: e.target.value,
-              }))
-            }
-            maxLength={20}
-          />
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Content
-            </label>
-            <textarea
-              value={newAnnouncement.content}
-              onChange={(e) =>
-                setNewAnnouncement((prev) => ({
-                  ...prev,
-                  content: e.target.value,
-                }))
-              }
-              maxLength={50}
-              rows={3}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary border-gray-300"
-            />
-          </div>
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setIsCreateModalOpen(false); // Close modal immediately
+
+    try {
+      const response = await fetchWithAuth("/api/admin/announcement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAnnouncement),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to create announcement");
+      }
+
+      setNotification({
+        message: "Announcement created successfully",
+        type: "success",
+      });
+      setNewAnnouncement({ title: "", content: "", targetAudience: "ALL" }); // Reset form
+      fetchAnnouncements(); // Refresh list
+    } catch (error: any) {
+      console.error("Error creating announcement:", error);
+      setNotification({ message: error.message, type: "error" });
+      setLoading(false); // Stop loading only on error
+      setIsCreateModalOpen(true); // Reopen modal on error
+    }
+  };
+
+  const columns: ColumnDef<Announcement>[] = [
+    { accessorKey: "title", header: "Title" },
+    {
+      accessorKey: "targetAudience",
+      header: "Target Audience",
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: ({ row }: { row: any }) =>
+        new Date(row.original.createdAt).toLocaleDateString(),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }: { row: any }) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleView(row.original.id)}
+          >
+            View
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleEdit(row.original.id)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => handleDelete(row.original.id)}
+          >
+            Delete
+          </Button>
         </div>
-      </Modal>
+      ),
+    },
+  ];
+
+  if (loading && announcements.length === 0) {
+    // Show spinner only on initial load
+    return <LoadingSpinnerCenter />;
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Announcements</h1>
+        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+          <DialogTrigger asChild>
+            <Button>Create Announcement</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Announcement</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
+              <Input
+                label="Title"
+                name="title"
+                value={newAnnouncement.title}
+                onChange={handleCreateInputChange}
+                required
+              />
+              <Textarea
+                label="Content"
+                name="content"
+                value={newAnnouncement.content}
+                onChange={handleCreateInputChange}
+                required
+                rows={5}
+              />
+              <Select
+                label="Target Audience"
+                name="targetAudience"
+                value={newAnnouncement.targetAudience}
+                onChange={handleCreateInputChange}
+                options={[
+                  { value: "ALL", label: "All Users" },
+                  { value: "STUDENTS", label: "Students Only" },
+                  { value: "TEACHERS", label: "Teachers Only" },
+                ]}
+                required
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Creating..." : "Create"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+      {loading && <p>Refreshing...</p>}
+      <DataTable columns={columns} data={announcements} />
     </div>
   );
 }

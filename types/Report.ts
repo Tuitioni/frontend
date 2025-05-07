@@ -1,55 +1,18 @@
-export interface ReportPreview {
+export interface Report {
   id: string;
   title: string;
-  subject: string;
-  status: string;
-  createdAt: Date;
-  student?: {
-    firstName: string;
-    lastName: string;
-  };
-  teacher?: {
-    firstName: string;
-    lastName: string;
-  };
+  content: string;
+  generatedBy: string; // User ID or name
+  reportType: "FINANCIAL" | "USER_ACTIVITY" | "SYSTEM_HEALTH" | "OTHER";
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
 }
 
-export interface ReportDetail {
-  id: string;
+export interface CreateReportDto {
   title: string;
-  subject: string;
-  description: string;
-  status: string;
-  studentId?: string;
-  teacherId?: string;
-  resolverId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  student?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  teacher?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  resolver?: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  content: string;
+  generatedBy: string; // Should ideally be taken from authenticated user on backend
+  reportType: "FINANCIAL" | "USER_ACTIVITY" | "SYSTEM_HEALTH" | "OTHER";
 }
 
-export interface UpdateReportDto {
-  title?: string;
-  subject?: string;
-  description?: string;
-  status?: string;
-  studentId?: string;
-  teacherId?: string;
-  resolverId?: string;
-}
+export interface UpdateReportDto extends Partial<CreateReportDto> {}

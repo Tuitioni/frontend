@@ -1,147 +1,120 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { AnnouncementDetail } from "@/types/Announcement";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AdminCard } from "@/components/ui/admin/adminCard";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
+import { Notification } from "@/components/ui/Notification";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { Announcement } from "@/types/Announcement";
 
-export default function AnnouncementDashboardByID({
-  params,
-}: {
+interface AnnouncementDetailProps {
   params: { id: string };
-}) {
-  const [announcement, setAnnouncement] = useState<AnnouncementDetail | null>(
-    null
-  );
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+}
+
+export default function AnnouncementDetailPage({
+  params,
+}: AnnouncementDetailProps) {
+  const router = useRouter();
+  const { fetchWithAuth } = useAuthFetch();
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "error";
+  } | null>(null);
 
   useEffect(() => {
     const fetchAnnouncement = async () => {
+      setLoading(true);
       try {
-        const token = localStorage.getItem("admin_token");
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
-
-        const response = await fetch(
-          `${process.env.TUITIONI_API}/announcement/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const response = await fetchWithAuth(
+          `/api/admin/announcement/${params.id}`
         );
-
         if (!response.ok) {
           throw new Error("Failed to fetch announcement details");
         }
-
-        const data = await response.json();
+        const data: Announcement = await response.json();
         setAnnouncement(data);
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
+      } catch (error: any) {
+        console.error("Error fetching announcement:", error);
+        setNotification({ message: error.message, type: "error" });
       } finally {
         setLoading(false);
       }
     };
 
     fetchAnnouncement();
-  }, [params.id]);
+  }, [fetchWithAuth, params.id]);
 
   if (loading) {
-    return <LoadingSpinner size="lg" />;
+    return <LoadingSpinnerCenter />;
   }
 
-  if (error) {
+  if (notification) {
     return (
       <Notification
-        message={error}
-        type="error"
-        onClose={() => setError(null)}
+        message={notification.message}
+        type={notification.type}
+        onClose={() => setNotification(null)}
       />
     );
   }
 
   if (!announcement) {
-    return <div>No announcement found</div>;
+    return <p className="text-center mt-10">Announcement not found.</p>;
   }
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-        Announcement Details
-      </h1>
-      <div className="grid grid-cols-1 gap-8">
-        {/* Announcement Content */}
-        <AdminCard
-          title="Announcement"
-          className="bg-white shadow-lg rounded-xl"
-        >
-          <div className="space-y-6">
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Title</p>
-              <p className="text-xl font-semibold text-gray-900">
-                {announcement.title}
-              </p>
-            </div>
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Content</p>
-              <p className="text-lg text-gray-900 whitespace-pre-wrap">
-                {announcement.content}
-              </p>
-            </div>
-          </div>
-        </AdminCard>
-
-        {/* Admin Information */}
-        <AdminCard title="Created By" className="bg-white shadow-lg rounded-xl">
-          <div className="space-y-4">
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Admin Name</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {announcement.admin.name}
-              </p>
-            </div>
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Admin Email</p>
-              <p className="text-base text-gray-900">
-                {announcement.admin.email}
-              </p>
-            </div>
-          </div>
-        </AdminCard>
-
-        {/* Timestamps */}
-        <AdminCard title="Timeline" className="bg-white shadow-lg rounded-xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Created At</p>
-              <p className="text-base text-gray-900">
-                {formatDate(announcement.createdAt)}
-              </p>
-            </div>
-            <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Last Updated</p>
-              <p className="text-base text-gray-900">
-                {formatDate(announcement.updatedAt)}
-              </p>
-            </div>
-          </div>
-        </AdminCard>
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Announcement Details</h1>
+        <div>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/admin-dashboard/announcement")}
+            className="mr-2"
+          >
+            Back to List
+          </Button>
+          <Button
+            onClick={() =>
+              router.push(`/admin-dashboard/announcement/${params.id}/edit`)
+            }
+          >
+            Edit Announcement
+          </Button>
+        </div>
       </div>
+      <AdminCard title={`Announcement: ${announcement.title}`}>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-gray-500">Target Audience</p>
+            <p className="text-lg text-gray-900">
+              {announcement.targetAudience}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500">Content</p>
+            <p className="text-lg text-gray-900 whitespace-pre-wrap">
+              {announcement.content}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500">Created At</p>
+            <p className="text-base text-gray-900">
+              {new Date(announcement.createdAt).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500">Last Updated</p>
+            <p className="text-base text-gray-900">
+              {new Date(announcement.updatedAt).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </AdminCard>
     </div>
   );
 }
