@@ -36,6 +36,7 @@ import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
 import { TeachingDetailsCard } from "./components/TeachingDetailsCard";
 import { VerificationStatus } from "./components/VerificationStatus";
+import { DocumentVerificationCard } from "./components/DocumentVerificationCard";
 
 interface SelectOption {
   value: string;
@@ -477,6 +478,17 @@ export default function DashboardPage() {
                 }}
               />
             </motion.div>
+
+            {/* Document Verification Card - Show only when not verified */}
+            {!verificationStatus && (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <DocumentVerificationCard />
+              </motion.div>
+            )}
 
             {/* Additional Details Card */}
             <motion.div
