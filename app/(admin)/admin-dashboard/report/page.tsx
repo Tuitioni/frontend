@@ -1,113 +1,307 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
-import { Notification } from "@/components/ui/Notification";
+import { Report, CreateReportDto } from "@/types/Report";
 import DataTable from "@/components/ui/admin/dataTable";
-import { ReportPreview } from "@/types/Report";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { Modal } from "@/components/ui/admin/Modal";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Notification } from "@/components/ui/Notification";
+import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 
-export default function ReportDashboard() {
+const reportTypes: Report["reportType"][] = [
+  "FINANCIAL",
+  "USER_ACTIVITY",
+  "SYSTEM_HEALTH",
+  "OTHER",
+];
+
+const ReportsPage = () => {
   const router = useRouter();
   const { fetchWithAuth } = useAuthFetch();
-  const [reports, setReports] = useState<ReportPreview[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [reports, setReports] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newReport, setNewReport] = useState<CreateReportDto>({
+    title: "",
+    content: "",
+    generatedBy: "Admin",
+    reportType: "OTHER",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchReports = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetchWithAuth("/api/admin/report");
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.message || "Failed to fetch reports");
+      setReports(data || []);
+      setError(null);
+    } catch (err: any) {
+      console.error("Fetch error:", err);
+      const message = err.message || "Failed to fetch reports";
+      setError(message);
+      setNotification({
+        message,
+        type: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchWithAuth]);
 
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/report`
-        );
-        const data = await response.json();
-        setReports(data);
-      } catch (error: any) {
-        console.error("Error fetching reports:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchReports();
-  }, [fetchWithAuth]);
+  }, [fetchReports]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this report?")) return;
-
     try {
-      await fetchWithAuth(`${process.env.TUITIONI_API}/report/${id}`, {
-        method: "DELETE",
+      await fetchWithAuth(`/api/admin/report/${id}`, { method: "DELETE" });
+      setNotification({
+        message: "Report deleted successfully",
+        type: "success",
       });
-
-      setReports((prev) => prev.filter((report) => report.id !== id));
-    } catch (error: any) {
-      console.error("Error deleting report:", error);
-      setError(error.message);
+      fetchReports();
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      const message = err.message || "Failed to delete report";
+      setError(message);
+      setNotification({
+        message,
+        type: "error",
+      });
     }
   };
 
-  if (loading) {
-    return <LoadingSpinnerCenter />;
-  }
+  const handleCreateReport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const response = await fetchWithAuth("/api/admin/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReport),
+      });
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.message || "Failed to create report");
+      setNotification({
+        message: "Report created successfully",
+        type: "success",
+      });
+      setIsCreateModalOpen(false);
+      fetchReports();
+      setNewReport({
+        title: "",
+        content: "",
+        generatedBy: "Admin",
+        reportType: "OTHER",
+      });
+    } catch (err: any) {
+      console.error("Create error:", err);
+      const message = err.message || "Failed to create report";
+      setError(message);
+      setNotification({ message, type: "error" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-  if (error) {
-    return (
-      <Notification
-        message={error}
-        type="error"
-        onClose={() => setError(null)}
-      />
-    );
-  }
-
-  const columns = [
-    { key: "title", label: "Title" },
-    { key: "subject", label: "Subject" },
-    { key: "status", label: "Status" },
-    { key: "student", label: "Student" },
-    { key: "teacher", label: "Teacher" },
-    { key: "createdAt", label: "Created At" },
+  const columns: ColumnDef<Report>[] = [
+    { accessorKey: "id", header: "ID" },
+    { accessorKey: "title", header: "Title" },
+    { accessorKey: "reportType", header: "Type" },
+    { accessorKey: "generatedBy", header: "Generated By" },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: ({ row }: { row: any }) =>
+        new Date(row.original.createdAt).toLocaleDateString(),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }: { row: any }) => {
+        const report = row.original;
+        return (
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                router.push(`/admin-dashboard/report/${report.id}`)
+              }
+            >
+              View
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                router.push(`/admin-dashboard/report/${report.id}/edit`)
+              }
+            >
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDelete(report.id)}
+            >
+              Delete
+            </Button>
+          </div>
+        );
+      },
+    },
   ];
 
-  const tableData = reports.map((report) => ({
-    id: report.id,
-    title: report.title,
-    subject: report.subject,
-    status: report.status,
-    student: report.student
-      ? `${report.student.firstName} ${report.student.lastName}`
-      : "N/A",
-    teacher: report.teacher
-      ? `${report.teacher.firstName} ${report.teacher.lastName}`
-      : "N/A",
-    createdAt: new Date(report.createdAt).toLocaleDateString(),
-  }));
-
-  const handleView = (id: string) => {
-    router.push(`/admin-dashboard/report/${id}`);
-  };
-
-  const handleEdit = (id: string) => {
-    router.push(`/admin-dashboard/report/${id}/edit`);
-  };
+  if (isLoading && reports.length === 0) return <LoadingSpinnerCenter />;
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Report Dashboard
-      </h1>
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+    <div className="container mx-auto py-10">
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
+      )}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Reports</h1>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" /> Create Report
+        </Button>
       </div>
+
+      {error && !notification && !isLoading && (
+        <p className="text-red-500 py-2">
+          Error: {error}. Please try refreshing.
+        </p>
+      )}
+      {isLoading && <p className="py-2">Loading reports...</p>}
+
+      <DataTable columns={columns} data={reports} />
+
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        title="Create New Report"
+      >
+        <form onSubmit={handleCreateReport} className="space-y-4">
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Title
+            </label>
+            <Input
+              id="title"
+              name="title"
+              type="text"
+              value={newReport.title}
+              onChange={(e) =>
+                setNewReport({ ...newReport, title: e.target.value })
+              }
+              required
+              className="w-full"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="content"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Content
+            </label>
+            <textarea
+              id="content"
+              name="content"
+              value={newReport.content}
+              onChange={(e) =>
+                setNewReport({ ...newReport, content: e.target.value })
+              }
+              required
+              rows={4}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="reportType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Report Type
+            </label>
+            <Select
+              value={newReport.reportType}
+              onValueChange={(value: Report["reportType"]) =>
+                setNewReport({ ...newReport, reportType: value })
+              }
+              disabled={isSubmitting}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select report type" />
+              </SelectTrigger>
+              <SelectContent>
+                {reportTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.replace("_", " ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {error && isCreateModalOpen && (
+            <p className="text-red-500 text-sm mb-2">Error: {error}</p>
+          )}
+
+          <div className="flex justify-end space-x-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsCreateModalOpen(false);
+                setError(null);
+              }}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting || isLoading}>
+              {isSubmitting ? "Creating..." : "Create Report"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
-}
+};
+
+export default ReportsPage;

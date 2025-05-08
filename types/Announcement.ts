@@ -1,35 +1,16 @@
-export interface AnnouncementPreview {
+export interface Announcement {
   id: string;
   title: string;
   content: string;
-  createdAt: Date;
-  admin: {
-    name: string;
-  };
-}
-
-export interface AnnouncementDetail {
-  id: string;
-  title: string;
-  content: string;
-  adminId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  admin: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  targetAudience: "ALL" | "STUDENTS" | "TEACHERS"; // Example target audience
 }
 
 export interface CreateAnnouncementDto {
   title: string;
   content: string;
-  adminId: string;
+  targetAudience: "ALL" | "STUDENTS" | "TEACHERS";
 }
 
-export interface UpdateAnnouncementDto {
-  title?: string;
-  content?: string;
-  adminId?: string;
-}
+export interface UpdateAnnouncementDto extends Partial<CreateAnnouncementDto> {}
