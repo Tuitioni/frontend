@@ -48,6 +48,7 @@ export default function Page() {
           levelOfStudy: filters?.levelOfStudy || "",
         }),
       });
+      console.log(jobs);
 
       if (!response.ok) {
         throw new Error("Failed to fetch jobs");

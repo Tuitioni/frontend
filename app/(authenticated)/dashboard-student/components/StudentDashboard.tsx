@@ -18,6 +18,29 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { StudentDetail } from "@/types/Student";
 import { Toaster } from "@/components/ui/toaster";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { StudentProfileForm } from "./StudentProfileForm";
+import { useToast } from "@/components/ui/use-toast";
+
+interface StudentProfile {
+  district: string;
+  area: string;
+  gender: string;
+  age: number;
+  medium: string;
+  levelOfStudy: string;
+  school: string;
+  college: string | null;
+  university: string | null;
+  subjects: string[];
+  studentId: string;
+}
 
 const StudentDashboard = () => {
   const decodedToken = useToken();
@@ -26,6 +49,32 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+
+  // Default form state for the job post
+  const [postForm, setPostForm] = useState({
+    firstName: student?.firstName || "",
+    lastName: student?.lastName || "",
+    district: student?.profile?.district || "",
+    area: student?.profile?.area || "",
+    age: student?.profile?.age || 14,
+    medium: student?.profile?.medium || "ENGLISH_MEDIUM",
+    levelOfStudy: student?.profile?.levelOfStudy || "Middle School",
+    school: student?.profile?.school || "",
+    college: student?.profile?.college || null,
+    university: student?.profile?.university || null,
+    subjects: student?.profile?.subjects || ["Biology", "History", "Spanish"],
+    gender: student?.profile?.gender || "FEMALE",
+    salary: 1500,
+    numberOfDays: 3,
+    duration: "1.5 hours",
+    tuitionType: "Private",
+    class: "8th Grade",
+    note: "Prefers weekend classes",
+  });
+  const [posting, setPosting] = useState(false);
 
   // Log token payload only once
   useEffect(() => {
@@ -62,6 +111,114 @@ const StudentDashboard = () => {
     }
   }, [decodedToken?.sub, fetchStudentData, student, loading]);
 
+  const fetchProfile = async () => {
+    try {
+      const token = await makeAuthenticatedRequest("/api/student-profile");
+      if (token.ok) {
+        const data = await token.json();
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const handleProfileUpdate = async (updatedProfile: StudentProfile) => {
+    try {
+      if (!decodedToken?.sub) {
+        throw new Error("No user ID found");
+      }
+
+      const formattedData = {
+        ...updatedProfile,
+        gender: updatedProfile.gender.toUpperCase(),
+        medium:
+          updatedProfile.medium === "English"
+            ? "ENGLISH_MEDIUM"
+            : updatedProfile.medium === "Bengali"
+            ? "BANGLA_MEDIUM"
+            : "ENGLISH_VERSION",
+        studentId: decodedToken.sub,
+      };
+
+      const response = await makeAuthenticatedRequest("/api/student-profile", {
+        method: "POST",
+        data: formattedData,
+      });
+
+      if (response.ok) {
+        setProfile(formattedData);
+        setIsOpen(false);
+      } else {
+        const errorData = await response.json();
+        console.error("Profile update failed:", errorData);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  const handlePostSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPosting(true);
+    try {
+      if (!decodedToken?.sub) {
+        toast({
+          title: "Error",
+          description: "No student ID found in token",
+          variant: "destructive",
+        });
+        setPosting(false);
+        return;
+      }
+      const response = await makeAuthenticatedRequest("/api/student-post", {
+        method: "POST",
+        data: { ...postForm, studentId: decodedToken.sub },
+      });
+      if (response.ok) {
+        toast({ title: "Post created successfully!" });
+        setPostForm((prev) => ({ ...prev, note: "" }));
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Failed to create post",
+          description: errorData.error || "Unknown error",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to create post",
+        variant: "destructive",
+      });
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  const handlePostChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+    // List of fields that should be numbers
+    const numberFields = ["age", "salary", "numberOfDays"];
+    setPostForm((prev) => ({
+      ...prev,
+      [name]: numberFields.includes(name) ? Number(value) : value,
+    }));
+  };
+
+  const handleSubjectsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPostForm((prev) => ({ ...prev, subjects: e.target.value.split(",") }));
+  };
+
   if (loading) return <DashboardSkeleton />;
   if (error)
     return (
@@ -74,6 +231,20 @@ const StudentDashboard = () => {
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <Toaster />
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button>Edit Profile</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Student Profile</DialogTitle>
+          </DialogHeader>
+          <StudentProfileForm
+            initialData={profile}
+            onSubmit={handleProfileUpdate}
+          />
+        </DialogContent>
+      </Dialog>
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold">Student Dashboard</h1>
@@ -112,7 +283,7 @@ const StudentDashboard = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/profile/edit")}
+                onClick={() => setIsOpen(true)}
               >
                 <Edit2 className="h-4 w-4" />
               </Button>
@@ -152,157 +323,170 @@ const StudentDashboard = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {/* Education Details */}
+        {/* Simple Post Form */}
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg sm:text-xl">
-                  Education Details
-                </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => router.push("/profile/edit")}
-                >
-                  <Edit2 className="h-4 w-4" />
+              <CardTitle>Post a Tuition Job</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-4" onSubmit={handlePostSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="firstName"
+                    value={postForm.firstName}
+                    onChange={handlePostChange}
+                    placeholder="First Name"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="lastName"
+                    value={postForm.lastName}
+                    onChange={handlePostChange}
+                    placeholder="Last Name"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="district"
+                    value={postForm.district}
+                    onChange={handlePostChange}
+                    placeholder="District"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="area"
+                    value={postForm.area}
+                    onChange={handlePostChange}
+                    placeholder="Area"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="age"
+                    type="number"
+                    value={postForm.age}
+                    onChange={handlePostChange}
+                    placeholder="Age"
+                    required
+                  />
+                  <select
+                    className="border rounded px-3 py-2 w-full"
+                    name="medium"
+                    value={postForm.medium}
+                    onChange={handlePostChange}
+                    required
+                  >
+                    <option value="ENGLISH_MEDIUM">English Medium</option>
+                    <option value="BANGLA_MEDIUM">Bangla Medium</option>
+                    <option value="ENGLISH_VERSION">English Version</option>
+                  </select>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="levelOfStudy"
+                    value={postForm.levelOfStudy}
+                    onChange={handlePostChange}
+                    placeholder="Level of Study"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="school"
+                    value={postForm.school}
+                    onChange={handlePostChange}
+                    placeholder="School"
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="college"
+                    value={postForm.college || ""}
+                    onChange={handlePostChange}
+                    placeholder="College (optional)"
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="university"
+                    value={postForm.university || ""}
+                    onChange={handlePostChange}
+                    placeholder="University (optional)"
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="subjects"
+                    value={postForm.subjects.join(",")}
+                    onChange={handleSubjectsChange}
+                    placeholder="Subjects (comma separated)"
+                    required
+                  />
+                  <select
+                    className="border rounded px-3 py-2 w-full"
+                    name="gender"
+                    value={postForm.gender}
+                    onChange={handlePostChange}
+                    required
+                  >
+                    <option value="FEMALE">Female</option>
+                    <option value="MALE">Male</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="salary"
+                    type="number"
+                    value={postForm.salary}
+                    onChange={handlePostChange}
+                    placeholder="Salary"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="numberOfDays"
+                    type="number"
+                    value={postForm.numberOfDays}
+                    onChange={handlePostChange}
+                    placeholder="Number of Days"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="duration"
+                    value={postForm.duration}
+                    onChange={handlePostChange}
+                    placeholder="Duration (e.g. 1.5 hours)"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="tuitionType"
+                    value={postForm.tuitionType}
+                    onChange={handlePostChange}
+                    placeholder="Tuition Type"
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="class"
+                    value={postForm.class}
+                    onChange={handlePostChange}
+                    placeholder="Class"
+                    required
+                  />
+                </div>
+                <textarea
+                  className="border rounded px-3 py-2 w-full"
+                  name="note"
+                  value={postForm.note}
+                  onChange={handlePostChange}
+                  placeholder="Note (optional)"
+                  rows={2}
+                />
+                <Button type="submit" disabled={posting}>
+                  {posting ? "Posting..." : "Post Tuition Job"}
                 </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {student?.profile ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <GraduationCap className="h-4 w-4 text-gray-500" />
-                        <h3 className="font-medium text-sm sm:text-base">
-                          Education Level
-                        </h3>
-                      </div>
-                      <p className="text-sm sm:text-base">
-                        {student.profile.levelOfStudy}
-                      </p>
-                    </div>
-                    {student.profile.school && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <School className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            School
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {student.profile.school}
-                        </p>
-                      </div>
-                    )}
-                    {student.profile.college && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <School className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            College
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {student.profile.college}
-                        </p>
-                      </div>
-                    )}
-                    {student.profile.university && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <School className="h-4 w-4 text-gray-500" />
-                          <h3 className="font-medium text-sm sm:text-base">
-                            University
-                          </h3>
-                        </div>
-                        <p className="text-sm sm:text-base">
-                          {student.profile.university}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Book className="h-4 w-4 text-gray-500" />
-                        <h3 className="font-medium text-sm sm:text-base">
-                          Medium
-                        </h3>
-                      </div>
-                      <p className="text-sm sm:text-base">
-                        {student.profile.medium}
-                      </p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm sm:text-base mb-2">
-                        Subjects
-                      </h3>
-                      {student.profile.subjects &&
-                      student.profile.subjects.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {student.profile.subjects.map((subject, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-primary/10 rounded-full text-sm sm:text-base"
-                            >
-                              {subject}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">
-                          No subjects specified
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-gray-500">
-                    Your profile information is incomplete.
-                  </p>
-                  <Button
-                    className="mt-2"
-                    variant="outline"
-                    onClick={() => router.push("/profile/edit")}
-                  >
-                    Complete Your Profile
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Upcoming Classes or Recommendations */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">
-                Recommended for You
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-4">
-                <p className="text-gray-500 mb-3">
-                  Start exploring tutors and courses tailored to your interests.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                  <Button onClick={() => router.push("/tutors")}>
-                    Find Tutors
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => router.push("/courses")}
-                  >
-                    Browse Courses
-                  </Button>
-                </div>
-              </div>
+              </form>
             </CardContent>
           </Card>
         </div>
