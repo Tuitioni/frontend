@@ -16,12 +16,13 @@ export default function NavbarButtons() {
   ];
 
   return (
-    <div className="flex gap-1 md:gap-2">
+    <div className="flex gap-0.5 sm:gap-1 md:gap-2">
       {buttons.map((button) => (
         <Link key={button.path} href={button.path}>
           <Button
             variant={pathname === button.path ? "activeOutline" : "outline"}
             size="sm"
+            className="text-xs bg-transparent sm:text-sm md:text-base px-2 sm:px-3 md:px-4 h-7 sm:h-8 md:h-9"
           >
             {button.name}
           </Button>

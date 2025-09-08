@@ -8,13 +8,14 @@ import YoutubePlayer from "@/app/components/YoutubePlayer";
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Hero />
-      <Separator className="my-8" />
-      <SearchTutor />
-      <TopTutors />
-      <YoutubePlayer />
+      <main className="flex-grow">
+        <Hero />
+        <SearchTutor />
+        <TopTutors />
+        <YoutubePlayer />
+      </main>
       <Footer />
     </div>
   );

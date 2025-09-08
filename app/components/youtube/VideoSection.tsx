@@ -13,7 +13,7 @@ export const VideoSection: React.FC<VideoSectionProps> = ({
 }) => {
   return (
     <div className="w-full md:w-1/2">
-      <div className="relative pb-[56.25%] rounded-lg overflow-hidden">
+      <div className="relative pb-[80%] rounded-lg overflow-hidden">
         <YouTube
           videoId={videoId}
           opts={{
@@ -21,7 +21,7 @@ export const VideoSection: React.FC<VideoSectionProps> = ({
             width: "100%",
             height: "100%",
           }}
-          className="absolute top-0 left-0 w-full h-full"
+          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
           onReady={(event: YouTubeEvent) => event.target.pauseVideo()}
         />
       </div>

@@ -15,7 +15,7 @@ export const ChannelInfo: React.FC = () => {
           href={CHANNEL_CONFIG.channelUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300 hover:shadow-lg"
+          className="inline-block bg-yellow text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition duration-300 hover:shadow-lg"
         >
           Visit Channel
         </a>
