@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
+
 import { tokenService } from "./auth/token";
-import { AxiosHeaders } from "axios";
+
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,

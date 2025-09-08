@@ -1,8 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useDistrictsData } from "@/app/hooks/useDistrictsData";
+import React, { useState } from "react";
+
 import { EDUCATION_LEVELS } from "@/app/constants/data";
+import { useDistrictsData } from "@/app/hooks/useDistrictsData";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,8 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -25,6 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+
 import { SectionWrapper } from "./SectionWrapper";
 
 export default function SearchTutor() {

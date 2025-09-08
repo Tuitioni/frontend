@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import { Input, Select } from "@/components/ui/admin/Form";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Notification } from "@/components/ui/Notification";
-import { StudentDetail, UpdateStudentDto } from "@/types/Student";
 import { Gender, Medium } from "@/types";
+import { StudentDetail, UpdateStudentDto } from "@/types/Student";
 
 interface StudentEditProps {
   params: { id: string };

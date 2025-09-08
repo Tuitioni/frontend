@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import Logo from "./navbar/Logo";
+
 import MobileMenu from "./MobileMenu";
-import NavbarButtons from "./NavbarButtons";
 import AuthButtons from "./navbar/AuthButtons";
+import Logo from "./navbar/Logo";
+import NavbarButtons from "./NavbarButtons";
 
 export default function Navbar() {
   return (

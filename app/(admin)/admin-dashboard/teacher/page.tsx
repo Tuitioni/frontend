@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TeacherPreview } from "@/types/teacher";
+import { useEffect, useState } from "react";
+
 import DataTable from "@/components/ui/admin/dataTable";
-import { Notification } from "@/components/ui/Notification";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
+import { Notification } from "@/components/ui/Notification";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { TeacherPreview } from "@/types/teacher";
 
 export default function TeacherDashboard() {
   const router = useRouter();

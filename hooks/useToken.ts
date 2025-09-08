@@ -1,6 +1,7 @@
-import { useMemo } from "react";
-import { tokenService } from "@/lib/auth/token";
 import { jwtDecode } from "jwt-decode";
+import { useMemo } from "react";
+
+import { tokenService } from "@/lib/auth/token";
 
 interface TokenPayload {
   sub: string;

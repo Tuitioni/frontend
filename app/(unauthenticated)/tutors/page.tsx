@@ -1,7 +1,10 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState, Suspense } from "react";
-import TutorCard from "@/app/(unauthenticated)/tutors/components/tutors/TutorCard"; // Adjust the import path as needed
+
 import FilterTutors from "@/app/(unauthenticated)/tutors/components/tutors/FilterTutors";
+import SkeletonTutorCard from "@/app/(unauthenticated)/tutors/components/tutors/SkeletonTutorCard";
+import TutorCard from "@/app/(unauthenticated)/tutors/components/tutors/TutorCard"; // Adjust the import path as needed
 import {
   Select,
   SelectContent,
@@ -9,8 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSearchParams } from "next/navigation";
-import SkeletonTutorCard from "@/app/(unauthenticated)/tutors/components/tutors/SkeletonTutorCard";
 
 interface Tutor {
   id: string;

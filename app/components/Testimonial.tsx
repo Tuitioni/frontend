@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { imageLoader } from "@/lib/ImageLoader";
+
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { testimonials } from "@/data/testimonials";
+import { imageLoader } from "@/lib/ImageLoader";
 
 export default function TestimonialSliderCard() {
   return (

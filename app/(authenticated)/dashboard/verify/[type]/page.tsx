@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { Upload, AlertCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
-import { useToken } from "@/hooks/useToken";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, AlertCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToken } from "@/hooks/useToken";
+
 
 export default function VerifyDocumentPage() {
   const params = useParams();

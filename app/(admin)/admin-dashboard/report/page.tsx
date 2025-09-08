@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import DataTable from "@/components/ui/admin/dataTable";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import DataTable from "@/components/ui/admin/dataTable";
-import { ReportPreview } from "@/types/Report";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { ReportPreview } from "@/types/Report";
 
 export default function ReportDashboard() {
   const router = useRouter();

@@ -1,6 +1,6 @@
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 import { FaFacebook, FaYoutube, FaTiktok } from "react-icons/fa";
 
 // Separate components for better organization

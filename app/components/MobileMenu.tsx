@@ -1,8 +1,9 @@
 "use client"; // Mark this as a client component
 
-import React, { useState } from "react";
 import { Menu, X } from "lucide-react"; // Lucide icons
 import Link from "next/link";
+import React, { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 
 interface MobileMenuProps {

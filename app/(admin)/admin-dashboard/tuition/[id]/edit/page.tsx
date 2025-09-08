@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { useEffect, useState } from "react";
+
+import { AdminCard } from "@/components/ui/admin/adminCard";
+import { Input } from "@/components/ui/admin/Form";
+import { Button } from "@/components/ui/button";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/admin/Form";
+import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { Tuition, UpdateTuitionDto } from "@/types/Tuition";
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { checkAuth, handleTokenError } from "@/utils/auth";
+import { handleTokenError } from "@/utils/auth";
 
 export default function EditTuitionPage({
   params,

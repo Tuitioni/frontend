@@ -1,7 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobCard from "@/app/(unauthenticated)/jobs/components/JobCard";
+
 import FilterJobs from "@/app/(unauthenticated)/jobs/components/FilterJobs";
+import JobCard from "@/app/(unauthenticated)/jobs/components/JobCard";
+import SkeletonJobCard from "@/app/(unauthenticated)/jobs/components/SkeletonJobCard";
 import {
   Select,
   SelectContent,
@@ -9,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import SkeletonJobCard from "@/app/(unauthenticated)/jobs/components/SkeletonJobCard";
 
 // Define the type for the job data
 interface Job {

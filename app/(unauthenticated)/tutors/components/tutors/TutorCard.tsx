@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+
 import HireModal from "./HireModal";
 
 // Define the type for the TutorCard props

@@ -1,4 +1,5 @@
 import React from "react";
+
 import { CHANNEL_CONFIG } from "@/app/constants/data";
 
 export const ChannelInfo: React.FC = () => {

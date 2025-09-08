@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import { Button } from "@/components/ui/button";
-import { Teacher } from "@/types/teacher";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { Teacher } from "@/types/teacher";
 
 export default function TeacherDetailPage({
   params,

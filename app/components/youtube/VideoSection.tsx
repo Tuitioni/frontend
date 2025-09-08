@@ -1,5 +1,6 @@
 import React from "react";
 import YouTube, { YouTubeProps } from "react-youtube";
+
 import type { YouTubeEvent } from "react-youtube";
 
 interface VideoSectionProps {

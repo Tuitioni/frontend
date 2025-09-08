@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
-import { VideoSection } from "./youtube/VideoSection";
-import { ChannelInfo } from "./youtube/ChannelInfo";
+
 import { YOUTUBE_CONFIG } from "@/app/constants/data";
+
 import { SectionWrapper } from "./SectionWrapper";
+import { ChannelInfo } from "./youtube/ChannelInfo";
+import { VideoSection } from "./youtube/VideoSection";
 
 export default function YoutubePlayer() {
   return (

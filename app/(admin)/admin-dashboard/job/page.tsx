@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Post } from "@/types/Post";
+
 import DataTable from "@/components/ui/admin/dataTable";
-import { Notification } from "@/components/ui/Notification";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Notification } from "@/components/ui/Notification";
+import { Post } from "@/types/Post";
 
 export default function PostPage() {
   const [posts, setPosts] = useState<Post[]>([]);

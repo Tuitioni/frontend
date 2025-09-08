@@ -1,7 +1,8 @@
 import React from "react";
-import { TutorCard } from "./TutorCard";
+
 import { SectionTitle } from "./SectionTitle";
 import { SectionWrapper } from "./SectionWrapper";
+import { TutorCard } from "./TutorCard";
 
 // Move types to separate types.ts file or define here if small project
 interface Tutor {

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+
 import Sidebar from "@/components/ui/admin/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminLayout({
   children,

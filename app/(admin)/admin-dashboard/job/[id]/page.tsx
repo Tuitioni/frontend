@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Post } from "@/types/Post";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+
 import { AdminCard } from "@/components/ui/admin/adminCard";
-import { Notification } from "@/components/ui/Notification";
+import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Notification } from "@/components/ui/Notification";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { Post } from "@/types/Post";
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();

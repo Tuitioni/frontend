@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+
 import { Input } from "@/components/ui/admin/Form";
 import { Button } from "@/components/ui/button";
 import { Notification } from "@/components/ui/Notification";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Card, Metric, Text } from "@tremor/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -15,7 +16,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Card, Metric, Text } from "@tremor/react";
+
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 

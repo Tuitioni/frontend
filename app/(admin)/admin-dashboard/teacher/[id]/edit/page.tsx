@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import { Input, Select } from "@/components/ui/admin/Form";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
 import { Notification } from "@/components/ui/Notification";
-import { TeacherDetail, UpdateTeacherDto } from "@/types/teacher";
-import { Gender, Medium } from "@/types";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { Gender, Medium } from "@/types";
+import { UpdateTeacherDto } from "@/types/teacher";
 
 interface TeacherEditProps {
   params: { id: string };

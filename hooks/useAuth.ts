@@ -1,6 +1,8 @@
-import { useToken } from "./useToken";
-import { tokenService } from "@/lib/auth/token";
 import { useRouter } from "next/navigation";
+
+import { tokenService } from "@/lib/auth/token";
+
+import { useToken } from "./useToken";
 
 export function useAuth() {
   const decodedToken = useToken();

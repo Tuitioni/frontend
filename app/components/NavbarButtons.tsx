@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
+
+import { Button } from "@/components/ui/button";
 
 export default function NavbarButtons() {
   const pathname = usePathname();

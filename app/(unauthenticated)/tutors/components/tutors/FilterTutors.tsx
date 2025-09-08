@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, Check, ChevronsUpDown } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
 
 interface DistrictData {
   district: string;
@@ -30,21 +26,14 @@ interface DistrictData {
 }
 
 interface FilterTutorsProps {
-  onFilterChange: (filters: {
-    district: string;
-    area: string;
-    level: string;
-  }) => void;
+  onFilterChange: (filters: { district: string; area: string; level: string }) => void;
   onReset: () => void;
 }
 
-export default function FilterTutors({
-  onFilterChange,
-  onReset,
-}: FilterTutorsProps) {
-  const [district, setDistrict] = React.useState("all");
-  const [area, setArea] = React.useState("all");
-  const [level, setLevel] = React.useState("all");
+export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsProps) {
+  const [district, setDistrict] = useState('all');
+  const [area, setArea] = useState('all');
+  const [level, setLevel] = useState('all');
   const [districtsData, setDistrictsData] = useState<DistrictData[]>([]);
   const [availableAreas, setAvailableAreas] = useState<string[]>([]);
   const [openDistrict, setOpenDistrict] = useState(false);
@@ -54,12 +43,12 @@ export default function FilterTutors({
     const fetchDistrictsData = async () => {
       try {
         const response = await fetch(
-          "https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json"
+          'https://gist.githubusercontent.com/sifatulrabbi/9c1ae990e905bf620af298b5a4489f68/raw/4d9596fc0e0e48c223dea79efe902f6478e70cfd/bd_districts_areas.json'
         );
         const data = await response.json();
         setDistrictsData(data);
       } catch (error) {
-        console.error("Error fetching districts data:", error);
+        console.error('Error fetching districts data:', error);
       }
     };
 
@@ -67,7 +56,7 @@ export default function FilterTutors({
   }, []);
 
   useEffect(() => {
-    if (district && district !== "all") {
+    if (district && district !== 'all') {
       const selectedDistrict = districtsData.find(
         (d) => d.district.toLowerCase() === district.toLowerCase()
       );
@@ -75,21 +64,21 @@ export default function FilterTutors({
     } else {
       setAvailableAreas([]);
     }
-    setArea("all"); // Reset area when district changes
+    setArea('all'); // Reset area when district changes
   }, [district, districtsData]);
 
   const handleApplyFilters = () => {
     onFilterChange({
-      district: district === "all" ? "" : district,
-      area: area === "all" ? "" : area,
-      level: level === "all" ? "" : level,
+      district: district === 'all' ? '' : district,
+      area: area === 'all' ? '' : area,
+      level: level === 'all' ? '' : level,
     });
   };
 
   const handleReset = () => {
-    setDistrict("all");
-    setArea("all");
-    setLevel("all");
+    setDistrict('all');
+    setArea('all');
+    setLevel('all');
     onReset();
   };
 
@@ -102,9 +91,7 @@ export default function FilterTutors({
 
         <div className="space-y-2 sm:space-y-3 lg:space-y-4">
           <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">
-              District
-            </label>
+            <label className="text-xs sm:text-sm lg:text-base font-medium">District</label>
             <Popover open={openDistrict} onOpenChange={setOpenDistrict}>
               <PopoverTrigger asChild>
                 <Button
@@ -113,12 +100,10 @@ export default function FilterTutors({
                   aria-expanded={openDistrict}
                   className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
                 >
-                  {district === "all"
-                    ? "Select District"
-                    : districtsData.find(
-                        (d) =>
-                          d.district.toLowerCase() === district.toLowerCase()
-                      )?.district || "Select District"}
+                  {district === 'all'
+                    ? 'Select District'
+                    : districtsData.find((d) => d.district.toLowerCase() === district.toLowerCase())
+                        ?.district || 'Select District'}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -130,14 +115,14 @@ export default function FilterTutors({
                     <CommandItem
                       value="all"
                       onSelect={() => {
-                        setDistrict("all");
+                        setDistrict('all');
                         setOpenDistrict(false);
                       }}
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4",
-                          district === "all" ? "opacity-100" : "opacity-0"
+                          'mr-2 h-4 w-4',
+                          district === 'all' ? 'opacity-100' : 'opacity-0'
                         )}
                       />
                       All Districts
@@ -153,10 +138,8 @@ export default function FilterTutors({
                       >
                         <Check
                           className={cn(
-                            "mr-2 h-4 w-4",
-                            district === d.district.toLowerCase()
-                              ? "opacity-100"
-                              : "opacity-0"
+                            'mr-2 h-4 w-4',
+                            district === d.district.toLowerCase() ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         {d.district}
@@ -169,9 +152,7 @@ export default function FilterTutors({
           </div>
 
           <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">
-              Area
-            </label>
+            <label className="text-xs sm:text-sm lg:text-base font-medium">Area</label>
             <Popover open={openArea} onOpenChange={setOpenArea}>
               <PopoverTrigger asChild>
                 <Button
@@ -179,12 +160,12 @@ export default function FilterTutors({
                   role="combobox"
                   aria-expanded={openArea}
                   className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
-                  disabled={district === "all"}
+                  disabled={district === 'all'}
                 >
-                  {area === "all"
-                    ? district !== "all"
-                      ? "Select Area"
-                      : "Select District First"
+                  {area === 'all'
+                    ? district !== 'all'
+                      ? 'Select Area'
+                      : 'Select District First'
                     : area}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -197,15 +178,12 @@ export default function FilterTutors({
                     <CommandItem
                       value="all"
                       onSelect={() => {
-                        setArea("all");
+                        setArea('all');
                         setOpenArea(false);
                       }}
                     >
                       <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          area === "all" ? "opacity-100" : "opacity-0"
-                        )}
+                        className={cn('mr-2 h-4 w-4', area === 'all' ? 'opacity-100' : 'opacity-0')}
                       />
                       All Areas
                     </CommandItem>
@@ -220,10 +198,8 @@ export default function FilterTutors({
                       >
                         <Check
                           className={cn(
-                            "mr-2 h-4 w-4",
-                            area === areaItem.toLowerCase()
-                              ? "opacity-100"
-                              : "opacity-0"
+                            'mr-2 h-4 w-4',
+                            area === areaItem.toLowerCase() ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         {areaItem}
@@ -236,9 +212,7 @@ export default function FilterTutors({
           </div>
 
           <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">
-              Level of Study
-            </label>
+            <label className="text-xs sm:text-sm lg:text-base font-medium">Level of Study</label>
             <Select value={level} onValueChange={setLevel}>
               <SelectTrigger className="w-full text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10">
                 <SelectValue placeholder="Select Level" />
@@ -246,15 +220,9 @@ export default function FilterTutors({
               <SelectContent>
                 <SelectItem value="all">All Levels</SelectItem>
                 <SelectItem value="primary">Primary (Class 1-5)</SelectItem>
-                <SelectItem value="junior">
-                  Junior Secondary (Class 6-8)
-                </SelectItem>
-                <SelectItem value="secondary">
-                  Secondary (Class 9-10)
-                </SelectItem>
-                <SelectItem value="higher">
-                  Higher Secondary (Class 11-12)
-                </SelectItem>
+                <SelectItem value="junior">Junior Secondary (Class 6-8)</SelectItem>
+                <SelectItem value="secondary">Secondary (Class 9-10)</SelectItem>
+                <SelectItem value="higher">Higher Secondary (Class 11-12)</SelectItem>
                 <SelectItem value="admission">Admission Test</SelectItem>
                 <SelectItem value="university">University</SelectItem>
               </SelectContent>

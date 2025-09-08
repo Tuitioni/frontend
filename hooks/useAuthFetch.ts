@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { useCallback } from "react";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 interface JWTPayload {
   exp: number;

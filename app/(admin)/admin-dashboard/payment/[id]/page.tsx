@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { AdminCard } from "@/components/ui/admin/adminCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Notification } from "@/components/ui/Notification";
 import { PaymentDetail } from "@/types/Payment";
-import { AdminCard } from "@/components/ui/admin/adminCard";
 
 export default function PaymentDashboardByID({
   params,

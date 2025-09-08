@@ -1,5 +1,6 @@
-import AboutUs from "./components/AboutUs";
 import React from "react";
+
+import AboutUs from "./components/AboutUs";
 import FAQ from "./components/FAQ";
 
 export default function Page() {

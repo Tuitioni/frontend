@@ -1,14 +1,14 @@
 "use client";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { AuthMode } from "@/lib/types/auth";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { tokenService } from '@/lib/auth/token';
-import axiosInstance from '@/lib/axios';
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { tokenService } from '@/lib/auth/token';
+import { AuthMode } from "@/lib/types/auth";
+
 
 interface AuthFormContainerProps {
   defaultMode?: AuthMode;

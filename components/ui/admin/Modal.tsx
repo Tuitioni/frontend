@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+
 import { Button } from "../button";
 
 interface ModalProps {

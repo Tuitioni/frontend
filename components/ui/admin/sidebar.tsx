@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -15,6 +12,10 @@ import {
   Bell,
   Briefcase,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Sidebar() {
   const { logout } = useAuth();
