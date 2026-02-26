@@ -1,8 +1,8 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
-import { tokenService } from "@/lib/auth/token";
+import { tokenService } from '@/lib/auth/token';
 
-import { useToken } from "./useToken";
+import { useToken } from './useToken';
 
 export function useAuth() {
   const decodedToken = useToken();
@@ -18,18 +18,17 @@ export function useAuth() {
 
   const logout = () => {
     tokenService.removeToken();
-    router.push("/login");
+    router.push('/login');
   };
 
   const handleUnauthorized = () => {
-    console.log("Unauthorized - redirecting to login");
     logout();
   };
 
   const makeAuthenticatedRequest = async (
     endpoint: string,
     options: {
-      method?: "GET" | "POST" | "PATCH" | "DELETE" | "PUT";
+      method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
       data?: any;
       headers?: HeadersInit;
       isFormData?: boolean;
@@ -39,14 +38,14 @@ export function useAuth() {
       const token = tokenService.getToken();
       if (!token || !isTokenValid()) {
         handleUnauthorized();
-        throw new Error("Invalid or expired authentication token");
+        throw new Error('Invalid or expired authentication token');
       }
 
-      const { method = "GET", data, isFormData = false } = options;
+      const { method = 'GET', data, isFormData = false } = options;
 
       const headers: HeadersInit = {
         Authorization: `Bearer ${token}`,
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...options.headers,
       };
 
@@ -67,26 +66,25 @@ export function useAuth() {
       // Handle unauthorized responses
       if (response.status === 401 || responseData?.statusCode === 401) {
         handleUnauthorized();
-        throw new Error("Session expired");
+        throw new Error('Session expired');
       }
 
       if (!response.ok) {
         throw new Error(
-          responseData?.error ||
-            `Server error (${response.status}): ${response.statusText}`
+          responseData?.error || `Server error (${response.status}): ${response.statusText}`
         );
       }
 
       if (!responseData) {
-        throw new Error("Empty response from server");
+        throw new Error('Empty response from server');
       }
 
       return responseData;
     } catch (error) {
       if (
         error instanceof Error &&
-        (error.message.includes("Session expired") ||
-          error.message.includes("Invalid or expired authentication token"))
+        (error.message.includes('Session expired') ||
+          error.message.includes('Invalid or expired authentication token'))
       ) {
         handleUnauthorized();
       }

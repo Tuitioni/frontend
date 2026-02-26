@@ -1,42 +1,34 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
-import { Notification } from "@/components/ui/Notification";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
-import { Tuition } from "@/types/Tuition";
-import { handleTokenError } from "@/utils/auth";
+import { AdminCard } from '@/components/ui/admin/adminCard';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { Tuition } from '@/types/Tuition';
+import { handleTokenError } from '@/utils/auth';
 
-export default function TuitionDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function TuitionDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { fetchWithAuth } = useAuthFetch();
   const [tuition, setTuition] = useState<Tuition | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchTuition() {
       try {
         const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/tuition/${params.id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/tuition/${params.id}`
         );
         const data = await response.json();
         setTuition(data);
       } catch (error: any) {
-        console.error("Error fetching tuition:", error);
-        setError(error.message);
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
       } finally {
         setLoading(false);
       }
@@ -46,44 +38,33 @@ export default function TuitionDetailPage({
   }, [params.id, fetchWithAuth]);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this tuition?")) return;
+    if (!confirm('Are you sure you want to delete this tuition?')) return;
 
     try {
-      const token = localStorage.getItem("admin_token");
+      const token = localStorage.getItem('admin_token');
       if (!token) {
-        throw new Error("No authentication token found");
+        throw new Error('No authentication token found');
       }
 
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/tuition/${params.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tuition/${params.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("jwt expired");
+          throw new Error('jwt expired');
         }
-        throw new Error("Failed to delete tuition");
+        throw new Error('Failed to delete tuition');
       }
 
-      setNotification({
-        message: "Tuition deleted successfully",
-        type: "success",
-      });
-
-      router.push("/admin-dashboard/tuition");
+      toast({ title: 'Success', description: 'Tuition deleted successfully' });
+      router.push('/admin-dashboard/tuition');
     } catch (error: any) {
-      console.error("Error deleting tuition:", error);
       handleTokenError(error);
-      setNotification({
-        message: "Failed to delete tuition",
-        type: "error",
-      });
+      toast({ title: 'Error', description: 'Failed to delete tuition', variant: 'destructive' });
     }
   };
 
@@ -92,16 +73,19 @@ export default function TuitionDetailPage({
   }
 
   if (!tuition) {
-    return <div>Tuition not found</div>;
+    return (
+      <EmptyState
+        title="Tuition not found"
+        description="The tuition record you're looking for doesn't exist or has been removed."
+      />
+    );
   }
 
   const footer = (
     <div className="flex gap-2 justify-end">
       <Button
         variant="outline"
-        onClick={() =>
-          router.push(`/admin-dashboard/tuition/${params.id}/edit`)
-        }
+        onClick={() => router.push(`/admin-dashboard/tuition/${params.id}/edit`)}
       >
         Edit
       </Button>
@@ -120,8 +104,7 @@ export default function TuitionDetailPage({
             <h3 className="text-lg font-semibold">Teacher Information</h3>
             <div className="space-y-2">
               <p>
-                <strong>Name:</strong> {tuition.teacher.firstName}{" "}
-                {tuition.teacher.lastName}
+                <strong>Name:</strong> {tuition.teacher.firstName} {tuition.teacher.lastName}
               </p>
               <p>
                 <strong>Email:</strong> {tuition.teacher.email}
@@ -134,8 +117,7 @@ export default function TuitionDetailPage({
             <h3 className="text-lg font-semibold">Student Information</h3>
             <div className="space-y-2">
               <p>
-                <strong>Name:</strong> {tuition.student.firstName}{" "}
-                {tuition.student.lastName}
+                <strong>Name:</strong> {tuition.student.firstName} {tuition.student.lastName}
               </p>
               <p>
                 <strong>Email:</strong> {tuition.student.email}
@@ -151,29 +133,18 @@ export default function TuitionDetailPage({
                 <strong>Fee:</strong> ৳{tuition.fee}
               </p>
               <p>
-                <strong>Payment ID:</strong>{" "}
-                {tuition.paymentId || "Not assigned"}
+                <strong>Payment ID:</strong> {tuition.paymentId || 'Not assigned'}
               </p>
               <p>
-                <strong>Created At:</strong>{" "}
-                {new Date(tuition.createdAt).toLocaleDateString()}
+                <strong>Created At:</strong> {new Date(tuition.createdAt).toLocaleDateString()}
               </p>
               <p>
-                <strong>Updated At:</strong>{" "}
-                {new Date(tuition.updatedAt).toLocaleDateString()}
+                <strong>Updated At:</strong> {new Date(tuition.updatedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
         </div>
       </AdminCard>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

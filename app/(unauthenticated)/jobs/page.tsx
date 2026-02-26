@@ -1,16 +1,16 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
 
-import FilterJobs from "@/app/(unauthenticated)/jobs/components/FilterJobs";
-import JobCard from "@/app/(unauthenticated)/jobs/components/JobCard";
-import SkeletonJobCard from "@/app/(unauthenticated)/jobs/components/SkeletonJobCard";
+import FilterJobs from '@/app/(unauthenticated)/jobs/components/FilterJobs';
+import JobCard from '@/app/(unauthenticated)/jobs/components/JobCard';
+import SkeletonJobCard from '@/app/(unauthenticated)/jobs/components/SkeletonJobCard';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 // Define the type for the job data
 interface Job {
@@ -51,29 +51,28 @@ export default function Page() {
 
       if (!filters) {
         // Initial load or reset - fetch all jobs
-        const response = await fetch("/api/jobs");
+        const response = await fetch('/api/jobs');
         const data = await response.json();
         setJobs(data);
         return;
       }
 
       // Fetch filtered jobs
-      const response = await fetch("/api/jobs/filter", {
-        method: "POST",
+      const response = await fetch('/api/jobs/filter', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(filters),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch filtered jobs");
+        throw new Error('Failed to fetch filtered jobs');
       }
 
       const data = await response.json();
       setJobs(data);
     } catch (error) {
-      console.error("Error fetching jobs:", error);
     } finally {
       setLoading(false);
     }
@@ -99,16 +98,11 @@ export default function Page() {
     <>
       <div className="flex flex-col lg:flex-row mt-2 sm:mt-3 lg:mt-4 min-h-[calc(100vh-6rem)]">
         <div className="lg:w-1/4 p-2 sm:p-3 lg:p-4">
-          <FilterJobs
-            onFilterChange={handleFilterChange}
-            onReset={handleReset}
-          />
+          <FilterJobs onFilterChange={handleFilterChange} onReset={handleReset} />
         </div>
         <div className="w-full lg:w-3/4 flex flex-col">
           <div className="flex flex-col sm:flex-row justify-between px-2 sm:px-3 lg:px-4 mb-2 gap-2">
-            <div className="text-sm sm:text-base lg:text-lg">
-              Showing Results: {jobs.length}
-            </div>
+            <div className="text-sm sm:text-base lg:text-lg">Showing Results: {jobs.length}</div>
             <div className="flex gap-1 items-center">
               <div className="text-sm sm:text-base lg:text-lg">Sort By:</div>
               <Select>
@@ -147,9 +141,7 @@ export default function Page() {
                     />
                   ))
                 ) : (
-                  <p className="text-sm sm:text-base lg:text-lg">
-                    No jobs available
-                  </p>
+                  <p className="text-sm sm:text-base lg:text-lg">No jobs available</p>
                 )}
               </div>
             </div>

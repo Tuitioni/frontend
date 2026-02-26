@@ -47,9 +47,7 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
         );
         const data = await response.json();
         setDistrictsData(data);
-      } catch (error) {
-        console.error('Error fetching districts data:', error);
-      }
+      } catch (error) {}
     };
 
     fetchDistrictsData();

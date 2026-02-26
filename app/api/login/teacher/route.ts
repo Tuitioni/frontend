@@ -1,22 +1,34 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+
+import { env } from '@/lib/env';
 
 export async function POST(request: Request) {
-  // Parse the JSON body from the incoming request
-  const { username: identifier, password } = await request.json();
-  console.log(identifier, password);
+  try {
+    const { username: identifier, password } = await request.json();
 
-  const response = await fetch(
-    `${process.env.TUITIONI_API}/auth/login/teacher`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Set the content type
-      },
-      body: JSON.stringify({ identifier, password }), // Include username and password in the body
+    if (!identifier || !password) {
+      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
     }
-  );
 
-  const res = await response.json();
-  console.log(res);
-  return NextResponse.json(res);
+    const response = await fetch(`${env.TUITIONI_API}/auth/login/teacher`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ identifier, password }),
+    });
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: res.message || 'Login failed' },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(res);
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }

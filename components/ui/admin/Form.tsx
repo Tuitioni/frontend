@@ -1,24 +1,33 @@
-import {
-  InputHTMLAttributes,
-  SelectHTMLAttributes,
-} from "react";
+import { InputHTMLAttributes, SelectHTMLAttributes, useId } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
 }
 
-export function Input({ label, error, className = "", ...props }: InputProps) {
+export function Input({ label, error, className = '', ...props }: InputProps) {
+  const generatedId = useId();
+  const inputId = props.id || generatedId;
+
   return (
     <div className="space-y-1">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={inputId} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <input
+        id={inputId}
         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-          error ? "border-red-500" : "border-gray-300"
+          error ? 'border-red-500' : 'border-gray-300'
         } ${className}`}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? `${inputId}-error` : undefined}
         {...props}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <p id={`${inputId}-error`} className="text-sm text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -29,20 +38,22 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
 }
 
-export function Select({
-  label,
-  options,
-  error,
-  className = "",
-  ...props
-}: SelectProps) {
+export function Select({ label, options, error, className = '', ...props }: SelectProps) {
+  const generatedId = useId();
+  const selectId = props.id || generatedId;
+
   return (
     <div className="space-y-1">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label htmlFor={selectId} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <select
+        id={selectId}
         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-          error ? "border-red-500" : "border-gray-300"
+          error ? 'border-red-500' : 'border-gray-300'
         } ${className}`}
+        aria-invalid={error ? 'true' : undefined}
+        aria-describedby={error ? `${selectId}-error` : undefined}
         {...props}
       >
         {options.map((option) => (
@@ -51,7 +62,11 @@ export function Select({
           </option>
         ))}
       </select>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <p id={`${selectId}-error`} className="text-sm text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

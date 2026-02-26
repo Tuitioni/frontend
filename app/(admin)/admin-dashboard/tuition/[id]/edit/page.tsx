@@ -1,53 +1,48 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { Input } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
-import { Notification } from "@/components/ui/Notification";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
-import { Tuition, UpdateTuitionDto } from "@/types/Tuition";
-import { handleTokenError } from "@/utils/auth";
+import { AdminCard } from '@/components/ui/admin/adminCard';
+import { Input } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { Tuition, UpdateTuitionDto } from '@/types/Tuition';
+import { handleTokenError } from '@/utils/auth';
 
-export default function EditTuitionPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditTuitionPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { fetchWithAuth } = useAuthFetch();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<UpdateTuitionDto>({
-    teacherId: "",
-    studentId: "",
+    teacherId: '',
+    studentId: '',
     fee: 0,
-    paymentId: "",
+    paymentId: '',
   });
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   useEffect(() => {
     async function fetchTuition() {
       try {
         const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/tuition/${params.id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/tuition/${params.id}`
         );
         const data: Tuition = await response.json();
         setFormData({
           teacherId: data.teacher.id,
           studentId: data.student.id,
           fee: data.fee,
-          paymentId: data.paymentId || "",
+          paymentId: data.paymentId || '',
         });
       } catch (error: any) {
-        console.error("Error fetching tuition:", error);
-        setError(error.message);
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
@@ -60,42 +55,39 @@ export default function EditTuitionPage({
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("admin_token");
+      const token = localStorage.getItem('admin_token');
       if (!token) {
-        throw new Error("No authentication token found");
+        throw new Error('No authentication token found');
       }
 
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/tuition/${params.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tuition/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("jwt expired");
+          throw new Error('jwt expired');
         }
-        throw new Error("Failed to update tuition");
+        throw new Error('Failed to update tuition');
       }
 
-      setNotification({
-        message: "Tuition updated successfully",
-        type: "success",
+      toast({
+        title: 'Success',
+        description: 'Tuition updated successfully',
       });
 
       router.push(`/admin-dashboard/tuition/${params.id}`);
     } catch (error: any) {
-      console.error("Error updating tuition:", error);
       handleTokenError(error);
-      setNotification({
-        message: "Failed to update tuition",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to update tuition',
+        variant: 'destructive',
       });
     }
   };
@@ -128,16 +120,12 @@ export default function EditTuitionPage({
   return (
     <div className="container mx-auto py-10">
       <AdminCard title="Edit Tuition" footer={footer}>
-        <form
-          id="edit-tuition-form"
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
+        <form id="edit-tuition-form" onSubmit={handleSubmit} className="space-y-6">
           <Input
             label="Teacher ID"
             name="teacherId"
             value={formData.teacherId}
-            onChange={(e) => handleChange("teacherId", e.target.value)}
+            onChange={(e) => handleChange('teacherId', e.target.value)}
             required
           />
 
@@ -145,7 +133,7 @@ export default function EditTuitionPage({
             label="Student ID"
             name="studentId"
             value={formData.studentId}
-            onChange={(e) => handleChange("studentId", e.target.value)}
+            onChange={(e) => handleChange('studentId', e.target.value)}
             required
           />
 
@@ -154,7 +142,7 @@ export default function EditTuitionPage({
             name="fee"
             type="number"
             value={formData.fee}
-            onChange={(e) => handleChange("fee", parseInt(e.target.value))}
+            onChange={(e) => handleChange('fee', parseInt(e.target.value))}
             required
           />
 
@@ -162,18 +150,10 @@ export default function EditTuitionPage({
             label="Payment ID"
             name="paymentId"
             value={formData.paymentId}
-            onChange={(e) => handleChange("paymentId", e.target.value)}
+            onChange={(e) => handleChange('paymentId', e.target.value)}
           />
         </form>
       </AdminCard>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

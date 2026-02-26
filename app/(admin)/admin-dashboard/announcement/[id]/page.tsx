@@ -1,33 +1,29 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { AnnouncementDetail } from "@/types/Announcement";
+import { AdminCard } from '@/components/ui/admin/adminCard';
+import { EmptyState } from '@/components/ui/empty-state';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { formatDate } from '@/lib/formatters';
+import { AnnouncementDetail } from '@/types/Announcement';
 
-export default function AnnouncementDashboardByID({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const [announcement, setAnnouncement] = useState<AnnouncementDetail | null>(
-    null
-  );
+export default function AnnouncementDashboardByID({ params }: { params: { id: string } }) {
+  const { toast } = useToast();
+  const [announcement, setAnnouncement] = useState<AnnouncementDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAnnouncement = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
+        const token = localStorage.getItem('admin_token');
         if (!token) {
-          throw new Error("No authentication token found");
+          throw new Error('No authentication token found');
         }
 
         const response = await fetch(
-          `${process.env.TUITIONI_API}/announcement/${params.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/announcement/${params.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -36,14 +32,17 @@ export default function AnnouncementDashboardByID({
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch announcement details");
+          throw new Error('Failed to fetch announcement details');
         }
 
         const data = await response.json();
         setAnnouncement(data);
       } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message);
+        toast({
+          title: 'Error',
+          description: err.message,
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
@@ -56,53 +55,29 @@ export default function AnnouncementDashboardByID({
     return <LoadingSpinner size="lg" />;
   }
 
-  if (error) {
+  if (!announcement) {
     return (
-      <Notification
-        message={error}
-        type="error"
-        onClose={() => setError(null)}
+      <EmptyState
+        title="No announcement found"
+        description="The announcement you are looking for does not exist or has been removed."
       />
     );
   }
 
-  if (!announcement) {
-    return <div>No announcement found</div>;
-  }
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-        Announcement Details
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Announcement Details</h1>
       <div className="grid grid-cols-1 gap-8">
         {/* Announcement Content */}
-        <AdminCard
-          title="Announcement"
-          className="bg-white shadow-lg rounded-xl"
-        >
+        <AdminCard title="Announcement" className="bg-white shadow-lg rounded-xl">
           <div className="space-y-6">
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Title</p>
-              <p className="text-xl font-semibold text-gray-900">
-                {announcement.title}
-              </p>
+              <p className="text-xl font-semibold text-gray-900">{announcement.title}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Content</p>
-              <p className="text-lg text-gray-900 whitespace-pre-wrap">
-                {announcement.content}
-              </p>
+              <p className="text-lg text-gray-900 whitespace-pre-wrap">{announcement.content}</p>
             </div>
           </div>
         </AdminCard>
@@ -112,15 +87,11 @@ export default function AnnouncementDashboardByID({
           <div className="space-y-4">
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Admin Name</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {announcement.admin.name}
-              </p>
+              <p className="text-lg font-semibold text-gray-900">{announcement.admin.name}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Admin Email</p>
-              <p className="text-base text-gray-900">
-                {announcement.admin.email}
-              </p>
+              <p className="text-base text-gray-900">{announcement.admin.email}</p>
             </div>
           </div>
         </AdminCard>
@@ -130,15 +101,11 @@ export default function AnnouncementDashboardByID({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Created At</p>
-              <p className="text-base text-gray-900">
-                {formatDate(announcement.createdAt)}
-              </p>
+              <p className="text-base text-gray-900">{formatDate(announcement.createdAt)}</p>
             </div>
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-500">Last Updated</p>
-              <p className="text-base text-gray-900">
-                {formatDate(announcement.updatedAt)}
-              </p>
+              <p className="text-base text-gray-900">{formatDate(announcement.updatedAt)}</p>
             </div>
           </div>
         </AdminCard>

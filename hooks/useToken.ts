@@ -1,12 +1,11 @@
-import { jwtDecode } from "jwt-decode";
-import { useMemo } from "react";
+import { jwtDecode } from 'jwt-decode';
+import { useMemo } from 'react';
 
-import { tokenService } from "@/lib/auth/token";
+import { tokenService } from '@/lib/auth/token';
 
 interface TokenPayload {
   sub: string;
-  exp?: number; // Expiration time
-  // add other token payload properties if needed
+  exp?: number;
 }
 
 export function useToken() {
@@ -17,7 +16,6 @@ export function useToken() {
     try {
       return jwtDecode<TokenPayload>(token);
     } catch (error) {
-      console.error("Failed to decode token:", error);
       return null;
     }
   }, [token]);

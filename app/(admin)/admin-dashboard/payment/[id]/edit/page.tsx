@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-import { Input, Select } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { PaymentMethod, PaymentStatus } from "@/types";
-import { PaymentDetail, UpdatePaymentDto } from "@/types/Payment";
+import { Input, Select } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { PaymentMethod, PaymentStatus } from '@/types';
+import { PaymentDetail, UpdatePaymentDto } from '@/types/Payment';
 
 interface PaymentEditProps {
   params: { id: string };
@@ -16,38 +16,32 @@ interface PaymentEditProps {
 
 export default function PaymentEdit({ params }: PaymentEditProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   const [formData, setFormData] = useState<UpdatePaymentDto>({
     amount: 0,
-    tuitionId: "",
-    status: "",
-    teacherId: "",
+    tuitionId: '',
+    status: '',
+    teacherId: '',
     paymentMethod: PaymentMethod.BKASH,
     paymentDate: new Date(),
     paymentStatus: PaymentStatus.UNPAID,
-    transactionId: "",
+    transactionId: '',
   });
 
   useEffect(() => {
     const fetchPayment = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch(
-          `${process.env.TUITIONI_API}/payment/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/${params.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch payment");
+          throw new Error('Failed to fetch payment');
         }
 
         const payment: PaymentDetail = await response.json();
@@ -62,9 +56,10 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
           transactionId: payment.transactionId,
         });
       } catch (error) {
-        setNotification({
-          message: "Failed to fetch payment details",
-          type: "error",
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch payment details',
+          variant: 'destructive',
         });
       }
     };
@@ -77,45 +72,41 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/payment/${params.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to update payment");
+        throw new Error('Failed to update payment');
       }
 
-      setNotification({
-        message: "Payment updated successfully",
-        type: "success",
+      toast({
+        title: 'Success',
+        description: 'Payment updated successfully',
       });
-      router.push("/admin-dashboard/payment");
+      router.push('/admin-dashboard/payment');
     } catch (error) {
-      setNotification({
-        message: "Failed to update payment",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to update payment',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "amount" ? Number(value) : value,
+      [name]: name === 'amount' ? Number(value) : value,
     }));
   };
 
@@ -144,8 +135,8 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
           value={formData.paymentMethod}
           onChange={handleInputChange}
           options={[
-            { value: PaymentMethod.BKASH, label: "Bkash" },
-            { value: PaymentMethod.NAGAD, label: "Nagad" },
+            { value: PaymentMethod.BKASH, label: 'Bkash' },
+            { value: PaymentMethod.NAGAD, label: 'Nagad' },
           ]}
         />
 
@@ -160,7 +151,7 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
           type="date"
           label="Payment Date"
           name="paymentDate"
-          value={formData.paymentDate.toISOString().split("T")[0]}
+          value={formData.paymentDate.toISOString().split('T')[0]}
           onChange={handleInputChange}
         />
 
@@ -170,33 +161,20 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
           value={formData.paymentStatus}
           onChange={handleInputChange}
           options={[
-            { value: PaymentStatus.PAID, label: "Paid" },
-            { value: PaymentStatus.UNPAID, label: "Unpaid" },
+            { value: PaymentStatus.PAID, label: 'Paid' },
+            { value: PaymentStatus.UNPAID, label: 'Unpaid' },
           ]}
         />
 
         <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? <LoadingSpinner size="sm" /> : "Update Payment"}
+            {loading ? <LoadingSpinner size="sm" /> : 'Update Payment'}
           </Button>
         </div>
       </form>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

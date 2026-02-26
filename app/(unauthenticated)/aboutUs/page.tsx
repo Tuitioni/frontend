@@ -1,7 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import AboutUs from "./components/AboutUs";
-import FAQ from "./components/FAQ";
+import AboutUs from './components/AboutUs';
+import FAQ from './components/FAQ';
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description:
+    'Learn about Tuitioni and our mission to connect students with qualified tutors in Bangladesh.',
+};
 
 export default function Page() {
   return (

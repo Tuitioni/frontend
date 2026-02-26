@@ -1,14 +1,4 @@
-export enum Medium {
-  ENGLISH_MEDIUM = "ENGLISH_MEDIUM",
-  BANGLA_MEDIUM = "BANGLA_MEDIUM",
-  ENGLISH_VERSION = "ENGLISH_VERSION",
-}
-
-export enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  OTHER = "OTHER",
-}
+import { Gender, Medium } from './index';
 
 export interface Post {
   id: string;

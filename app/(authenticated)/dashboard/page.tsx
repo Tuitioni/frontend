@@ -15,7 +15,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Toaster } from '@/components/ui/toaster';
 import { useAuth } from '@/hooks/useAuth';
 import { useToken } from '@/hooks/useToken';
 import { TeacherDetail } from '@/types/teacher';
@@ -28,11 +27,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const decodedToken = useToken();
-  console.log(decodedToken);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
 
-  // Memoize fetchProfile to prevent recreation on every render
   const fetchProfile = useCallback(async () => {
     if (!decodedToken?.sub) {
       setError('Authentication error - no user ID found');
@@ -44,24 +41,16 @@ export default function DashboardPage() {
       setLoading(true);
       const data = await makeAuthenticatedRequest(`/api/teacher/${decodedToken.sub}`);
       setProfile(data);
-      console.log(data);
     } catch (error) {
-      console.error('Dashboard Error:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        userId: decodedToken.sub,
-        timestamp: new Date().toISOString(),
-      });
       setError(error instanceof Error ? error.message : 'Failed to load profile data');
     } finally {
       setLoading(false);
     }
   }, [decodedToken?.sub, makeAuthenticatedRequest]);
 
-  // Use a ref to track if the component is mounted
   const isMounted = useRef(false);
 
   useEffect(() => {
-    // Only fetch on initial mount
     if (!isMounted.current) {
       isMounted.current = true;
       fetchProfile();
@@ -84,7 +73,6 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <Toaster />
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold">Teacher Dashboard</h1>
@@ -116,7 +104,12 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="text-lg sm:text-xl">Profile</CardTitle>
-              <Button variant="ghost" size="icon" onClick={() => setIsEditModalOpen(true)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsEditModalOpen(true)}
+                aria-label="Edit profile"
+              >
                 <Edit2 className="h-4 w-4" />
               </Button>
             </div>
@@ -163,7 +156,7 @@ export default function DashboardPage() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg sm:text-xl">Teaching Details</CardTitle>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="Edit teaching details">
                   <Edit2 className="h-4 w-4" />
                 </Button>
               </div>

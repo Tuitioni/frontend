@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-import { Input, Select } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { Gender, Medium } from "@/types";
-import { StudentDetail, UpdateStudentDto } from "@/types/Student";
+import { Input, Select } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { Gender, Medium } from '@/types';
+import { StudentDetail, UpdateStudentDto } from '@/types/Student';
 
 interface StudentEditProps {
   params: { id: string };
@@ -16,26 +16,23 @@ interface StudentEditProps {
 
 export default function StudentEdit({ params }: StudentEditProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   const [formData, setFormData] = useState<UpdateStudentDto>({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: '',
+    lastName: '',
+    email: '',
     profile: {
-      district: "",
-      area: "",
+      district: '',
+      area: '',
       gender: Gender.MALE,
       age: 18,
       medium: Medium.BANGLA_MEDIUM,
-      levelOfStudy: "",
-      school: "",
-      college: "",
-      university: "",
+      levelOfStudy: '',
+      school: '',
+      college: '',
+      university: '',
       subjects: [],
     },
   });
@@ -43,18 +40,15 @@ export default function StudentEdit({ params }: StudentEditProps) {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch(
-          `${process.env.TUITIONI_API}/student/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/student/${params.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch student");
+          throw new Error('Failed to fetch student');
         }
 
         const student: StudentDetail = await response.json();
@@ -78,9 +72,10 @@ export default function StudentEdit({ params }: StudentEditProps) {
             : undefined,
         });
       } catch (error) {
-        setNotification({
-          message: "Failed to fetch student details",
-          type: "error",
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch student details',
+          variant: 'destructive',
         });
       }
     };
@@ -91,48 +86,43 @@ export default function StudentEdit({ params }: StudentEditProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    console.log(formData);
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/student/${params.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/student/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to update student");
+        throw new Error('Failed to update student');
       }
 
-      setNotification({
-        message: "Student updated successfully",
-        type: "success",
+      toast({
+        title: 'Success',
+        description: 'Student updated successfully',
       });
-      router.push("/admin-dashboard/students");
+      router.push('/admin-dashboard/students');
     } catch (error) {
-      setNotification({
-        message: "Failed to update student",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to update student',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const numericFields = ["profile.age"];
+    const numericFields = ['profile.age'];
 
-    if (name.includes("profile.")) {
-      const profileField = name.split(".")[1];
+    if (name.includes('profile.')) {
+      const profileField = name.split('.')[1];
       setFormData((prev) => ({
         ...prev,
         profile: {
@@ -193,8 +183,8 @@ export default function StudentEdit({ params }: StudentEditProps) {
           value={formData.profile?.gender}
           onChange={handleInputChange}
           options={[
-            { value: Gender.MALE, label: "Male" },
-            { value: Gender.FEMALE, label: "Female" },
+            { value: Gender.MALE, label: 'Male' },
+            { value: Gender.FEMALE, label: 'Female' },
           ]}
         />
 
@@ -204,9 +194,9 @@ export default function StudentEdit({ params }: StudentEditProps) {
           value={formData.profile?.medium}
           onChange={handleInputChange}
           options={[
-            { value: Medium.BANGLA_MEDIUM, label: "Bangla Medium" },
-            { value: Medium.ENGLISH_MEDIUM, label: "English Medium" },
-            { value: Medium.ENGLISH_VERSION, label: "English Version" },
+            { value: Medium.BANGLA_MEDIUM, label: 'Bangla Medium' },
+            { value: Medium.ENGLISH_MEDIUM, label: 'English Medium' },
+            { value: Medium.ENGLISH_VERSION, label: 'English Version' },
           ]}
         />
 
@@ -247,27 +237,14 @@ export default function StudentEdit({ params }: StudentEditProps) {
         />
 
         <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? <LoadingSpinner size="sm" /> : "Update Student"}
+            {loading ? <LoadingSpinner size="sm" /> : 'Update Student'}
           </Button>
         </div>
       </form>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

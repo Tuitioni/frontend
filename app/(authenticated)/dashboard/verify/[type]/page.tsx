@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import { Upload, AlertCircle } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { Upload, AlertCircle } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
-import { useToken } from "@/hooks/useToken";
-
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/hooks/useAuth';
+import { useToken } from '@/hooks/useToken';
 
 export default function VerifyDocumentPage() {
   const params = useParams();
@@ -21,20 +20,20 @@ export default function VerifyDocumentPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const documentType = params.type as "nid" | "birth-certificate" | "passport";
+  const documentType = params.type as 'nid' | 'birth-certificate' | 'passport';
   const documentTitles = {
-    nid: "National ID",
-    "birth-certificate": "Birth Certificate",
-    passport: "Passport",
+    nid: 'National ID',
+    'birth-certificate': 'Birth Certificate',
+    passport: 'Passport',
   };
-  const documentTitle = documentTitles[documentType] || "Document";
+  const documentTitle = documentTitles[documentType] || 'Document';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       // Check file size (5MB limit)
       if (selectedFile.size > 5 * 1024 * 1024) {
-        setError("File size should be less than 5MB");
+        setError('File size should be less than 5MB');
         return;
       }
       setFile(selectedFile);
@@ -45,11 +44,11 @@ export default function VerifyDocumentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError("Please select a file");
+      setError('Please select a file');
       return;
     }
     if (!decodedToken?.sub) {
-      setError("Authentication error");
+      setError('Authentication error');
       return;
     }
 
@@ -58,24 +57,20 @@ export default function VerifyDocumentPage() {
 
     try {
       const formData = new FormData();
-      formData.append("document", file);
+      formData.append('document', file);
 
       const response = await makeAuthenticatedRequest(
         `/api/teacher/${decodedToken.sub}/verify/${documentType}`,
         {
-          method: "POST",
+          method: 'POST',
           data: formData,
           isFormData: true,
         }
       );
 
-      console.log("Document uploaded successfully:", response);
-      router.push("/dashboard?verification=success");
+      router.push('/dashboard?verification=success');
     } catch (error) {
-      console.error("Failed to upload document:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to upload document"
-      );
+      setError(error instanceof Error ? error.message : 'Failed to upload document');
     } finally {
       setLoading(false);
     }
@@ -111,20 +106,12 @@ export default function VerifyDocumentPage() {
             </div>
 
             <div className="flex gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-              >
+              <Button type="button" variant="outline" onClick={() => router.back()}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={loading || !file}
-                className="flex-1"
-              >
+              <Button type="submit" disabled={loading || !file} className="flex-1">
                 {loading ? (
-                  "Uploading..."
+                  'Uploading...'
                 ) : (
                   <>
                     <Upload className="h-4 w-4 mr-2" />

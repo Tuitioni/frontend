@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-export const dynamic = "force-dynamic";
+import { env } from '@/lib/env';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
-    const response = await fetch(`${process.env.TUITIONI_API}/teacher`, {
-      method: "GET",
+    const response = await fetch(`${env.TUITIONI_API}/teacher`, {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -16,13 +18,8 @@ export async function GET(request: Request) {
     }
 
     const data = await response.json();
-    console.log("Fetched teachers:", data);
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching teachers:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch teachers" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch teachers' }, { status: 500 });
   }
 }

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -34,23 +34,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem("admin_token");
+      const token = localStorage.getItem('admin_token');
       if (!token) {
         setIsAuthenticated(false);
-        if (window.location.pathname.startsWith("/admin-dashboard")) {
-          router.replace("/signin");
+        if (window.location.pathname.startsWith('/admin-dashboard')) {
+          router.replace('/signin');
         }
         return;
       }
 
       if (!checkTokenExpiration(token)) {
         // Token is expired or invalid
-        localStorage.removeItem("admin_token");
-        document.cookie =
-          "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        localStorage.removeItem('admin_token');
+        document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
         setIsAuthenticated(false);
-        if (window.location.pathname.startsWith("/admin-dashboard")) {
-          router.replace("/signin");
+        if (window.location.pathname.startsWith('/admin-dashboard')) {
+          router.replace('/signin');
         }
         return;
       }
@@ -67,43 +66,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (token: string) => {
     if (!token) {
-      console.error("No token provided to login function");
       return;
     }
 
     if (!checkTokenExpiration(token)) {
-      console.error("Token is expired or invalid");
       logout();
       return;
     }
 
     try {
       const decodedToken = jwtDecode<JWTPayload>(token);
-      localStorage.setItem("admin_token", token);
+      localStorage.setItem('admin_token', token);
 
       // Set secure cookie with proper attributes
-      const secure = process.env.NODE_ENV === "production";
+      const secure = process.env.NODE_ENV === 'production';
       document.cookie = `admin_token=${token}; path=/; ${
-        secure ? "secure;" : ""
+        secure ? 'secure;' : ''
       } samesite=strict; max-age=${decodedToken.exp - Date.now() / 1000}`; // Set max-age to remaining time
 
       setIsAuthenticated(true);
-      router.push("/admin-dashboard");
+      router.push('/admin-dashboard');
     } catch (error) {
-      console.error("Invalid token:", error);
       logout();
     }
   };
 
   const logout = () => {
     // Clear authentication state
-    localStorage.removeItem("admin_token");
-    document.cookie =
-      "admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    localStorage.removeItem('admin_token');
+    document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
     setIsAuthenticated(false);
 
     // Immediate redirect to signin
-    router.replace("/signin");
+    router.replace('/signin');
   };
 
   return (
@@ -116,7 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }

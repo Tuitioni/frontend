@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { env } from '@/lib/env';
+
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -13,20 +15,16 @@ export async function POST(request: NextRequest) {
     const token = authHeader.split(' ')[1];
     const data = await request.json();
 
-    const response = await fetch(`${process.env.TUITIONI_API}/teacher-profile`, {
+    const response = await fetch(`${env.TUITIONI_API}/teacher-profile`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
 
     const responseText = await response.text();
-    console.log('Profile Creation Response:', {
-      status: response.status,
-      body: responseText
-    });
 
     if (!response.ok) {
       return NextResponse.json(
@@ -38,10 +36,6 @@ export async function POST(request: NextRequest) {
     const responseData = responseText ? JSON.parse(responseText) : null;
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error('Error creating teacher profile:', error);
-    return NextResponse.json(
-      { error: 'Failed to create teacher profile' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create teacher profile' }, { status: 500 });
   }
-} 
+}

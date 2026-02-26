@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 interface FormData {
   name: string;
@@ -12,23 +12,20 @@ interface FormData {
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    message: "",
+    name: '',
+    email: '',
+    message: '',
   });
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Thank you for your query. We will get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    alert('Thank you for your query. We will get back to you soon.');
+    setFormData({ name: '', email: '', message: '' });
   };
 
   return (
@@ -37,10 +34,7 @@ const Contact: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Contact Us</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Name
             </label>
             <input
@@ -50,14 +44,11 @@ const Contact: React.FC = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-4 py-2 border border-input rounded-md shadow-sm focus:ring-ring focus:border-input focus:ring-2 focus:outline-none"
             />
           </div>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
@@ -67,14 +58,11 @@ const Contact: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-4 py-2 border border-input rounded-md shadow-sm focus:ring-ring focus:border-input focus:ring-2 focus:outline-none"
             />
           </div>
           <div>
-            <label
-              htmlFor="message"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="message" className="block text-sm font-medium text-gray-700">
               Message
             </label>
             <textarea
@@ -83,7 +71,7 @@ const Contact: React.FC = () => {
               value={formData.message}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 block w-full px-4 py-2 border border-input rounded-md shadow-sm focus:ring-ring focus:border-input focus:ring-2 focus:outline-none"
               rows={4}
             ></textarea>
           </div>

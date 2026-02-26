@@ -1,14 +1,13 @@
-"use client";
-import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+'use client';
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { tokenService } from '@/lib/auth/token';
-import { AuthMode } from "@/lib/types/auth";
-
+import { AuthMode } from '@/lib/types/auth';
 
 interface AuthFormContainerProps {
   defaultMode?: AuthMode;
@@ -23,23 +22,23 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
   const router = useRouter();
   const [mode, setMode] = useState<AuthMode>(defaultMode);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // Form states
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    phone: "",
-    location: "",
-    username: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+    location: '',
+    username: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -49,37 +48,36 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       const teacherId = decoded.sub;
 
       const profileData = {
-        district: "Not Specified",
-        area: "Not Specified",
-        gender: "MALE",
+        district: 'Not Specified',
+        area: 'Not Specified',
+        gender: 'MALE',
         age: 25,
-        medium: "ENGLISH_MEDIUM",
-        education: "Not Specified",
+        medium: 'ENGLISH_MEDIUM',
+        education: 'Not Specified',
         yearsOfExperience: 0,
-        subjects: ["Not Specified"],
-        specialization: "Not Specified",
-        teachingLevel: "Not Specified",
-        availability: "Not Specified",
+        subjects: ['Not Specified'],
+        specialization: 'Not Specified',
+        teachingLevel: 'Not Specified',
+        availability: 'Not Specified',
         monthlySalary: 0,
-        teacherId: teacherId
+        teacherId: teacherId,
       };
 
-      const response = await fetch("/api/teacher-profile", {
-        method: "POST",
+      const response = await fetch('/api/teacher-profile', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(profileData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create teacher profile");
+        throw new Error('Failed to create teacher profile');
       }
 
       return await response.json();
     } catch (error) {
-      console.error("Error creating teacher profile:", error);
       throw error;
     }
   };
@@ -87,12 +85,12 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
   const handleRegister = async () => {
     try {
       setIsLoading(true);
-      setError("");
-      
+      setError('');
+
       // 1. Register the user
-      const registerResponse = await fetch("/api/register/teacher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const registerResponse = await fetch('/api/register/teacher', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -105,13 +103,13 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
 
       if (!registerResponse.ok) {
         const errorData = await registerResponse.json();
-        throw new Error(errorData.error || "Registration failed");
+        throw new Error(errorData.error || 'Registration failed');
       }
 
       // 2. Automatically login after registration
-      const loginResponse = await fetch("/api/login/teacher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const loginResponse = await fetch('/api/login/teacher', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: formData.email, // Use email as username
           password: formData.password,
@@ -119,13 +117,13 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       });
 
       if (!loginResponse.ok) {
-        throw new Error("Auto-login failed after registration");
+        throw new Error('Auto-login failed after registration');
       }
 
       const loginData = await loginResponse.json();
-      
+
       if (!loginData.access_token) {
-        throw new Error("No access token received");
+        throw new Error('No access token received');
       }
 
       // 3. Store the token
@@ -137,8 +135,7 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       // 5. Redirect to dashboard
       router.push('/dashboard');
     } catch (err) {
-      console.error('Registration/Login error:', err);
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -147,11 +144,11 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      setError("");
+      setError('');
 
-      const response = await fetch("/api/login/teacher", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/login/teacher', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: formData.username || formData.email,
           password: formData.password,
@@ -160,23 +157,20 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
+        throw new Error(errorData.message || 'Login failed');
       }
 
       const data = await response.json();
-      console.log('Login response:', data);
 
       if (data.access_token) {
         tokenService.setToken(data.access_token);
         const token = tokenService.getToken();
-        console.log('Token stored:', token ? 'Yes' : 'No');
         router.push('/dashboard');
       } else {
         throw new Error('No access token received');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -186,14 +180,14 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     <Card className="w-full max-w-md mx-auto mt-8 p-6">
       <div className="mb-6 flex space-x-4 justify-center">
         <Button
-          variant={mode === 'login' ? "default" : "outline"}
+          variant={mode === 'login' ? 'default' : 'outline'}
           onClick={() => setMode('login')}
           className="w-1/2"
         >
           Login
         </Button>
         <Button
-          variant={mode === 'register' ? "default" : "outline"}
+          variant={mode === 'register' ? 'default' : 'outline'}
           onClick={() => setMode('register')}
           className="w-1/2"
         >
@@ -201,10 +195,12 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
         </Button>
       </div>
 
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        mode === 'login' ? handleLogin() : handleRegister();
-      }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          mode === 'login' ? handleLogin() : handleRegister();
+        }}
+      >
         <div className="space-y-4">
           {mode === 'register' && (
             <>
@@ -241,9 +237,9 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
           )}
 
           <Input
-            name={mode === 'login' ? "username" : "email"}
-            type={mode === 'login' ? "text" : "email"}
-            placeholder={mode === 'login' ? "Username or Email" : "Email"}
+            name={mode === 'login' ? 'username' : 'email'}
+            type={mode === 'login' ? 'text' : 'email'}
+            placeholder={mode === 'login' ? 'Username or Email' : 'Email'}
             value={mode === 'login' ? formData.username : formData.email}
             onChange={handleInputChange}
             required
@@ -258,19 +254,13 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
             required
           />
 
-          {error && (
-            <div className="text-sm text-red-500 mt-2">{error}</div>
-          )}
+          {error && <div className="text-sm text-red-500 mt-2">{error}</div>}
 
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "Please wait..." : mode === 'login' ? "Login" : "Register"}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Register'}
           </Button>
         </div>
       </form>
     </Card>
   );
-} 
+}

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-import { Input, Select } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { ReportDetail, UpdateReportDto } from "@/types/Report";
+import { Input, Select } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { ReportDetail, UpdateReportDto } from '@/types/Report';
 
 interface ReportEditProps {
   params: { id: string };
@@ -15,34 +15,28 @@ interface ReportEditProps {
 
 export default function ReportEdit({ params }: ReportEditProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   const [formData, setFormData] = useState<UpdateReportDto>({
-    title: "",
-    subject: "",
-    description: "",
-    status: "pending",
+    title: '',
+    subject: '',
+    description: '',
+    status: 'pending',
   });
 
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const token = localStorage.getItem("admin_token");
-        const response = await fetch(
-          `${process.env.TUITIONI_API}/report/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/${params.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch report");
+          throw new Error('Failed to fetch report');
         }
 
         const report: ReportDetail = await response.json();
@@ -56,9 +50,10 @@ export default function ReportEdit({ params }: ReportEditProps) {
           resolverId: report.resolverId,
         });
       } catch (error) {
-        setNotification({
-          message: "Failed to fetch report details",
-          type: "error",
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch report details',
+          variant: 'destructive',
         });
       }
     };
@@ -71,32 +66,30 @@ export default function ReportEdit({ params }: ReportEditProps) {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await fetch(
-        `${process.env.TUITIONI_API}/report/${params.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/${params.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to update report");
+        throw new Error('Failed to update report');
       }
 
-      setNotification({
-        message: "Report updated successfully",
-        type: "success",
+      toast({
+        title: 'Success',
+        description: 'Report updated successfully',
       });
-      router.push("/admin-dashboard/report");
+      router.push('/admin-dashboard/report');
     } catch (error) {
-      setNotification({
-        message: "Failed to update report",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to update report',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -104,9 +97,7 @@ export default function ReportEdit({ params }: ReportEditProps) {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -119,12 +110,7 @@ export default function ReportEdit({ params }: ReportEditProps) {
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Report</h1>
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <Input
-          label="Title"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-        />
+        <Input label="Title" name="title" value={formData.title} onChange={handleInputChange} />
         <Input
           label="Subject"
           name="subject"
@@ -132,9 +118,7 @@ export default function ReportEdit({ params }: ReportEditProps) {
           onChange={handleInputChange}
         />
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
             name="description"
             value={formData.description}
@@ -150,34 +134,21 @@ export default function ReportEdit({ params }: ReportEditProps) {
           value={formData.status}
           onChange={handleInputChange}
           options={[
-            { value: "pending", label: "Pending" },
-            { value: "processing", label: "Processing" },
-            { value: "resolved", label: "Resolved" },
+            { value: 'pending', label: 'Pending' },
+            { value: 'processing', label: 'Processing' },
+            { value: 'resolved', label: 'Resolved' },
           ]}
         />
 
         <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={loading}
-          >
+          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? <LoadingSpinner size="sm" /> : "Update Report"}
+            {loading ? <LoadingSpinner size="sm" /> : 'Update Report'}
           </Button>
         </div>
       </form>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

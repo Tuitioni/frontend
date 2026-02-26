@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
-import { Button } from "../button";
-import { Tooltip } from "./toolTip";
+import { Button } from '../button';
+import { LoadingSpinner } from '../LoadingSpinner';
+import { Tooltip } from './toolTip';
 
 interface Column {
   key: string;
@@ -12,7 +14,7 @@ interface DataTableProps {
   data?: any[];
   columns?: Column[];
   onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => void | Promise<void>;
   onView?: (id: string) => void;
 }
 
@@ -24,7 +26,17 @@ export default function DataTable({
   onView,
 }: DataTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const itemsPerPage = 10;
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await onDelete?.(id);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -42,10 +54,7 @@ export default function DataTable({
           </thead>
           <tbody>
             {data
-              .slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
-              )
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((row, index) => (
                 <tr key={index} className="bg-white border-b hover:bg-gray-50">
                   {columns.map((column) => (
@@ -59,8 +68,9 @@ export default function DataTable({
                         variant="ghost"
                         size="icon"
                         onClick={() => onView?.(row.id)}
+                        aria-label="View"
                       >
-                        👁️
+                        <Eye className="h-4 w-4" />
                       </Button>
                     </Tooltip>
                     <Tooltip content="Edit">
@@ -68,17 +78,24 @@ export default function DataTable({
                         variant="ghost"
                         size="icon"
                         onClick={() => onEdit?.(row.id)}
+                        aria-label="Edit"
                       >
-                        ✏️
+                        <Pencil className="h-4 w-4" />
                       </Button>
                     </Tooltip>
                     <Tooltip content="Delete">
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onDelete?.(row.id)}
+                        onClick={() => handleDelete(row.id)}
+                        disabled={deletingId === row.id}
+                        aria-label="Delete"
                       >
-                        🗑️
+                        {deletingId === row.id ? (
+                          <LoadingSpinner size="sm" />
+                        ) : (
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        )}
                       </Button>
                     </Tooltip>
                   </td>
@@ -88,7 +105,6 @@ export default function DataTable({
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-between px-6 py-4">
         <Button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

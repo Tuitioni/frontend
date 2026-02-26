@@ -1,22 +1,18 @@
-import axios, { AxiosHeaders } from "axios";
+import axios, { AxiosHeaders } from 'axios';
 
-import { tokenService } from "./auth/token";
-
+import { tokenService } from './auth/token';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: '',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Add auth header to every request if token exists
     const authHeader = tokenService.getAuthHeader();
     if (authHeader.Authorization) {
-      // Convert plain object to AxiosHeaders instance
       config.headers = new AxiosHeaders({
         ...config.headers,
         ...authHeader,
@@ -29,14 +25,12 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // Handle token expiration
       tokenService.removeToken();
-      window.location.href = "/login";
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

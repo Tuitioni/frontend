@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+
+import { env } from '@/lib/env';
 
 interface FilterBody {
   area: string;
@@ -10,9 +12,7 @@ export async function POST(request: Request) {
   try {
     const body: FilterBody = await request.json();
 
-    console.log(body)
-
-    const response = await fetch(`${process.env.TUITIONI_API}/post/filter`, {
+    const response = await fetch(`${env.TUITIONI_API}/post/filter`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,12 +26,7 @@ export async function POST(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data);
-
   } catch (error) {
-    console.error('Error filtering posts:', error);
-    return NextResponse.json(
-      { error: 'Failed to filter posts' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to filter posts' }, { status: 500 });
   }
-} 
+}

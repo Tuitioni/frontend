@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { Input } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
+import { AdminCard } from '@/components/ui/admin/adminCard';
+import { Input } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
 
 interface PasswordChangeForm {
   currentPassword: string;
@@ -19,16 +19,13 @@ interface PasswordChangeForm {
 export default function SettingsPage() {
   const { logout } = useAuth();
   const { fetchWithAuth } = useAuthFetch();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
 
   const [passwordForm, setPasswordForm] = useState<PasswordChangeForm>({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   useEffect(() => {
@@ -47,28 +44,30 @@ export default function SettingsPage() {
     e.preventDefault();
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setNotification({
-        type: "error",
-        message: "New passwords do not match",
+      toast({
+        title: 'Error',
+        description: 'New passwords do not match',
+        variant: 'destructive',
       });
       return;
     }
 
     if (passwordForm.newPassword.length < 6) {
-      setNotification({
-        type: "error",
-        message: "New password must be at least 6 characters long",
+      toast({
+        title: 'Error',
+        description: 'New password must be at least 6 characters long',
+        variant: 'destructive',
       });
       return;
     }
 
     try {
       const response = await fetchWithAuth(
-        `${process.env.TUITIONI_API}/auth/change-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/change-password`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             currentPassword: passwordForm.currentPassword,
@@ -78,19 +77,19 @@ export default function SettingsPage() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to change password");
+        throw new Error('Failed to change password');
       }
 
-      setNotification({
-        type: "success",
-        message: "Password changed successfully. Please login again.",
+      toast({
+        title: 'Success',
+        description: 'Password changed successfully. Please login again.',
       });
 
       // Clear form
       setPasswordForm({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
       });
 
       // Logout after successful password change
@@ -98,9 +97,10 @@ export default function SettingsPage() {
         logout();
       }, 2000);
     } catch (error: any) {
-      setNotification({
-        type: "error",
-        message: error.message || "Failed to change password",
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to change password',
+        variant: 'destructive',
       });
     }
   };
@@ -161,26 +161,14 @@ export default function SettingsPage() {
 
         {/* Profile Settings Section */}
         <AdminCard title="Profile Settings">
-          <div className="text-gray-500 italic">
-            Profile settings will be available soon.
-          </div>
+          <div className="text-gray-500 italic">Profile settings will be available soon.</div>
         </AdminCard>
 
         {/* Notification Settings Section */}
         <AdminCard title="Notification Settings">
-          <div className="text-gray-500 italic">
-            Notification settings will be available soon.
-          </div>
+          <div className="text-gray-500 italic">Notification settings will be available soon.</div>
         </AdminCard>
       </div>
-
-      {notification && (
-        <Notification
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

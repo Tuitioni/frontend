@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-import { Input, Select } from "@/components/ui/admin/Form";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinnerCenter } from "@/components/ui/LoadingSpinnerCenter";
-import { Notification } from "@/components/ui/Notification";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
-import { Gender, Medium } from "@/types";
-import { UpdateTeacherDto } from "@/types/teacher";
+import { Input, Select } from '@/components/ui/admin/Form';
+import { Button } from '@/components/ui/button';
+import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { Gender, Medium } from '@/types';
+import { UpdateTeacherDto } from '@/types/teacher';
 
 interface TeacherEditProps {
   params: { id: string };
@@ -18,29 +18,26 @@ interface TeacherEditProps {
 export default function TeacherEdit({ params }: TeacherEditProps) {
   const router = useRouter();
   const { fetchWithAuth } = useAuthFetch();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   const [formData, setFormData] = useState<UpdateTeacherDto>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    location: "",
-    phone: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    location: '',
+    phone: '',
     profile: {
-      district: "",
-      area: "",
+      district: '',
+      area: '',
       gender: Gender.MALE,
       medium: Medium.BANGLA_MEDIUM,
-      education: "",
+      education: '',
       yearsOfExperience: 0,
       subjects: [],
-      specialization: "",
-      teachingLevel: "",
-      availability: "",
+      specialization: '',
+      teachingLevel: '',
+      availability: '',
       monthlySalary: 0,
     },
   });
@@ -49,7 +46,7 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
     const fetchTeacher = async () => {
       try {
         const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/teacher/${params.id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/teacher/${params.id}`
         );
         const data = await response.json();
         setFormData({
@@ -67,7 +64,7 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
                 education: data.profile.education,
                 yearsOfExperience: Number(data.profile.yearsOfExperience) || 0,
                 subjects: data.profile.subjects,
-                specialization: data.profile.specialization || "",
+                specialization: data.profile.specialization || '',
                 teachingLevel: data.profile.teachingLevel,
                 availability: data.profile.availability,
                 monthlySalary: Number(data.profile.monthlySalary) || 0,
@@ -75,10 +72,10 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             : undefined,
         });
       } catch (error: any) {
-        console.error("Error fetching teacher:", error);
-        setNotification({
-          message: "Failed to fetch teacher details",
-          type: "error",
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch teacher details',
+          variant: 'destructive',
         });
       } finally {
         setLoading(false);
@@ -94,47 +91,42 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
 
     try {
       const response = await fetchWithAuth(
-        `${process.env.TUITIONI_API}/teacher/${params.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/teacher/${params.id}`,
         {
-          method: "PUT",
+          method: 'PUT',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(formData),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update teacher");
+        throw new Error('Failed to update teacher');
       }
 
-      setNotification({
-        message: "Teacher updated successfully",
-        type: "success",
+      toast({
+        title: 'Success',
+        description: 'Teacher updated successfully',
       });
-      router.push("/admin-dashboard/teachers");
+      router.push('/admin-dashboard/teachers');
     } catch (error: any) {
-      console.error("Error updating teacher:", error);
-      setNotification({
-        message: "Failed to update teacher",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to update teacher',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    const numericFields = [
-      "profile.yearsOfExperience",
-      "profile.monthlySalary",
-    ];
+    const numericFields = ['profile.yearsOfExperience', 'profile.monthlySalary'];
 
-    if (name.includes("profile.")) {
-      const profileField = name.split(".")[1];
+    if (name.includes('profile.')) {
+      const profileField = name.split('.')[1];
       setFormData((prev) => ({
         ...prev,
         profile: {
@@ -152,16 +144,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
 
   if (loading) {
     return <LoadingSpinnerCenter />;
-  }
-
-  if (notification) {
-    return (
-      <Notification
-        message={notification.message}
-        type={notification.type}
-        onClose={() => setNotification(null)}
-      />
-    );
   }
 
   return (
@@ -220,9 +202,7 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             required
           />
 
-          <h2 className="text-xl font-semibold mt-8 mb-4">
-            Profile Information
-          </h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">Profile Information</h2>
 
           <Input
             label="District"
@@ -245,8 +225,8 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             value={formData.profile?.gender}
             onChange={handleInputChange}
             options={[
-              { value: Gender.MALE, label: "Male" },
-              { value: Gender.FEMALE, label: "Female" },
+              { value: Gender.MALE, label: 'Male' },
+              { value: Gender.FEMALE, label: 'Female' },
             ]}
             required
           />
@@ -257,9 +237,9 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
             value={formData.profile?.medium}
             onChange={handleInputChange}
             options={[
-              { value: Medium.BANGLA_MEDIUM, label: "Bangla Medium" },
-              { value: Medium.ENGLISH_MEDIUM, label: "English Medium" },
-              { value: Medium.ENGLISH_VERSION, label: "English Version" },
+              { value: Medium.BANGLA_MEDIUM, label: 'Bangla Medium' },
+              { value: Medium.ENGLISH_MEDIUM, label: 'English Medium' },
+              { value: Medium.ENGLISH_VERSION, label: 'English Version' },
             ]}
             required
           />

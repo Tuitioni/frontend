@@ -1,38 +1,36 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { AdminCard } from "@/components/ui/admin/adminCard";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { Notification } from "@/components/ui/Notification";
-import { useAuthFetch } from "@/hooks/useAuthFetch";
-import { Post } from "@/types/Post";
+import { AdminCard } from '@/components/ui/admin/adminCard';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { Post } from '@/types/Post';
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { fetchWithAuth } = useAuthFetch();
+  const { toast } = useToast();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
 
   useEffect(() => {
     async function fetchPost() {
       try {
         const response = await fetchWithAuth(
-          `${process.env.TUITIONI_API}/post/${params.id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/post/${params.id}`
         );
         const data = await response.json();
         setPost(data);
       } catch (error: any) {
-        console.error("Error fetching post:", error);
-        setNotification({
-          message: "Failed to fetch job post",
-          type: "error",
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch job post',
+          variant: 'destructive',
         });
       } finally {
         setLoading(false);
@@ -43,29 +41,26 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   }, [params.id, fetchWithAuth]);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this job post?")) return;
+    if (!confirm('Are you sure you want to delete this job post?')) return;
 
     try {
-      const response = await fetchWithAuth(
-        `${process.env.TUITIONI_API}/post/${params.id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to delete post");
-
-      setNotification({
-        message: "Job post deleted successfully",
-        type: "success",
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.id}`, {
+        method: 'DELETE',
       });
 
-      router.push("/admin-dashboard/job");
+      if (!response.ok) throw new Error('Failed to delete post');
+
+      toast({
+        title: 'Success',
+        description: 'Job post deleted successfully',
+      });
+
+      router.push('/admin-dashboard/job');
     } catch (error) {
-      console.error("Error deleting post:", error);
-      setNotification({
-        message: "Failed to delete job post",
-        type: "error",
+      toast({
+        title: 'Error',
+        description: 'Failed to delete job post',
+        variant: 'destructive',
       });
     }
   };
@@ -75,7 +70,12 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   }
 
   if (!post) {
-    return <div>Post not found</div>;
+    return (
+      <EmptyState
+        title="Post not found"
+        description="The job post you are looking for does not exist or has been removed."
+      />
+    );
   }
 
   const footer = (
@@ -116,18 +116,18 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
               <strong>Level of Study:</strong> {post.levelOfStudy}
             </p>
             <p>
-              <strong>School:</strong> {post.school || "N/A"}
+              <strong>School:</strong> {post.school || 'N/A'}
             </p>
             <p>
-              <strong>College:</strong> {post.college || "N/A"}
+              <strong>College:</strong> {post.college || 'N/A'}
             </p>
             <p>
-              <strong>University:</strong> {post.university || "N/A"}
+              <strong>University:</strong> {post.university || 'N/A'}
             </p>
           </div>
           <div className="space-y-2">
             <p>
-              <strong>Subjects:</strong> {post.subjects.join(", ")}
+              <strong>Subjects:</strong> {post.subjects.join(', ')}
             </p>
             <p>
               <strong>Gender:</strong> {post.gender}
@@ -148,27 +148,17 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
               <strong>Class:</strong> {post.class}
             </p>
             <p>
-              <strong>Note:</strong> {post.note || "N/A"}
+              <strong>Note:</strong> {post.note || 'N/A'}
             </p>
             <p>
-              <strong>Created At:</strong>{" "}
-              {new Date(post.createdAt).toLocaleDateString()}
+              <strong>Created At:</strong> {new Date(post.createdAt).toLocaleDateString()}
             </p>
             <p>
-              <strong>Updated At:</strong>{" "}
-              {new Date(post.updatedAt).toLocaleDateString()}
+              <strong>Updated At:</strong> {new Date(post.updatedAt).toLocaleDateString()}
             </p>
           </div>
         </div>
       </AdminCard>
-
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 }

@@ -1,56 +1,39 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+
+import { env } from '@/lib/env';
+
+const ALLOWED_FILTER_PROPERTIES = ['gender', 'area', 'district', 'teachingLevel', 'medium'];
 
 export async function POST(request: Request) {
   try {
-    // Parse the request body
     const body = await request.json();
 
-    // Validate the body: Ensure at least one of the allowed properties is present
-    const allowedProperties = [
-      "gender",
-      "area",
-      "district",
-      "teachingLevel",
-      "medium",
-    ];
-
     const hasValidProperty = Object.keys(body).some((key) =>
-      allowedProperties.includes(key)
+      ALLOWED_FILTER_PROPERTIES.includes(key)
     );
 
     if (!hasValidProperty) {
       return NextResponse.json(
-        {
-          error: "At least one valid property is required in the request body",
-        },
+        { error: 'At least one valid filter property is required' },
         { status: 400 }
       );
     }
 
-    // Fetch data from the external API
-    const response = await fetch(`${process.env.TUTIONI_API}/teacher/filter`, {
-      method: "POST",
+    const response = await fetch(`${env.TUITIONI_API}/teacher/filter`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to filter teachers" },
-        { status: response.status }
-      );
+      return NextResponse.json({ error: 'Failed to filter teachers' }, { status: response.status });
     }
 
-    const data = await response.json();
-    console.log("Filtered Teachers:", data);
-    return NextResponse.json(data);
+    const filteredTeachers = await response.json();
+    return NextResponse.json(filteredTeachers);
   } catch (error) {
-    console.error("Error filtering teacher data:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
