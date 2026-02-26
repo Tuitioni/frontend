@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { tokenService } from '@/lib/auth/token';
-import { AuthMode } from '@/lib/types/auth';
+import { AuthMode } from '@/types/auth';
 
 interface AuthFormContainerProps {
   defaultMode?: AuthMode;

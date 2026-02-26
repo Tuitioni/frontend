@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { withAuth } from "@/components/auth/withAuth";
-import { handleTokenError } from "@/utils/auth";
+import { withAuth } from '@/components/auth/withAuth';
+import { handleTokenError } from '@/lib/auth/admin';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -11,9 +11,9 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   // Create a wrapper for API calls that handles token validation
   const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     try {
-      const token = localStorage.getItem("admin_token");
+      const token = localStorage.getItem('admin_token');
       if (!token) {
-        throw new Error("No authentication token found");
+        throw new Error('No authentication token found');
       }
 
       const response = await fetch(url, {
@@ -26,7 +26,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("jwt expired");
+          throw new Error('jwt expired');
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -39,7 +39,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   // Add fetchWithAuth to window object so it's available throughout the app
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     (window as any).fetchWithAuth = fetchWithAuth;
   }
 

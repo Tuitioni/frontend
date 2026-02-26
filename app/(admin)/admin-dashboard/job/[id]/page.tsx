@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/adminCard';
+import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';

@@ -3,14 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/adminCard';
+import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Input } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuthFetch } from '@/hooks/useAuthFetch';
+import { handleTokenError } from '@/lib/auth/admin';
 import { Tuition, UpdateTuitionDto } from '@/types/Tuition';
-import { handleTokenError } from '@/utils/auth';
 
 export default function EditTuitionPage({ params }: { params: { id: string } }) {
   const router = useRouter();

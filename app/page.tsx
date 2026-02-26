@@ -1,9 +1,9 @@
-import Footer from "@/app/components/Footer";
-import Hero from "@/app/components/Hero";
-import Navbar from "@/app/components/Navbar";
-import SearchTutor from "@/app/components/SearchTutor";
-import TopTutors from "@/app/components/TopTutors";
-import YoutubePlayer from "@/app/components/YoutubePlayer";
+import Hero from '@/components/landing/Hero';
+import SearchTutor from '@/components/landing/SearchTutor';
+import TopTutors from '@/components/landing/TopTutors';
+import YoutubePlayer from '@/components/landing/YoutubePlayer';
+import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 
 export default function HomePage() {
   return (

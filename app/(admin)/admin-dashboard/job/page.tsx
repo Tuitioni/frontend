@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import DataTable from '@/components/ui/admin/dataTable';
+import DataTable from '@/components/ui/admin/DataTable';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/components/ui/use-toast';
 import { Post } from '@/types/Post';

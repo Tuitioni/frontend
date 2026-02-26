@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import DataTable from '@/components/ui/admin/dataTable';
+import DataTable from '@/components/ui/admin/DataTable';
 import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuthFetch } from '@/hooks/useAuthFetch';

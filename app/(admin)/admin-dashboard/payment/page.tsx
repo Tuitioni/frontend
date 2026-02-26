@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import DataTable from '@/components/ui/admin/dataTable';
+import DataTable from '@/components/ui/admin/DataTable';
 import { Input, Select } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import {

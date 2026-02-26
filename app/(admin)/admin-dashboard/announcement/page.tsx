@@ -3,7 +3,7 @@
 import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 
-import DataTable from '@/components/ui/admin/dataTable';
+import DataTable from '@/components/ui/admin/DataTable';
 import { Input } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import {

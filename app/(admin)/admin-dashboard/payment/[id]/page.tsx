@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/adminCard';
+import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';

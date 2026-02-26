@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/adminCard';
+import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Input } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';

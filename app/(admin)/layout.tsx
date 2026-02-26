@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
-import Sidebar from '@/components/ui/admin/sidebar';
+import Sidebar from '@/components/ui/admin/Sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
