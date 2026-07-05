@@ -18,6 +18,7 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 
 RUN npm run build
 
+
 # Stage 3: Runner
 FROM node:18-alpine AS runner
 WORKDIR /app
