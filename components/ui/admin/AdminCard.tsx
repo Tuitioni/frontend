@@ -9,14 +9,14 @@ interface CardProps {
 
 export function AdminCard({ title, children, footer, className = '' }: CardProps) {
   return (
-    <div className={`bg-white rounded-lg shadow ${className}`}>
+    <div className={`rounded-2xl border border-border bg-card shadow-soft-sm ${className}`}>
       {title && (
-        <div className="px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold">{title}</h3>
+        <div className="border-b border-border px-6 py-4">
+          <h3 className="font-display text-lg font-bold">{title}</h3>
         </div>
       )}
-      <div className="px-6 py-4">{children}</div>
-      {footer && <div className="px-6 py-4 border-t">{footer}</div>}
+      <div className="px-6 py-5">{children}</div>
+      {footer && <div className="border-t border-border px-6 py-4">{footer}</div>}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Upload, AlertCircle } from 'lucide-react';
+import { Upload, AlertCircle, ShieldCheck, ArrowLeft, FileText } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -77,44 +77,80 @@ export default function VerifyDocumentPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <Card>
+    <div className="mx-auto max-w-2xl p-4 sm:p-6">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
+
+      <Card className="rounded-2xl border-border shadow-soft">
         <CardHeader>
-          <CardTitle>Upload {documentTitle}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-xl bg-brand-50 text-primary dark:bg-primary/15">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <CardTitle className="text-lg sm:text-xl">Upload {documentTitle}</CardTitle>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Verify your identity to build trust with students.
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 text-red-500 p-3 rounded-md flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" />
+              <div className="flex items-center gap-2 rounded-xl border border-error/20 bg-error/10 p-3 text-sm font-medium text-error">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="document">Select Document</Label>
-              <Input
-                id="document"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleFileChange}
-                className="cursor-pointer"
-              />
-              <p className="text-sm text-muted-foreground">
-                Accepted formats: PDF, JPG, JPEG, PNG (Max size: 5MB)
-              </p>
+              <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-4">
+                <Input
+                  id="document"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="cursor-pointer"
+                />
+                {file && (
+                  <p className="mt-3 flex items-center gap-2 text-sm font-medium text-primary">
+                    <FileText className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{file.name}</span>
+                  </p>
+                )}
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Accepted formats: PDF, JPG, JPEG, PNG (Max size: 5MB)
+                </p>
+              </div>
             </div>
 
-            <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+                className="rounded-pill font-semibold"
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading || !file} className="flex-1">
+              <Button
+                type="submit"
+                disabled={loading || !file}
+                className="flex-1 rounded-pill font-semibold shadow-glow"
+              >
                 {loading ? (
                   'Uploading...'
                 ) : (
                   <>
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="mr-2 h-4 w-4" />
                     Upload {documentTitle}
                   </>
                 )}

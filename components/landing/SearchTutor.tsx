@@ -10,6 +10,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -43,23 +44,27 @@ export default function SearchTutor() {
   };
 
   return (
-    <SectionWrapper className="bg-white">
-      <div className="bg-bluishGrey rounded-2xl shadow-lg">
-        <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
+    <SectionWrapper>
+      <div className="overflow-hidden rounded-2xl border border-border bg-mesh shadow-soft-lg">
+        <div className="grid gap-8 p-6 md:grid-cols-2 md:p-10">
           {/* Content Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+              <span className="h-2 w-2 rounded-full bg-amber" />
+              For tutors
+            </span>
+            <h2 className="text-2xl font-extrabold tracking-tight md:text-3xl">
               Looking for interesting tuition jobs?
             </h2>
-            <p className="text-gray-600">
-              Join our community of 500+ verified tutoring opportunities. Whether youre starting
-              your teaching journey or you&apos;re an experienced educator, find the perfect match
-              for your expertise.
+            <p className="text-muted-foreground">
+              Join our community of 500+ verified tutoring opportunities. Whether you&apos;re
+              starting your teaching journey or you&apos;re an experienced educator, find the
+              perfect match for your expertise.
             </p>
           </div>
 
           {/* Search Filters Section */}
-          <div className="bg-white rounded-xl p-6 shadow-sm space-y-6">
+          <div className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-soft-sm">
             <div className="grid md:grid-cols-2 gap-4">
               {/* District Selector */}
               <div className="space-y-2">
@@ -81,42 +86,46 @@ export default function SearchTutor() {
                   <PopoverContent className="w-full p-0">
                     <Command>
                       <CommandInput placeholder="Search district..." />
-                      <CommandEmpty>No district found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="all"
-                          onSelect={() => {
-                            setDistrict('all');
-                            setOpenDistrict(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              'mr-2 h-4 w-4',
-                              district === 'all' ? 'opacity-100' : 'opacity-0'
-                            )}
-                          />
-                          All Districts
-                        </CommandItem>
-                        {districts.map((d) => (
+                      <CommandList>
+                        <CommandEmpty>No district found.</CommandEmpty>
+                        <CommandGroup>
                           <CommandItem
-                            key={d.district}
-                            value={d.district}
+                            value="all"
                             onSelect={() => {
-                              setDistrict(d.district.toLowerCase());
+                              setDistrict('all');
                               setOpenDistrict(false);
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                district === d.district.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                                district === 'all' ? 'opacity-100' : 'opacity-0'
                               )}
                             />
-                            {d.district}
+                            All Districts
                           </CommandItem>
-                        ))}
-                      </CommandGroup>
+                          {districts.map((d) => (
+                            <CommandItem
+                              key={d.district}
+                              value={d.district}
+                              onSelect={() => {
+                                setDistrict(d.district.toLowerCase());
+                                setOpenDistrict(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  district === d.district.toLowerCase()
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                                )}
+                              />
+                              {d.district}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
                     </Command>
                   </PopoverContent>
                 </Popover>
@@ -144,42 +153,44 @@ export default function SearchTutor() {
                   <PopoverContent className="w-full p-0">
                     <Command>
                       <CommandInput placeholder="Search area..." />
-                      <CommandEmpty>No area found.</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="all"
-                          onSelect={() => {
-                            setArea('all');
-                            setOpenArea(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              'mr-2 h-4 w-4',
-                              area === 'all' ? 'opacity-100' : 'opacity-0'
-                            )}
-                          />
-                          All Areas
-                        </CommandItem>
-                        {availableAreas.map((areaItem) => (
+                      <CommandList>
+                        <CommandEmpty>No area found.</CommandEmpty>
+                        <CommandGroup>
                           <CommandItem
-                            key={areaItem}
-                            value={areaItem}
+                            value="all"
                             onSelect={() => {
-                              setArea(areaItem.toLowerCase());
+                              setArea('all');
                               setOpenArea(false);
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                area === areaItem.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                                area === 'all' ? 'opacity-100' : 'opacity-0'
                               )}
                             />
-                            {areaItem}
+                            All Areas
                           </CommandItem>
-                        ))}
-                      </CommandGroup>
+                          {availableAreas.map((areaItem) => (
+                            <CommandItem
+                              key={areaItem}
+                              value={areaItem}
+                              onSelect={() => {
+                                setArea(areaItem.toLowerCase());
+                                setOpenArea(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  area === areaItem.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                                )}
+                              />
+                              {areaItem}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
                     </Command>
                   </PopoverContent>
                 </Popover>

@@ -86,17 +86,20 @@ export default function ReportDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Report Dashboard</h1>
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Reports</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          View, edit, and manage all submitted reports.
+        </p>
       </div>
+      <DataTable
+        data={tableData}
+        columns={columns}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

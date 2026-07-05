@@ -161,21 +161,26 @@ export default function PaymentDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <div className="w-full flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Payment Dashboard</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Create Payment</Button>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Payments</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            View, edit, and manage all teacher payments.
+          </p>
+        </div>
+        <Button className="rounded-pill" onClick={() => setIsModalOpen(true)}>
+          Create Payment
+        </Button>
       </div>
 
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      </div>
+      <DataTable
+        data={tableData}
+        columns={columns}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>

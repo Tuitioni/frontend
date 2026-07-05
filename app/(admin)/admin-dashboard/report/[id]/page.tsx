@@ -66,29 +66,37 @@ export default function ReportDashboardByID({ params }: { params: { id: string }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Report Details</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Report Details</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Full details for {report.title}.</p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Report Information */}
-        <AdminCard
-          title="Report Information"
-          className="bg-white shadow-lg rounded-xl lg:col-span-2"
-        >
-          <div className="space-y-6">
+        <AdminCard title="Report Information" className="lg:col-span-2">
+          <div className="space-y-5">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Title</p>
-              <p className="text-lg font-semibold text-gray-900">{report.title}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Title
+              </p>
+              <p className="mt-1 text-lg font-semibold">{report.title}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Subject</p>
-              <p className="text-lg font-semibold text-gray-900">{report.subject}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Subject
+              </p>
+              <p className="mt-1 text-lg font-semibold">{report.subject}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Description</p>
-              <p className="text-base text-gray-900 whitespace-pre-wrap">{report.description}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Description
+              </p>
+              <p className="mt-1 whitespace-pre-wrap text-foreground">{report.description}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Status</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Status
+              </p>
               <Badge
                 variant={statusVariantMap[report.status] || 'secondary'}
                 className="mt-1 w-fit"
@@ -100,46 +108,56 @@ export default function ReportDashboardByID({ params }: { params: { id: string }
         </AdminCard>
 
         {/* Involved Parties */}
-        <AdminCard title="Involved Parties" className="bg-white shadow-lg rounded-xl">
-          <div className="space-y-6">
+        <AdminCard title="Involved Parties">
+          <div className="space-y-5">
             {report.student && (
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Student</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Student
+                </p>
+                <p className="mt-1 text-lg font-semibold">
                   {report.student.firstName} {report.student.lastName}
                 </p>
-                <p className="text-sm text-gray-500">{report.student.email}</p>
+                <p className="text-sm text-muted-foreground">{report.student.email}</p>
               </div>
             )}
             {report.teacher && (
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Teacher</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Teacher
+                </p>
+                <p className="mt-1 text-lg font-semibold">
                   {report.teacher.firstName} {report.teacher.lastName}
                 </p>
-                <p className="text-sm text-gray-500">{report.teacher.email}</p>
+                <p className="text-sm text-muted-foreground">{report.teacher.email}</p>
               </div>
             )}
             {report.resolver && (
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Resolver</p>
-                <p className="text-lg font-semibold text-gray-900">{report.resolver.name}</p>
-                <p className="text-sm text-gray-500">{report.resolver.email}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Resolver
+                </p>
+                <p className="mt-1 text-lg font-semibold">{report.resolver.name}</p>
+                <p className="text-sm text-muted-foreground">{report.resolver.email}</p>
               </div>
             )}
           </div>
         </AdminCard>
 
         {/* Timestamps */}
-        <AdminCard title="Timeline" className="bg-white shadow-lg rounded-xl">
-          <div className="space-y-6">
+        <AdminCard title="Timeline">
+          <div className="space-y-5">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Created At</p>
-              <p className="text-base text-gray-900">{formatDate(report.createdAt)}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Created At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{formatDate(report.createdAt)}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Last Updated</p>
-              <p className="text-base text-gray-900">{formatDate(report.updatedAt)}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Last Updated
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{formatDate(report.updatedAt)}</p>
             </div>
           </div>
         </AdminCard>

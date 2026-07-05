@@ -139,9 +139,17 @@ export default function StudentEdit({ params }: StudentEditProps) {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Student</h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Student</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the student&apos;s personal and profile information.
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
         <Input
           label="First Name"
           name="firstName"
@@ -162,7 +170,9 @@ export default function StudentEdit({ params }: StudentEditProps) {
           onChange={handleInputChange}
         />
 
-        <h2 className="text-xl font-semibold mt-8 mb-4">Profile Information</h2>
+        <h2 className="mb-2 mt-8 border-t border-border pt-6 font-display text-lg font-bold">
+          Profile Information
+        </h2>
 
         <Input
           label="District"
@@ -236,11 +246,17 @@ export default function StudentEdit({ params }: StudentEditProps) {
           onChange={handleInputChange}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.back()}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" className="rounded-pill" disabled={loading}>
             {loading ? <LoadingSpinner size="sm" /> : 'Update Student'}
           </Button>
         </div>

@@ -179,97 +179,133 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-8 p-6">
-      <div className="mb-6 flex space-x-4 justify-center">
-        <Button
-          variant={mode === 'login' ? 'default' : 'outline'}
-          onClick={() => setMode('login')}
-          className="w-1/2"
-        >
-          Login
-        </Button>
-        <Button
-          variant={mode === 'register' ? 'default' : 'outline'}
-          onClick={() => setMode('register')}
-          className="w-1/2"
-        >
-          Register
-        </Button>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          mode === 'login' ? handleLogin() : handleRegister();
-        }}
-      >
-        <div className="space-y-4">
-          {mode === 'register' && (
-            <>
-              <Input
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="phone"
-                type="tel"
-                placeholder="Phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="district"
-                placeholder="District"
-                value={formData.district}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="area"
-                placeholder="Area"
-                value={formData.area}
-                onChange={handleInputChange}
-                required
-              />
-            </>
-          )}
-
-          <Input
-            name={mode === 'login' ? 'username' : 'email'}
-            type={mode === 'login' ? 'text' : 'email'}
-            placeholder={mode === 'login' ? 'Username or Email' : 'Email'}
-            value={mode === 'login' ? formData.username : formData.email}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-
-          {error && <div className="text-sm text-red-500 mt-2">{error}</div>}
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Register'}
-          </Button>
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-mesh px-4 py-12">
+      <Card className="w-full max-w-md rounded-2xl border-border p-7 shadow-float sm:p-8">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 font-display text-lg font-extrabold text-white shadow-glow">
+            T
+          </div>
+          <h1 className="text-2xl font-extrabold tracking-tight">
+            {mode === 'login' ? 'Welcome back' : 'Create your account'}
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {mode === 'login'
+              ? 'Log in to manage your tutoring profile and students.'
+              : 'Join Tuitioni and start connecting with students.'}
+          </p>
         </div>
-      </form>
-    </Card>
+
+        <div className="mb-6 flex gap-1 rounded-pill bg-secondary p-1">
+          <button
+            type="button"
+            onClick={() => setMode('login')}
+            className={`w-1/2 rounded-pill py-2 text-sm font-semibold transition-all ${
+              mode === 'login'
+                ? 'bg-card text-primary shadow-soft-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('register')}
+            className={`w-1/2 rounded-pill py-2 text-sm font-semibold transition-all ${
+              mode === 'register'
+                ? 'bg-card text-primary shadow-soft-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Register
+          </button>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            mode === 'login' ? handleLogin() : handleRegister();
+          }}
+        >
+          <div className="space-y-3.5">
+            {mode === 'register' && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    name="firstName"
+                    placeholder="First name"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <Input
+                    name="lastName"
+                    placeholder="Last name"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <Input
+                  name="phone"
+                  type="tel"
+                  placeholder="Phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    name="district"
+                    placeholder="District"
+                    value={formData.district}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <Input
+                    name="area"
+                    placeholder="Area"
+                    value={formData.area}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            <Input
+              name={mode === 'login' ? 'username' : 'email'}
+              type={mode === 'login' ? 'text' : 'email'}
+              placeholder={mode === 'login' ? 'Username or email' : 'Email'}
+              value={mode === 'login' ? formData.username : formData.email}
+              onChange={handleInputChange}
+              required
+            />
+
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleInputChange}
+              required
+            />
+
+            {error && (
+              <div className="rounded-md bg-error/10 px-3 py-2 text-sm font-medium text-error">
+                {error}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full rounded-pill font-semibold shadow-glow"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Create account'}
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
 }

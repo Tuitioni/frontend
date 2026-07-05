@@ -49,12 +49,18 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">Admin Login</h2>
+    <div className="flex min-h-screen items-center justify-center bg-mesh px-4 py-12">
+      <div className="w-full max-w-md space-y-8 rounded-2xl border border-border bg-card p-8 shadow-float">
+        <div className="text-center">
+          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 font-display text-lg font-extrabold text-white shadow-glow">
+            T
+          </div>
+          <h2 className="text-2xl font-extrabold tracking-tight">Admin sign in</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Access the Tuitioni administration dashboard.
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <Input
               label="Username"

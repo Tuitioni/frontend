@@ -4,7 +4,6 @@ import { SectionTitle } from './SectionTitle';
 import { SectionWrapper } from './SectionWrapper';
 import { TutorCard } from './TutorCard';
 
-// Move types to separate types.ts file or define here if small project
 interface Tutor {
   id: string;
   subject: string;
@@ -17,23 +16,47 @@ interface Tutor {
 const dummyTutors: Tutor[] = [
   {
     id: '1',
-    name: 'John Doe',
+    name: 'Rifat Ahsan',
+    subject: 'Physics',
+    institute: 'University of Dhaka',
+    imageUrl: 'https://picsum.photos/seed/rifat/400/300',
+    rating: 4.9,
+  },
+  {
+    id: '2',
+    name: 'Nusrat Jahan',
     subject: 'Mathematics',
-    institute: 'ABC Institute',
-    imageUrl: 'https://picsum.photos/400/300',
+    institute: 'BUET',
+    imageUrl: 'https://picsum.photos/seed/nusrat/400/300',
     rating: 4.8,
   },
-  // ... existing tutors with added properties ...
+  {
+    id: '3',
+    name: 'Tanvir Rahman',
+    subject: 'Chemistry',
+    institute: 'North South University',
+    imageUrl: 'https://picsum.photos/seed/tanvir/400/300',
+    rating: 4.7,
+  },
+  {
+    id: '4',
+    name: 'Farzana Nawrin',
+    subject: 'English',
+    institute: 'BRAC University',
+    imageUrl: 'https://picsum.photos/seed/farzana/400/300',
+    rating: 4.9,
+  },
 ];
 
 export default function TopTutors() {
   return (
     <SectionWrapper>
       <SectionTitle
-        title="Top Tutors"
-        subtitle="We help to make communication between teachers and students"
+        eyebrow="Featured tutors"
+        title="Meet our top-rated tutors"
+        subtitle="Hand-picked, verified teachers loved by students across the country."
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {dummyTutors.map((tutor) => (
           <TutorCard key={tutor.id} tutor={tutor} />
         ))}

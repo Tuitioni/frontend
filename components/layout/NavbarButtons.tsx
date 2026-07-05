@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-import { Button } from '@/components/ui/button';
-
 export default function NavbarButtons() {
   const pathname = usePathname();
 
@@ -17,18 +15,24 @@ export default function NavbarButtons() {
   ];
 
   return (
-    <div className="flex gap-0.5 sm:gap-1 md:gap-2">
-      {buttons.map((button) => (
-        <Link key={button.path} href={button.path}>
-          <Button
-            variant={pathname === button.path ? 'activeOutline' : 'outline'}
-            size="sm"
-            className="text-xs bg-transparent sm:text-sm md:text-base px-2 sm:px-3 md:px-4 h-7 sm:h-8 md:h-9"
+    <div className="hidden items-center gap-1 md:flex">
+      {buttons.map((button) => {
+        const active = pathname === button.path;
+        return (
+          <Link
+            key={button.path}
+            href={button.path}
+            aria-current={active ? 'page' : undefined}
+            className={`rounded-pill px-3.5 py-2 text-sm font-semibold transition-colors ${
+              active
+                ? 'bg-primary/10 text-primary'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
           >
             {button.name}
-          </Button>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </div>
   );
 }

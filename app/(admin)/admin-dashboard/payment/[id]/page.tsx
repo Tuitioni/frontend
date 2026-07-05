@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 
 import { AdminCard } from '@/components/ui/admin/AdminCard';
-import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/components/ui/use-toast';
@@ -58,37 +57,54 @@ export default function PaymentDashboardByID({ params }: { params: { id: string 
     );
   }
 
+  const statusPillClass = (status: string) => {
+    const base = 'inline-flex items-center rounded-pill px-2.5 py-1 text-xs font-medium';
+    if (status === 'PAID' || status === 'COMPLETED') return `${base} bg-success/10 text-success`;
+    if (status === 'FAILED') return `${base} bg-error/10 text-error`;
+    return `${base} bg-warning/10 text-warning`;
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Payment Details</h1>
-      <div className="grid grid-cols-1 gap-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Payment Details</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Full details for this payment record.</p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Payment Information */}
-        <AdminCard title="Payment Information" className="bg-white shadow-lg rounded-xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AdminCard title="Payment Information" className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Amount</p>
-              <p className="text-xl font-semibold text-gray-900">৳{payment.amount}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Amount
+              </p>
+              <p className="mt-1 font-display text-2xl font-bold tabular">৳{payment.amount}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Status</p>
-              <Badge
-                variant={payment.paymentStatus === 'PAID' ? 'success' : 'destructive'}
-                className="mt-1 w-fit"
-              >
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Status
+              </p>
+              <span className={`mt-2 w-fit ${statusPillClass(payment.paymentStatus)}`}>
                 {payment.paymentStatus}
-              </Badge>
+              </span>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Payment Method</p>
-              <p className="text-lg font-semibold text-gray-900">{payment.paymentMethod}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Payment Method
+              </p>
+              <p className="mt-1 text-lg font-semibold">{payment.paymentMethod}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Transaction ID</p>
-              <p className="text-lg font-semibold text-gray-900">{payment.transactionId}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Transaction ID
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{payment.transactionId}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Payment Date</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Payment Date
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">
                 {formatDate(payment.paymentDate)}
               </p>
             </div>
@@ -96,31 +112,39 @@ export default function PaymentDashboardByID({ params }: { params: { id: string 
         </AdminCard>
 
         {/* Teacher Information */}
-        <AdminCard title="Teacher Information" className="bg-white shadow-lg rounded-xl">
-          <div className="space-y-4">
+        <AdminCard title="Teacher Information">
+          <div className="space-y-5">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Name</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </p>
+              <p className="mt-1 text-lg font-semibold">
                 {payment.teacher.firstName} {payment.teacher.lastName}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Email</p>
-              <p className="text-base text-gray-900">{payment.teacher.email}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Email
+              </p>
+              <p className="mt-1 text-lg font-semibold">{payment.teacher.email}</p>
             </div>
           </div>
         </AdminCard>
 
         {/* Timestamps */}
-        <AdminCard title="Timeline" className="bg-white shadow-lg rounded-xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AdminCard title="Timeline">
+          <div className="space-y-5">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Created At</p>
-              <p className="text-base text-gray-900">{formatDate(payment.createdAt)}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Created At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{formatDate(payment.createdAt)}</p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Last Updated</p>
-              <p className="text-base text-gray-900">{formatDate(payment.updatedAt)}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Last Updated
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{formatDate(payment.updatedAt)}</p>
             </div>
           </div>
         </AdminCard>

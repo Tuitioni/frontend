@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -81,22 +82,24 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
   };
 
   const FilterContent = () => (
-    <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 bg-card p-3 sm:p-4 lg:p-6 rounded-lg shadow-sm">
+    <div className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 shadow-soft-sm lg:p-6">
       <div>
-        <h3 className="font-semibold text-base sm:text-lg lg:text-xl mb-2 sm:mb-3 lg:mb-4">
-          Filter Tutors
-        </h3>
+        <span className="mb-2 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+          <span className="h-2 w-2 rounded-full bg-amber" />
+          Refine
+        </span>
+        <h3 className="font-display text-xl font-bold tracking-tight">Filter Tutors</h3>
 
-        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-          <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">District</label>
+        <div className="mt-4 space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold">District</label>
             <Popover open={openDistrict} onOpenChange={setOpenDistrict}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={openDistrict}
-                  className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+                  className="h-10 w-full justify-between rounded-pill text-sm font-normal"
                 >
                   {district === 'all'
                     ? 'Select District'
@@ -108,56 +111,58 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
               <PopoverContent className="w-full p-0">
                 <Command>
                   <CommandInput placeholder="Search district..." />
-                  <CommandEmpty>No district found.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem
-                      value="all"
-                      onSelect={() => {
-                        setDistrict('all');
-                        setOpenDistrict(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          district === 'all' ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                      All Districts
-                    </CommandItem>
-                    {districtsData.map((d) => (
+                  <CommandList>
+                    <CommandEmpty>No district found.</CommandEmpty>
+                    <CommandGroup>
                       <CommandItem
-                        key={d.district}
-                        value={d.district}
+                        value="all"
                         onSelect={() => {
-                          setDistrict(d.district.toLowerCase());
+                          setDistrict('all');
                           setOpenDistrict(false);
                         }}
                       >
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            district === d.district.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                            district === 'all' ? 'opacity-100' : 'opacity-0'
                           )}
                         />
-                        {d.district}
+                        All Districts
                       </CommandItem>
-                    ))}
-                  </CommandGroup>
+                      {districtsData.map((d) => (
+                        <CommandItem
+                          key={d.district}
+                          value={d.district}
+                          onSelect={() => {
+                            setDistrict(d.district.toLowerCase());
+                            setOpenDistrict(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              district === d.district.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                            )}
+                          />
+                          {d.district}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">Area</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold">Area</label>
             <Popover open={openArea} onOpenChange={setOpenArea}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={openArea}
-                  className="w-full justify-between text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+                  className="h-10 w-full justify-between rounded-pill text-sm font-normal"
                   disabled={district === 'all'}
                 >
                   {area === 'all'
@@ -171,48 +176,53 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
               <PopoverContent className="w-full p-0">
                 <Command>
                   <CommandInput placeholder="Search area..." />
-                  <CommandEmpty>No area found.</CommandEmpty>
-                  <CommandGroup>
-                    <CommandItem
-                      value="all"
-                      onSelect={() => {
-                        setArea('all');
-                        setOpenArea(false);
-                      }}
-                    >
-                      <Check
-                        className={cn('mr-2 h-4 w-4', area === 'all' ? 'opacity-100' : 'opacity-0')}
-                      />
-                      All Areas
-                    </CommandItem>
-                    {availableAreas.map((areaItem) => (
+                  <CommandList>
+                    <CommandEmpty>No area found.</CommandEmpty>
+                    <CommandGroup>
                       <CommandItem
-                        key={areaItem}
-                        value={areaItem}
+                        value="all"
                         onSelect={() => {
-                          setArea(areaItem.toLowerCase());
+                          setArea('all');
                           setOpenArea(false);
                         }}
                       >
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            area === areaItem.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                            area === 'all' ? 'opacity-100' : 'opacity-0'
                           )}
                         />
-                        {areaItem}
+                        All Areas
                       </CommandItem>
-                    ))}
-                  </CommandGroup>
+                      {availableAreas.map((areaItem) => (
+                        <CommandItem
+                          key={areaItem}
+                          value={areaItem}
+                          onSelect={() => {
+                            setArea(areaItem.toLowerCase());
+                            setOpenArea(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              area === areaItem.toLowerCase() ? 'opacity-100' : 'opacity-0'
+                            )}
+                          />
+                          {areaItem}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-            <label className="text-xs sm:text-sm lg:text-base font-medium">Level of Study</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold">Level of Study</label>
             <Select value={level} onValueChange={setLevel}>
-              <SelectTrigger className="w-full text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10">
+              <SelectTrigger className="h-10 w-full rounded-pill text-sm">
                 <SelectValue placeholder="Select Level" />
               </SelectTrigger>
               <SelectContent>
@@ -231,14 +241,16 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
 
       <div className="flex flex-col gap-2">
         <Button
-          className="w-full text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+          size="lg"
+          className="w-full rounded-pill font-semibold shadow-glow"
           onClick={handleApplyFilters}
         >
           Apply Filters
         </Button>
         <Button
           variant="outline"
-          className="w-full text-xs sm:text-sm lg:text-base h-8 sm:h-9 lg:h-10"
+          size="lg"
+          className="w-full rounded-pill font-semibold"
           onClick={handleReset}
         >
           Reset
@@ -254,9 +266,8 @@ export default function FilterTutors({ onFilterChange, onReset }: FilterTutorsPr
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              variant="outline"
               size="icon"
-              className="fixed bottom-4 right-4 h-12 w-12 rounded-full"
+              className="fixed bottom-4 right-4 z-20 h-12 w-12 rounded-full shadow-glow"
             >
               <Menu className="h-6 w-6" />
             </Button>

@@ -8,10 +8,15 @@ import {
   GraduationCap,
   Clock,
   AlertCircle,
+  BookOpen,
+  Wallet,
+  ShieldCheck,
+  TrendingUp,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -70,84 +75,175 @@ export default function DashboardPage() {
   if (loading) return <DashboardSkeleton />;
   if (error) {
     return (
-      <div className="p-4">
-        <div className="text-red-500 mb-4">{error}</div>
-        <Button onClick={() => window.location.reload()}>Refresh Page</Button>
+      <div className="min-h-[60vh] p-4 sm:p-6 flex items-center justify-center">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-error/10 text-error">
+            <AlertCircle className="h-6 w-6" />
+          </span>
+          <h2 className="mt-4 font-display text-xl font-bold">Couldn&apos;t load your dashboard</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="mt-6 rounded-pill px-6 font-semibold shadow-glow"
+          >
+            Refresh Page
+          </Button>
+        </div>
       </div>
     );
   }
 
+  const p = profile?.profile;
+  const stats = [
+    {
+      label: 'Experience',
+      value: `${p?.yearsOfExperience ?? 0}`,
+      suffix: 'yrs',
+      icon: Briefcase,
+      trend: 'Teaching level: ' + (p?.teachingLevel ?? '—'),
+    },
+    {
+      label: 'Subjects',
+      value: `${p?.subjects?.length ?? 0}`,
+      suffix: '',
+      icon: BookOpen,
+      trend: p?.medium?.replace('_', ' ') ?? '—',
+    },
+    {
+      label: 'Expected Salary',
+      value: `৳${(p?.monthlySalary ?? 0).toLocaleString()}`,
+      suffix: '/mo',
+      icon: Wallet,
+      trend: 'Monthly rate',
+    },
+    {
+      label: 'Availability',
+      value: p?.availability ?? '—',
+      suffix: '',
+      icon: Clock,
+      trend: `${p?.district ?? ''}${p?.area ? ', ' + p.area : ''}`,
+    },
+  ];
+
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Teacher Dashboard</h1>
-        <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Teacher Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Welcome back, {profile?.firstName ?? 'Teacher'}. Here&apos;s your profile at a glance.
+          </p>
+        </div>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           <Button
-            className="flex-1 sm:flex-initial text-sm sm:text-base"
+            className="flex-1 rounded-pill font-semibold shadow-glow sm:flex-initial"
             onClick={() => router.push('/jobs')}
           >
-            <Briefcase className="h-4 w-4 mr-2" />
+            <Briefcase className="mr-2 h-4 w-4" />
             Find Teaching Jobs
           </Button>
-          <Button className="flex-1 sm:flex-initial text-sm sm:text-base" variant="outline">
-            <Clock className="h-4 w-4 mr-2" />
+          <Button className="flex-1 rounded-pill font-semibold sm:flex-initial" variant="outline">
+            <Clock className="mr-2 h-4 w-4" />
             View Applications
           </Button>
           <Button
             variant="outline"
             onClick={logout}
-            className="flex-1 sm:flex-initial hover:bg-red-100 text-sm sm:text-base"
+            className="flex-1 rounded-pill font-semibold text-muted-foreground hover:border-error/40 hover:bg-error/10 hover:text-error sm:flex-initial"
           >
             Logout
           </Button>
+          <ThemeToggle className="hidden sm:inline-grid" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      {/* Summary Stats */}
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <div
+              key={s.label}
+              className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="grid h-10 w-10 place-items-center rounded-lg bg-brand-50 text-primary dark:bg-primary/15">
+                  <Icon className="h-5 w-5" />
+                </span>
+              </div>
+              <p className="mt-4 truncate font-display text-2xl font-extrabold tabular">
+                {s.value}
+                {s.suffix && (
+                  <span className="ml-1 text-base font-semibold text-muted-foreground">
+                    {s.suffix}
+                  </span>
+                )}
+              </p>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {s.label}
+              </p>
+              <p className="mt-2 flex items-center gap-1 truncate text-xs text-muted-foreground">
+                <TrendingUp className="h-3.5 w-3.5 flex-shrink-0 text-success" />
+                <span className="truncate">{s.trend}</span>
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Profile Card */}
-        <Card className="lg:col-span-1 h-fit lg:sticky lg:top-4">
+        <Card className="h-fit rounded-2xl border-border shadow-soft-sm lg:col-span-1 lg:sticky lg:top-4">
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <CardTitle className="text-lg sm:text-xl">Profile</CardTitle>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => openEditModal('profile')}
                 aria-label="Edit profile"
+                className="rounded-lg text-muted-foreground hover:text-primary"
               >
                 <Edit2 className="h-4 w-4" />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center mb-6">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <span className="text-xl sm:text-2xl font-bold">
+            <div className="mb-6 flex flex-col items-center">
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-800 shadow-soft sm:h-24 sm:w-24">
+                <span className="font-display text-xl font-bold text-white sm:text-2xl">
                   {profile?.firstName?.[0]}
                   {profile?.lastName?.[0]}
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-center">
+              <h2 className="text-center font-display text-lg font-bold sm:text-xl">
                 {profile?.firstName} {profile?.lastName}
               </h2>
-              <p className="text-sm sm:text-base text-gray-500">
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-pill bg-secondary px-3 py-1 text-xs font-semibold text-primary">
+                <GraduationCap className="h-3.5 w-3.5" />
                 {profile?.profile?.teachingLevel} Teacher
-              </p>
+              </span>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base break-all">{profile?.email}</span>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-brand-50 text-primary dark:bg-primary/15">
+                  <Mail className="h-4 w-4" />
+                </span>
+                <span className="break-all text-sm">{profile?.email}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">{profile?.phone}</span>
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-brand-50 text-primary dark:bg-primary/15">
+                  <Phone className="h-4 w-4" />
+                </span>
+                <span className="text-sm tabular">{profile?.phone}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">
+              <div className="flex items-center gap-3">
+                <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-brand-50 text-primary dark:bg-primary/15">
+                  <MapPin className="h-4 w-4" />
+                </span>
+                <span className="text-sm">
                   {profile?.profile?.district}, {profile?.profile?.area}
                 </span>
               </div>
@@ -156,50 +252,60 @@ export default function DashboardPage() {
         </Card>
 
         {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2">
           {/* Teaching Details Card */}
-          <Card>
+          <Card className="rounded-2xl border-border shadow-soft-sm">
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <CardTitle className="text-lg sm:text-xl">Teaching Details</CardTitle>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => openEditModal('teaching')}
                   aria-label="Edit teaching details"
+                  className="rounded-lg text-muted-foreground hover:text-primary"
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+                <div className="space-y-5">
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <GraduationCap className="h-4 w-4 text-gray-500" />
-                      <h3 className="font-medium text-sm sm:text-base">Education</h3>
+                    <div className="mb-2 flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4 text-primary" />
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Education
+                      </h3>
                     </div>
-                    <p className="text-sm sm:text-base">{profile?.profile?.education}</p>
+                    <p className="text-sm font-medium">{profile?.profile?.education}</p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Briefcase className="h-4 w-4 text-gray-500" />
-                      <h3 className="font-medium text-sm sm:text-base">Experience</h3>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-primary" />
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Experience
+                      </h3>
                     </div>
-                    <p className="text-sm sm:text-base">
+                    <p className="text-sm font-medium tabular">
                       {profile?.profile?.yearsOfExperience} years
                     </p>
                   </div>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <div>
-                    <h3 className="font-medium text-sm sm:text-base mb-2">Subjects</h3>
+                    <div className="mb-2 flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Subjects
+                      </h3>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {profile?.profile?.subjects.map((subject, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-primary/10 rounded-full text-sm sm:text-base"
+                          className="inline-flex items-center rounded-pill bg-secondary px-3 py-1 text-xs font-semibold text-primary"
                         >
                           {subject}
                         </span>
@@ -207,11 +313,13 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <h3 className="font-medium text-sm sm:text-base">Availability</h3>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Availability
+                      </h3>
                     </div>
-                    <p className="text-sm sm:text-base">{profile?.profile?.availability}</p>
+                    <p className="text-sm font-medium">{profile?.profile?.availability}</p>
                   </div>
                 </div>
               </div>
@@ -219,69 +327,82 @@ export default function DashboardPage() {
           </Card>
 
           {/* Additional Details Card */}
-          <Card>
+          <Card className="rounded-2xl border-border shadow-soft-sm">
             <CardHeader>
               <CardTitle className="text-lg sm:text-xl">Additional Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-primary/5 rounded-lg">
-                  <h3 className="text-xs sm:text-sm text-gray-500 mb-1">Medium</h3>
-                  <p className="font-semibold text-sm sm:text-base">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Medium
+                  </h3>
+                  <p className="text-sm font-semibold">
                     {profile?.profile?.medium.replace('_', ' ')}
                   </p>
                 </div>
-                <div className="p-4 bg-primary/5 rounded-lg">
-                  <h3 className="text-xs sm:text-sm text-gray-500 mb-1">Specialization</h3>
-                  <p className="font-semibold text-sm sm:text-base line-clamp-1">
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Specialization
+                  </h3>
+                  <p className="line-clamp-1 text-sm font-semibold">
                     {profile?.profile?.specialization}
                   </p>
                 </div>
-                <div className="p-4 bg-primary/5 rounded-lg">
-                  <h3 className="text-xs sm:text-sm text-gray-500 mb-1">Expected Salary</h3>
-                  <p className="font-semibold text-sm sm:text-base">
-                    ৳{profile?.profile?.monthlySalary.toLocaleString()}/month
+                <div className="rounded-xl border border-border bg-muted/40 p-4">
+                  <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Expected Salary
+                  </h3>
+                  <p className="text-sm font-semibold tabular">
+                    ৳{profile?.profile?.monthlySalary.toLocaleString()}
+                    <span className="font-normal text-muted-foreground">/month</span>
                   </p>
                 </div>
               </div>
 
               {/* Verification Card */}
-              <Card className="bg-yellow-50/50 mt-6">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <AlertCircle className="h-5 w-5 text-yellow-500" />
-                    Verify Your Account
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                    Please verify your account by uploading either your NID or Birth Certificate
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`/dashboard/verify/nid`)}
-                      className="text-sm sm:text-base"
-                    >
-                      Upload NID
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`/dashboard/verify/birth-certificate`)}
-                      className="text-sm sm:text-base"
-                    >
-                      Upload Birth Certificate
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`/dashboard/verify/passport`)}
-                      className="text-sm sm:text-base"
-                    >
-                      Upload Passport
-                    </Button>
+              <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-warning/30 dark:bg-warning/10">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-600 dark:bg-warning/20 dark:text-warning">
+                      <AlertCircle className="h-5 w-5" />
+                    </span>
+                    <h3 className="font-display text-base font-bold sm:text-lg">
+                      Verify Your Account
+                    </h3>
                   </div>
-                </CardContent>
-              </Card>
+                  <span className="inline-flex items-center gap-1.5 rounded-pill bg-warning/10 px-3 py-1 text-xs font-semibold text-warning">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Not verified
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Please verify your account by uploading either your NID or Birth Certificate
+                </p>
+                <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/dashboard/verify/nid`)}
+                    className="rounded-pill bg-card text-sm font-semibold"
+                  >
+                    Upload NID
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/dashboard/verify/birth-certificate`)}
+                    className="rounded-pill bg-card text-sm font-semibold"
+                  >
+                    Upload Birth Certificate
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/dashboard/verify/passport`)}
+                    className="rounded-pill bg-card text-sm font-semibold"
+                  >
+                    Upload Passport
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -303,20 +424,28 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <Skeleton className="h-8 w-40 sm:h-10" />
-        <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-          <Skeleton className="h-10 w-full sm:w-32" />
-          <Skeleton className="h-10 w-full sm:w-32" />
-          <Skeleton className="h-10 w-full sm:w-24" />
+    <div className="mx-auto max-w-7xl p-4 sm:p-6">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48 sm:h-10" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Skeleton className="h-10 w-full rounded-pill sm:w-32" />
+          <Skeleton className="h-10 w-full rounded-pill sm:w-32" />
+          <Skeleton className="h-10 w-full rounded-pill sm:w-24" />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <Skeleton className="h-[400px]" />
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          <Skeleton className="h-[300px]" />
-          <Skeleton className="h-[400px]" />
+      <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-[132px] rounded-2xl" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+        <Skeleton className="h-[400px] rounded-2xl" />
+        <div className="space-y-4 sm:space-y-6 lg:col-span-2">
+          <Skeleton className="h-[300px] rounded-2xl" />
+          <Skeleton className="h-[400px] rounded-2xl" />
         </div>
       </div>
     </div>

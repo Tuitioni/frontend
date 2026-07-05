@@ -107,9 +107,17 @@ export default function ReportEdit({ params }: ReportEditProps) {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Report</h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Report</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the report&apos;s details and status.
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
         <Input label="Title" name="title" value={formData.title} onChange={handleInputChange} />
         <Input
           label="Subject"
@@ -118,13 +126,13 @@ export default function ReportEdit({ params }: ReportEditProps) {
           onChange={handleInputChange}
         />
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-foreground">Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             rows={4}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary border-gray-300"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -140,11 +148,17 @@ export default function ReportEdit({ params }: ReportEditProps) {
           ]}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.back()}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" className="rounded-pill" disabled={loading}>
             {loading ? <LoadingSpinner size="sm" /> : 'Update Report'}
           </Button>
         </div>

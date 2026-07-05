@@ -1,6 +1,5 @@
 'use client';
 
-import { Card, Metric, Text } from '@tremor/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
@@ -130,34 +129,55 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard Overview</h1>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Dashboard Overview</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          A snapshot of tutors, students, tuitions, and revenue across Tuitioni.
+        </p>
+      </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="max-w-xs mx-auto" decoration="top" decorationColor="indigo">
-          <Text>Total Teachers</Text>
-          <Metric>{stats.teachers.total}</Metric>
-        </Card>
-        <Card className="max-w-xs mx-auto" decoration="top" decorationColor="green">
-          <Text>Total Students</Text>
-          <Metric>{stats.students.total}</Metric>
-        </Card>
-        <Card className="max-w-xs mx-auto" decoration="top" decorationColor="amber">
-          <Text>Active Tuitions</Text>
-          <Metric>{stats.tuitions.byStatus.ACTIVE}</Metric>
-        </Card>
-        <Card className="max-w-xs mx-auto" decoration="top" decorationColor="rose">
-          <Text>Total Revenue</Text>
-          <Metric>৳{stats.payments.totalAmount.toLocaleString()}</Metric>
-        </Card>
+      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Total Teachers
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">
+            {stats.teachers.total}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Total Students
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">
+            {stats.students.total}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Active Tuitions
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">
+            {stats.tuitions.byStatus.ACTIVE}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Total Revenue
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">
+            ৳{stats.payments.totalAmount.toLocaleString()}
+          </p>
+        </div>
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Medium Comparison Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Teachers & Students by Medium</h2>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-soft-sm">
+          <h2 className="mb-4 font-display text-lg font-bold">Teachers &amp; Students by Medium</h2>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={mediumComparisonData}>
@@ -174,8 +194,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tuition Status Distribution */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Tuition Status Distribution</h2>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-soft-sm">
+          <h2 className="mb-4 font-display text-lg font-bold">Tuition Status Distribution</h2>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -201,23 +221,35 @@ export default function AdminDashboard() {
       </div>
 
       {/* Additional Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="max-w-xs mx-auto" decoration="left" decorationColor="blue">
-          <Text>Total Jobs</Text>
-          <Metric>{stats.jobs.total}</Metric>
-          <div className="mt-2 text-sm text-gray-600">
-            <span className="text-green-600">{stats.jobs.byStatus.OPEN} Open</span> ·{' '}
-            <span className="text-gray-500">{stats.jobs.byStatus.CLOSED} Closed</span>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Total Jobs
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">{stats.jobs.total}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium">
+            <span className="inline-flex items-center rounded-pill bg-success/10 px-2.5 py-1 tabular text-success">
+              {stats.jobs.byStatus.OPEN} Open
+            </span>
+            <span className="inline-flex items-center rounded-pill bg-muted px-2.5 py-1 tabular text-muted-foreground">
+              {stats.jobs.byStatus.CLOSED} Closed
+            </span>
           </div>
-        </Card>
-        <Card className="max-w-xs mx-auto" decoration="left" decorationColor="purple">
-          <Text>Reports</Text>
-          <Metric>{stats.reports.total}</Metric>
-        </Card>
-        <Card className="max-w-xs mx-auto" decoration="left" decorationColor="cyan">
-          <Text>Announcements</Text>
-          <Metric>{stats.announcements.total}</Metric>
-        </Card>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Reports
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">{stats.reports.total}</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-soft-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Announcements
+          </p>
+          <p className="mt-2 font-display text-3xl font-extrabold tabular">
+            {stats.announcements.total}
+          </p>
+        </div>
       </div>
     </div>
   );

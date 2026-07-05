@@ -93,71 +93,98 @@ function TutorsContent() {
     fetchFilteredTutors();
   };
 
-  return (
-    <>
-      <div className="flex flex-col lg:flex-row mt-2 sm:mt-3 lg:mt-4 min-h-[calc(100vh-6rem)]">
-        <div className="lg:w-1/4 p-2 sm:p-3 lg:p-4">
-          <FilterTutors onFilterChange={handleFilterChange} onReset={handleReset} />
-        </div>
-        <div className="w-full lg:w-3/4 flex flex-col">
-          <div className="flex flex-col sm:flex-row justify-between px-2 sm:px-3 lg:px-4 mb-2 gap-2">
-            <div className="text-sm sm:text-base lg:text-lg">
-              Showing Results: {tutors.length || 0}
-            </div>
-            <div className="flex gap-1 items-center">
-              <div className="text-sm sm:text-base lg:text-lg">Sort By:</div>
-              <Select>
-                <SelectTrigger className="w-[140px] sm:w-[160px] lg:w-[180px] h-8 sm:h-9 lg:h-10 text-xs sm:text-sm lg:text-base">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="experience">Experience</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+  const hasTutors = Array.isArray(tutors) && tutors.length > 0;
 
-          {loading ? (
-            <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+  return (
+    <div className="bg-mesh">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <header className="mb-8 max-w-2xl">
+          <span className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+            <span className="h-2 w-2 rounded-full bg-amber" />
+            Browse tutors
+          </span>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Find your perfect <span className="text-gradient">tutor</span>
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground">
+            Compare verified tutors by subject, area, and experience, then hire in minutes.
+          </p>
+        </header>
+
+        <div className="flex min-h-[calc(100vh-6rem)] flex-col gap-6 lg:flex-row">
+          <div className="lg:w-1/4">
+            <FilterTutors onFilterChange={handleFilterChange} onReset={handleReset} />
+          </div>
+          <div className="flex w-full flex-col lg:w-3/4">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div className="text-sm font-medium text-muted-foreground">
+                Showing{' '}
+                <span className="tabular font-bold text-foreground">{tutors.length || 0}</span>{' '}
+                results
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Sort by</span>
+                <Select>
+                  <SelectTrigger className="h-10 w-[160px] rounded-pill text-sm lg:w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="experience">Experience</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="location">Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[...Array(6)].map((_, index) => (
                   <SkeletonTutorCard key={index} />
                 ))}
               </div>
-            </div>
-          ) : (
-            <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-                {Array.isArray(tutors)
-                  ? tutors.map((tutor) => (
-                      <TutorCard
-                        key={tutor.id}
-                        id={tutor.id}
-                        firstName={tutor.firstName}
-                        lastName={tutor.lastName}
-                        location={tutor.location}
-                        phone={tutor.phone}
-                        medium={tutor.medium}
-                        education={tutor.education}
-                        subjects={tutor.subjects}
-                        yearsOfExperience={tutor.yearsOfExperience}
-                      />
-                    ))
-                  : null}
+            ) : hasTutors ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {tutors.map((tutor) => (
+                  <TutorCard
+                    key={tutor.id}
+                    id={tutor.id}
+                    firstName={tutor.firstName}
+                    lastName={tutor.lastName}
+                    location={tutor.location}
+                    phone={tutor.phone}
+                    medium={tutor.medium}
+                    education={tutor.education}
+                    subjects={tutor.subjects}
+                    yearsOfExperience={tutor.yearsOfExperience}
+                  />
+                ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-12 text-center shadow-soft-sm">
+                <span className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-secondary text-2xl text-primary">
+                  🔍
+                </span>
+                <h3 className="font-display text-lg font-bold">No tutors found</h3>
+                <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                  Try adjusting or resetting your filters to see more tutors.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 export default function TutorsPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="bg-mesh py-20 text-center text-sm text-muted-foreground">Loading...</div>
+      }
+    >
       <TutorsContent />
     </Suspense>
   );

@@ -82,69 +82,105 @@ export default function TuitionDetailPage({ params }: { params: { id: string } }
   }
 
   const footer = (
-    <div className="flex gap-2 justify-end">
+    <div className="flex justify-end gap-3">
       <Button
         variant="outline"
+        className="rounded-pill"
         onClick={() => router.push(`/admin-dashboard/tuition/${params.id}/edit`)}
       >
         Edit
       </Button>
-      <Button variant="destructive" onClick={handleDelete}>
+      <Button variant="destructive" className="rounded-pill" onClick={handleDelete}>
         Delete
       </Button>
     </div>
   );
 
   return (
-    <div className="container mx-auto py-10">
-      <AdminCard title="Tuition Details" footer={footer}>
-        <div className="grid grid-cols-2 gap-8">
-          {/* Teacher Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Teacher Information</h3>
-            <div className="space-y-2">
-              <p>
-                <strong>Name:</strong> {tuition.teacher.firstName} {tuition.teacher.lastName}
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Tuition Details</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Full details for {tuition.subject} tuition.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Teacher Information */}
+        <AdminCard title="Teacher Information">
+          <div className="space-y-5">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
               </p>
-              <p>
-                <strong>Email:</strong> {tuition.teacher.email}
+              <p className="mt-1 text-lg font-semibold">
+                {tuition.teacher.firstName} {tuition.teacher.lastName}
               </p>
             </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Email
+              </p>
+              <p className="mt-1 text-lg font-semibold">{tuition.teacher.email}</p>
+            </div>
           </div>
+        </AdminCard>
 
-          {/* Student Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Student Information</h3>
-            <div className="space-y-2">
-              <p>
-                <strong>Name:</strong> {tuition.student.firstName} {tuition.student.lastName}
+        {/* Student Information */}
+        <AdminCard title="Student Information">
+          <div className="space-y-5">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
               </p>
-              <p>
-                <strong>Email:</strong> {tuition.student.email}
+              <p className="mt-1 text-lg font-semibold">
+                {tuition.student.firstName} {tuition.student.lastName}
               </p>
             </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Email
+              </p>
+              <p className="mt-1 text-lg font-semibold">{tuition.student.email}</p>
+            </div>
           </div>
+        </AdminCard>
 
-          {/* Tuition Details */}
-          <div className="col-span-2 space-y-4">
-            <h3 className="text-lg font-semibold">Tuition Details</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <p>
-                <strong>Fee:</strong> ৳{tuition.fee}
+        {/* Tuition Details */}
+        <AdminCard title="Tuition Details" footer={footer} className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Fee
               </p>
-              <p>
-                <strong>Payment ID:</strong> {tuition.paymentId || 'Not assigned'}
+              <p className="mt-1 text-lg font-semibold tabular">৳{tuition.fee}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Payment ID
               </p>
-              <p>
-                <strong>Created At:</strong> {new Date(tuition.createdAt).toLocaleDateString()}
+              <p className="mt-1 text-lg font-semibold tabular">
+                {tuition.paymentId || 'Not assigned'}
               </p>
-              <p>
-                <strong>Updated At:</strong> {new Date(tuition.updatedAt).toLocaleDateString()}
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Created At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">
+                {new Date(tuition.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Updated At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">
+                {new Date(tuition.updatedAt).toLocaleDateString()}
               </p>
             </div>
           </div>
-        </div>
-      </AdminCard>
+        </AdminCard>
+      </div>
     </div>
   );
 }

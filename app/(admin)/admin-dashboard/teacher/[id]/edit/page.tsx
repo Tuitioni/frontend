@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 import { Input, Select } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuthFetch } from '@/hooks/useAuthFetch';
@@ -147,134 +148,144 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
   }
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <div className="w-full max-w-3xl bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Edit Teacher</h1>
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Teacher</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the teacher&apos;s personal and profile information.
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="First Name"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
+            required
+          />
+          <Input
+            label="Last Name"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Input
+          label="Phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Input
+          label="Location"
+          name="location"
+          value={formData.location}
+          onChange={handleInputChange}
+          required
+        />
+
+        <h2 className="mb-2 mt-8 border-t border-border pt-6 font-display text-lg font-bold">
+          Profile Information
+        </h2>
+
+        <Input
+          label="District"
+          name="profile.district"
+          value={formData.profile?.district}
+          onChange={handleInputChange}
+          required
+        />
+        <Input
+          label="Area"
+          name="profile.area"
+          value={formData.profile?.area}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Select
+          label="Gender"
+          name="profile.gender"
+          value={formData.profile?.gender}
+          onChange={handleInputChange}
+          options={[
+            { value: Gender.MALE, label: 'Male' },
+            { value: Gender.FEMALE, label: 'Female' },
+          ]}
+          required
+        />
+
+        <Select
+          label="Medium"
+          name="profile.medium"
+          value={formData.profile?.medium}
+          onChange={handleInputChange}
+          options={[
+            { value: Medium.BANGLA_MEDIUM, label: 'Bangla Medium' },
+            { value: Medium.ENGLISH_MEDIUM, label: 'English Medium' },
+            { value: Medium.ENGLISH_VERSION, label: 'English Version' },
+          ]}
+          required
+        />
+
+        <Input
+          label="Education"
+          name="profile.education"
+          value={formData.profile?.education}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Input
+          label="Years of Experience"
+          type="number"
+          name="profile.yearsOfExperience"
+          value={formData.profile?.yearsOfExperience}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Input
+          label="Monthly Salary"
+          type="number"
+          name="profile.monthlySalary"
+          value={formData.profile?.monthlySalary}
+          onChange={handleInputChange}
+          required
+        />
+
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
           <Button
+            type="button"
             variant="outline"
+            className="rounded-pill"
             onClick={() => router.push(`/admin-dashboard/teacher/${params.id}`)}
+            disabled={loading}
           >
             Cancel
           </Button>
+          <Button type="submit" className="rounded-pill" disabled={loading}>
+            {loading ? <LoadingSpinner size="sm" /> : 'Save Changes'}
+          </Button>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              required
-            />
-            <Input
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <Input
-            label="Email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            label="Phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            label="Location"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            required
-          />
-
-          <h2 className="text-xl font-semibold mt-8 mb-4">Profile Information</h2>
-
-          <Input
-            label="District"
-            name="profile.district"
-            value={formData.profile?.district}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            label="Area"
-            name="profile.area"
-            value={formData.profile?.area}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Select
-            label="Gender"
-            name="profile.gender"
-            value={formData.profile?.gender}
-            onChange={handleInputChange}
-            options={[
-              { value: Gender.MALE, label: 'Male' },
-              { value: Gender.FEMALE, label: 'Female' },
-            ]}
-            required
-          />
-
-          <Select
-            label="Medium"
-            name="profile.medium"
-            value={formData.profile?.medium}
-            onChange={handleInputChange}
-            options={[
-              { value: Medium.BANGLA_MEDIUM, label: 'Bangla Medium' },
-              { value: Medium.ENGLISH_MEDIUM, label: 'English Medium' },
-              { value: Medium.ENGLISH_VERSION, label: 'English Version' },
-            ]}
-            required
-          />
-
-          <Input
-            label="Education"
-            name="profile.education"
-            value={formData.profile?.education}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            label="Years of Experience"
-            type="number"
-            name="profile.yearsOfExperience"
-            value={formData.profile?.yearsOfExperience}
-            onChange={handleInputChange}
-            required
-          />
-
-          <Input
-            label="Monthly Salary"
-            type="number"
-            name="profile.monthlySalary"
-            value={formData.profile?.monthlySalary}
-            onChange={handleInputChange}
-            required
-          />
-
-          <div className="flex justify-end space-x-2">
-            <Button type="submit">Save Changes</Button>
-          </div>
-        </form>
-      </div>
+      </form>
     </div>
   );
 }

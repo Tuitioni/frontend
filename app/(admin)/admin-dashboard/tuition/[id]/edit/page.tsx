@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Input } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinnerCenter } from '@/components/ui/LoadingSpinnerCenter';
@@ -103,57 +102,65 @@ export default function EditTuitionPage({ params }: { params: { id: string } }) 
     return <LoadingSpinnerCenter />;
   }
 
-  const footer = (
-    <div className="flex gap-2 justify-end">
-      <Button type="submit" form="edit-tuition-form">
-        Update Tuition
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => router.push(`/admin-dashboard/tuition/${params.id}`)}
-      >
-        Cancel
-      </Button>
-    </div>
-  );
-
   return (
-    <div className="container mx-auto py-10">
-      <AdminCard title="Edit Tuition" footer={footer}>
-        <form id="edit-tuition-form" onSubmit={handleSubmit} className="space-y-6">
-          <Input
-            label="Teacher ID"
-            name="teacherId"
-            value={formData.teacherId}
-            onChange={(e) => handleChange('teacherId', e.target.value)}
-            required
-          />
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Tuition</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the tuition assignment and payment details.
+        </p>
+      </div>
+      <form
+        id="edit-tuition-form"
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
+        <Input
+          label="Teacher ID"
+          name="teacherId"
+          value={formData.teacherId}
+          onChange={(e) => handleChange('teacherId', e.target.value)}
+          required
+        />
 
-          <Input
-            label="Student ID"
-            name="studentId"
-            value={formData.studentId}
-            onChange={(e) => handleChange('studentId', e.target.value)}
-            required
-          />
+        <Input
+          label="Student ID"
+          name="studentId"
+          value={formData.studentId}
+          onChange={(e) => handleChange('studentId', e.target.value)}
+          required
+        />
 
-          <Input
-            label="Fee"
-            name="fee"
-            type="number"
-            value={formData.fee}
-            onChange={(e) => handleChange('fee', parseInt(e.target.value))}
-            required
-          />
+        <Input
+          label="Fee"
+          name="fee"
+          type="number"
+          value={formData.fee}
+          onChange={(e) => handleChange('fee', parseInt(e.target.value))}
+          required
+        />
 
-          <Input
-            label="Payment ID"
-            name="paymentId"
-            value={formData.paymentId}
-            onChange={(e) => handleChange('paymentId', e.target.value)}
-          />
-        </form>
-      </AdminCard>
+        <Input
+          label="Payment ID"
+          name="paymentId"
+          value={formData.paymentId}
+          onChange={(e) => handleChange('paymentId', e.target.value)}
+        />
+
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.push(`/admin-dashboard/tuition/${params.id}`)}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" className="rounded-pill">
+            Update Tuition
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

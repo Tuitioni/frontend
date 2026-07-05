@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { AiFillStar } from 'react-icons/ai';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
 
-import HireModal from "./HireModal";
+import HireModal from './HireModal';
 
 // Define the type for the TutorCard props
 interface TutorCardProps {
@@ -32,51 +32,54 @@ export default function TutorCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Ensure subjects is always an array
   const subjectList = Array.isArray(subjects) ? subjects : [];
+  const initials = `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase();
 
   return (
     <>
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardContent className="p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between items-start">
-              <h3 className="font-semibold text-lg">
+      <div className="group flex flex-col rounded-2xl border border-border bg-card p-5 shadow-soft-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-800 font-display text-sm font-bold text-white">
+              {initials}
+            </span>
+            <div className="leading-tight">
+              <h3 className="font-display text-lg font-bold">
                 {firstName} {lastName}
               </h3>
-              <span className="text-sm text-gray-500">
-                {yearsOfExperience} yrs exp
-              </span>
+              <p className="mt-0.5 text-sm text-muted-foreground">{location}</p>
             </div>
-
-            <div className="text-sm text-gray-600">
-              <div>{education}</div>
-              <div>{location}</div>
-            </div>
-
-            <div className="flex flex-wrap gap-1 mt-2">
-              {subjectList.slice(0, 3).map((subject, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-100 px-2 py-1 rounded-full text-xs"
-                >
-                  {subject}
-                </span>
-              ))}
-              {subjectList.length > 3 && (
-                <span className="text-xs text-gray-500">
-                  +{subjectList.length - 3} more
-                </span>
-              )}
-            </div>
-
-            <Button
-              className="w-full mt-2"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Hire
-            </Button>
           </div>
-        </CardContent>
-      </Card>
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-pill bg-amber/15 px-2.5 py-1 text-xs font-semibold tabular text-amber-600">
+            <AiFillStar className="h-3.5 w-3.5" />
+            {yearsOfExperience} yrs
+          </span>
+        </div>
+
+        <p className="mt-4 text-sm text-muted-foreground">{education}</p>
+
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {subjectList.slice(0, 3).map((subject, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center rounded-pill bg-secondary px-3 py-1 text-xs font-semibold text-primary"
+            >
+              {subject}
+            </span>
+          ))}
+          {subjectList.length > 3 && (
+            <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-muted-foreground">
+              +{subjectList.length - 3} more
+            </span>
+          )}
+        </div>
+
+        <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+          <span className="text-xs font-medium text-muted-foreground">Verified tutor</span>
+          <Button size="sm" className="rounded-pill" onClick={() => setIsModalOpen(true)}>
+            Hire
+          </Button>
+        </div>
+      </div>
 
       <HireModal
         isOpen={isModalOpen}

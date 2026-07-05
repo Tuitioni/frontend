@@ -17,7 +17,7 @@ export default function MobileMenu({ className }: MobileMenuProps) {
     <div className={`md:hidden flex items-center ${className || ''}`}>
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="text-gray-700 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="text-foreground rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isMenuOpen}
       >
@@ -25,7 +25,7 @@ export default function MobileMenu({ className }: MobileMenuProps) {
       </button>
 
       {isMenuOpen && (
-        <div className="absolute top-14 right-0 bg-white shadow-md p-4 w-48 rounded-lg z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-14 right-0 bg-popover border border-border shadow-soft-lg p-4 w-48 rounded-xl z-10 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col gap-2">
             <Link href="/login">
               <Button variant="default" className="w-full">

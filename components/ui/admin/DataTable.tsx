@@ -40,30 +40,33 @@ export default function DataTable({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-card shadow-soft-sm">
       <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <table className="w-full text-left text-sm text-foreground">
+          <thead className="bg-muted/60 text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               {columns.map((column) => (
-                <th key={column.key} className="px-6 py-3">
+                <th key={column.key} className="px-6 py-3.5 font-semibold">
                   {column.label}
                 </th>
               ))}
-              <th className="px-6 py-3">Actions</th>
+              <th className="px-6 py-3.5 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
             {data
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
               .map((row, index) => (
-                <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                <tr
+                  key={index}
+                  className="border-b border-border transition-colors hover:bg-muted/50"
+                >
                   {columns.map((column) => (
                     <td key={column.key} className="px-6 py-4">
                       {row[column.key]}
                     </td>
                   ))}
-                  <td className="px-6 py-4 flex gap-2">
+                  <td className="px-6 py-4 flex gap-1">
                     <Tooltip content="View">
                       <Button
                         variant="ghost"
@@ -106,15 +109,23 @@ export default function DataTable({
         </table>
       </div>
 
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between border-t border-border bg-muted/30 px-6 py-3.5">
         <Button
+          variant="outline"
+          size="sm"
+          className="rounded-pill"
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           disabled={currentPage === 1}
         >
           Previous
         </Button>
-        <span className="text-sm text-gray-700">Page {currentPage}</span>
+        <span className="tabular text-sm font-medium text-muted-foreground">
+          Page {currentPage}
+        </span>
         <Button
+          variant="outline"
+          size="sm"
+          className="rounded-pill"
           onClick={() => setCurrentPage((p) => p + 1)}
           disabled={currentPage * itemsPerPage >= data.length}
         >

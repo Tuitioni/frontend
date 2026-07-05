@@ -95,59 +95,79 @@ export default function Page() {
   };
 
   return (
-    <>
-      <div className="flex flex-col lg:flex-row mt-2 sm:mt-3 lg:mt-4 min-h-[calc(100vh-6rem)]">
-        <div className="lg:w-1/4 p-2 sm:p-3 lg:p-4">
-          <FilterJobs onFilterChange={handleFilterChange} onReset={handleReset} />
-        </div>
-        <div className="w-full lg:w-3/4 flex flex-col">
-          <div className="flex flex-col sm:flex-row justify-between px-2 sm:px-3 lg:px-4 mb-2 gap-2">
-            <div className="text-sm sm:text-base lg:text-lg">Showing Results: {jobs.length}</div>
-            <div className="flex gap-1 items-center">
-              <div className="text-sm sm:text-base lg:text-lg">Sort By:</div>
-              <Select>
-                <SelectTrigger className="w-[140px] sm:w-[160px] lg:w-[180px] h-8 sm:h-9 lg:h-10 text-xs sm:text-sm lg:text-base">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">Date Posted</SelectItem>
-                  <SelectItem value="salary">Salary</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="bg-mesh">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <header className="mb-8 max-w-2xl">
+          <span className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+            <span className="h-2 w-2 rounded-full bg-amber" />
+            Teaching jobs
+          </span>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Discover your next <span className="text-gradient">tuition job</span>
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground">
+            Browse open tutoring opportunities and filter by area, level, and subject.
+          </p>
+        </header>
+
+        <div className="flex min-h-[calc(100vh-6rem)] flex-col gap-6 lg:flex-row">
+          <div className="lg:w-1/4">
+            <FilterJobs onFilterChange={handleFilterChange} onReset={handleReset} />
           </div>
-          {loading ? (
-            <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+          <div className="flex w-full flex-col lg:w-3/4">
+            <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+              <div className="text-sm font-medium text-muted-foreground">
+                Showing <span className="tabular font-bold text-foreground">{jobs.length}</span>{' '}
+                results
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-muted-foreground">Sort by</span>
+                <Select>
+                  <SelectTrigger className="h-10 w-[160px] rounded-pill text-sm lg:w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">Date Posted</SelectItem>
+                    <SelectItem value="salary">Salary</SelectItem>
+                    <SelectItem value="location">Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {loading ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[...Array(6)].map((_, index) => (
                   <SkeletonJobCard key={index} />
                 ))}
               </div>
-            </div>
-          ) : (
-            <div className="overflow-y-auto flex-1 px-2 sm:px-3 lg:px-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-                {jobs.length > 0 ? (
-                  jobs.map((job) => (
-                    <JobCard
-                      key={job.id}
-                      title={`${job.firstName} ${job.lastName}`}
-                      description={job.note}
-                      medium={job.medium}
-                      subjects={job.subjects}
-                      tutoringDays={`${job.numberOfDays} days per week`}
-                      monthlySalary={`$${job.salary}`}
-                    />
-                  ))
-                ) : (
-                  <p className="text-sm sm:text-base lg:text-lg">No jobs available</p>
-                )}
+            ) : jobs.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {jobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    title={`${job.firstName} ${job.lastName}`}
+                    description={job.note}
+                    medium={job.medium}
+                    subjects={job.subjects}
+                    tutoringDays={`${job.numberOfDays} days per week`}
+                    monthlySalary={`$${job.salary}`}
+                  />
+                ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-12 text-center shadow-soft-sm">
+                <span className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-secondary text-2xl text-primary">
+                  💼
+                </span>
+                <h3 className="font-display text-lg font-bold">No jobs available</h3>
+                <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                  Try adjusting or resetting your filters to see more opportunities.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

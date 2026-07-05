@@ -9,20 +9,22 @@ export default function AdminError({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center space-y-6 p-8 max-w-lg w-full mx-4">
-        <h2 className="text-3xl font-bold text-gray-800">Something went wrong</h2>
-        <p className="text-gray-600">An error occurred in the admin dashboard. Please try again.</p>
-        <div className="flex gap-4 justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-mesh px-4">
+      <div className="mx-4 w-full max-w-lg space-y-6 rounded-2xl border border-border bg-card p-8 text-center shadow-float">
+        <h2 className="text-2xl font-bold tracking-tight">Something went wrong</h2>
+        <p className="text-muted-foreground">
+          An error occurred in the admin dashboard. Please try again.
+        </p>
+        <div className="flex justify-center gap-3">
           <button
             onClick={() => reset()}
-            className="px-6 py-3 bg-blue text-white rounded-lg hover:opacity-90 transition-opacity"
+            className="rounded-pill bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-glow transition-opacity hover:opacity-90"
           >
             Try again
           </button>
           <Link
             href="/admin-dashboard"
-            className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+            className="rounded-pill border border-border px-6 py-3 font-semibold transition-colors hover:bg-muted"
           >
             Go to Dashboard
           </Link>

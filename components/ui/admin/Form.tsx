@@ -10,21 +10,21 @@ export function Input({ label, error, className = '', ...props }: InputProps) {
   const inputId = props.id || generatedId;
 
   return (
-    <div className="space-y-1">
-      <label htmlFor={inputId} className="block text-sm font-medium text-gray-700">
+    <div className="space-y-1.5">
+      <label htmlFor={inputId} className="block text-sm font-medium text-foreground">
         {label}
       </label>
       <input
         id={inputId}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-          error ? 'border-red-500' : 'border-gray-300'
+        className={`w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground shadow-soft-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring ${
+          error ? 'border-error' : 'border-border'
         } ${className}`}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${inputId}-error` : undefined}
         {...props}
       />
       {error && (
-        <p id={`${inputId}-error`} className="text-sm text-red-500">
+        <p id={`${inputId}-error`} className="text-sm font-medium text-error">
           {error}
         </p>
       )}
@@ -43,14 +43,14 @@ export function Select({ label, options, error, className = '', ...props }: Sele
   const selectId = props.id || generatedId;
 
   return (
-    <div className="space-y-1">
-      <label htmlFor={selectId} className="block text-sm font-medium text-gray-700">
+    <div className="space-y-1.5">
+      <label htmlFor={selectId} className="block text-sm font-medium text-foreground">
         {label}
       </label>
       <select
         id={selectId}
-        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-          error ? 'border-red-500' : 'border-gray-300'
+        className={`w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground shadow-soft-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring ${
+          error ? 'border-error' : 'border-border'
         } ${className}`}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${selectId}-error` : undefined}
@@ -63,7 +63,7 @@ export function Select({ label, options, error, className = '', ...props }: Sele
         ))}
       </select>
       {error && (
-        <p id={`${selectId}-error`} className="text-sm text-red-500">
+        <p id={`${selectId}-error`} className="text-sm font-medium text-error">
           {error}
         </p>
       )}

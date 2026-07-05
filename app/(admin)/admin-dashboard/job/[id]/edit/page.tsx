@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { AdminCard } from '@/components/ui/admin/AdminCard';
 import { Input, Select } from '@/components/ui/admin/Form';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -99,169 +98,174 @@ export default function EditJobPage({ params }: { params: { id: string } }) {
     );
   }
 
-  const footer = (
-    <div className="flex gap-2 justify-end">
-      <Button type="submit" form="edit-post-form">
-        Update Job Post
-      </Button>
-      <Button variant="outline" onClick={() => router.push(`/admin-dashboard/job/${params.id}`)}>
-        Cancel
-      </Button>
-    </div>
-  );
-
   return (
-    <div className="container mx-auto py-10">
-      <AdminCard title="Edit Job Post" footer={footer}>
-        <form id="edit-post-form" onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <Input
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={(e) => handleChange('firstName', e.target.value)}
-                required
-              />
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Job</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Update the details of this job post.</p>
+      </div>
+      <form
+        id="edit-post-form"
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
+        <Input
+          label="First Name"
+          name="firstName"
+          value={formData.firstName}
+          onChange={(e) => handleChange('firstName', e.target.value)}
+          required
+        />
 
-              <Input
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={(e) => handleChange('lastName', e.target.value)}
-                required
-              />
+        <Input
+          label="Last Name"
+          name="lastName"
+          value={formData.lastName}
+          onChange={(e) => handleChange('lastName', e.target.value)}
+          required
+        />
 
-              <Input
-                label="District"
-                name="district"
-                value={formData.district}
-                onChange={(e) => handleChange('district', e.target.value)}
-                required
-              />
+        <Input
+          label="District"
+          name="district"
+          value={formData.district}
+          onChange={(e) => handleChange('district', e.target.value)}
+          required
+        />
 
-              <Input
-                label="Area"
-                name="area"
-                value={formData.area}
-                onChange={(e) => handleChange('area', e.target.value)}
-                required
-              />
+        <Input
+          label="Area"
+          name="area"
+          value={formData.area}
+          onChange={(e) => handleChange('area', e.target.value)}
+          required
+        />
 
-              <Input
-                label="Age"
-                name="age"
-                type="number"
-                value={formData.age}
-                onChange={(e) => handleChange('age', parseInt(e.target.value))}
-                required
-              />
+        <Input
+          label="Age"
+          name="age"
+          type="number"
+          value={formData.age}
+          onChange={(e) => handleChange('age', parseInt(e.target.value))}
+          required
+        />
 
-              <Select
-                label="Medium"
-                name="medium"
-                value={formData.medium}
-                onChange={(e) => handleChange('medium', e.target.value)}
-                options={Object.values(Medium).map((medium: Medium) => ({
-                  value: medium,
-                  label: medium,
-                }))}
-                required
-              />
-            </div>
+        <Select
+          label="Medium"
+          name="medium"
+          value={formData.medium}
+          onChange={(e) => handleChange('medium', e.target.value)}
+          options={Object.values(Medium).map((medium: Medium) => ({
+            value: medium,
+            label: medium,
+          }))}
+          required
+        />
 
-            <div className="space-y-4">
-              <Input
-                label="Level of Study"
-                name="levelOfStudy"
-                value={formData.levelOfStudy}
-                onChange={(e) => handleChange('levelOfStudy', e.target.value)}
-                required
-              />
+        <h2 className="mb-2 mt-8 border-t border-border pt-6 font-display text-lg font-bold">
+          Tuition Details
+        </h2>
 
-              <Input
-                label="Subjects (comma-separated)"
-                name="subjects"
-                value={formData.subjects.join(', ')}
-                onChange={(e) =>
-                  setFormData((prev) =>
-                    prev
-                      ? {
-                          ...prev,
-                          subjects: e.target.value.split(',').map((s) => s.trim()),
-                        }
-                      : null
-                  )
-                }
-                required
-              />
+        <Input
+          label="Level of Study"
+          name="levelOfStudy"
+          value={formData.levelOfStudy}
+          onChange={(e) => handleChange('levelOfStudy', e.target.value)}
+          required
+        />
 
-              <Select
-                label="Gender"
-                name="gender"
-                value={formData.gender}
-                onChange={(e) => handleChange('gender', e.target.value)}
-                options={Object.values(Gender).map((gender: Gender) => ({
-                  value: gender,
-                  label: gender,
-                }))}
-                required
-              />
+        <Input
+          label="Subjects (comma-separated)"
+          name="subjects"
+          value={formData.subjects.join(', ')}
+          onChange={(e) =>
+            setFormData((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    subjects: e.target.value.split(',').map((s) => s.trim()),
+                  }
+                : null
+            )
+          }
+          required
+        />
 
-              <Input
-                label="Salary"
-                name="salary"
-                type="number"
-                value={formData.salary}
-                onChange={(e) => handleChange('salary', parseInt(e.target.value))}
-                required
-              />
+        <Select
+          label="Gender"
+          name="gender"
+          value={formData.gender}
+          onChange={(e) => handleChange('gender', e.target.value)}
+          options={Object.values(Gender).map((gender: Gender) => ({
+            value: gender,
+            label: gender,
+          }))}
+          required
+        />
 
-              <Input
-                label="Number of Days"
-                name="numberOfDays"
-                type="number"
-                value={formData.numberOfDays}
-                onChange={(e) => handleChange('numberOfDays', parseInt(e.target.value))}
-                required
-              />
+        <Input
+          label="Salary"
+          name="salary"
+          type="number"
+          value={formData.salary}
+          onChange={(e) => handleChange('salary', parseInt(e.target.value))}
+          required
+        />
 
-              <Input
-                label="Duration"
-                name="duration"
-                value={formData.duration}
-                onChange={(e) => handleChange('duration', e.target.value)}
-                required
-              />
-            </div>
-          </div>
+        <Input
+          label="Number of Days"
+          name="numberOfDays"
+          type="number"
+          value={formData.numberOfDays}
+          onChange={(e) => handleChange('numberOfDays', parseInt(e.target.value))}
+          required
+        />
 
-          <div className="space-y-4">
-            <Input
-              label="Tuition Type"
-              name="tuitionType"
-              value={formData.tuitionType}
-              onChange={(e) => handleChange('tuitionType', e.target.value)}
-              required
-            />
+        <Input
+          label="Duration"
+          name="duration"
+          value={formData.duration}
+          onChange={(e) => handleChange('duration', e.target.value)}
+          required
+        />
 
-            <Input
-              label="Class"
-              name="class"
-              value={formData.class}
-              onChange={(e) => handleChange('class', e.target.value)}
-              required
-            />
+        <Input
+          label="Tuition Type"
+          name="tuitionType"
+          value={formData.tuitionType}
+          onChange={(e) => handleChange('tuitionType', e.target.value)}
+          required
+        />
 
-            <Input
-              label="Note"
-              name="note"
-              value={formData.note || ''}
-              onChange={(e) => handleChange('note', e.target.value)}
-            />
-          </div>
-        </form>
-      </AdminCard>
+        <Input
+          label="Class"
+          name="class"
+          value={formData.class}
+          onChange={(e) => handleChange('class', e.target.value)}
+          required
+        />
+
+        <Input
+          label="Note"
+          name="note"
+          value={formData.note || ''}
+          onChange={(e) => handleChange('note', e.target.value)}
+        />
+
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.push(`/admin-dashboard/job/${params.id}`)}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" className="rounded-pill">
+            Update Job Post
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

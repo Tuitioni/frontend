@@ -106,9 +106,17 @@ export default function AnnouncementEdit({ params }: AnnouncementEditProps) {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Announcement</h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Announcement</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the announcement&apos;s title and content.
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
         <Input
           label="Title"
           name="title"
@@ -118,22 +126,28 @@ export default function AnnouncementEdit({ params }: AnnouncementEditProps) {
         />
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">Content</label>
+          <label className="block text-sm font-medium text-foreground">Content</label>
           <textarea
             name="content"
             value={formData.content}
             onChange={handleInputChange}
             maxLength={50}
             rows={4}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary border-gray-300"
+            className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground shadow-soft-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.back()}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" className="rounded-pill" disabled={loading}>
             {loading ? <LoadingSpinner size="sm" /> : 'Update Announcement'}
           </Button>
         </div>

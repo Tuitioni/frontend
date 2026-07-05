@@ -145,7 +145,11 @@ export function ProfileEditModal({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>}
+          {error && (
+            <div className="rounded-xl border border-error/20 bg-error/10 p-3 text-sm font-medium text-error">
+              {error}
+            </div>
+          )}
           {section === 'profile' ? (
             /* Personal Information */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -278,11 +282,20 @@ export function ProfileEditModal({
             </div>
           )}
 
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 border-t border-border pt-5">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-pill font-semibold"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="rounded-pill px-6 font-semibold shadow-glow"
+            >
               {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

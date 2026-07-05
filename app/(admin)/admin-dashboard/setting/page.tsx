@@ -110,8 +110,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Manage your admin account security and preferences.
+        </p>
+      </div>
 
       <div className="space-y-6">
         {/* Password Change Section */}
@@ -161,12 +166,16 @@ export default function SettingsPage() {
 
         {/* Profile Settings Section */}
         <AdminCard title="Profile Settings">
-          <div className="text-gray-500 italic">Profile settings will be available soon.</div>
+          <div className="italic text-muted-foreground">
+            Profile settings will be available soon.
+          </div>
         </AdminCard>
 
         {/* Notification Settings Section */}
         <AdminCard title="Notification Settings">
-          <div className="text-gray-500 italic">Notification settings will be available soon.</div>
+          <div className="italic text-muted-foreground">
+            Notification settings will be available soon.
+          </div>
         </AdminCard>
       </div>
     </div>

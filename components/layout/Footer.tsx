@@ -3,14 +3,13 @@ import Link from 'next/link';
 import React from 'react';
 import { FaFacebook, FaYoutube, FaTiktok } from 'react-icons/fa';
 
-// Separate components for better organization
-const Logo = () => (
-  <Link href="/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+const Brand = () => (
+  <Link href="/" className="flex items-center gap-3">
     <Image
       src="/Logo.svg"
       alt="Tuitioni Logo"
-      width={75}
-      height={75}
+      width={64}
+      height={64}
       className="transition-transform hover:scale-105"
     />
   </Link>
@@ -18,20 +17,17 @@ const Logo = () => (
 
 const FooterLinks = () => {
   const links = [
-    { text: 'About', href: '/about' },
-    { text: 'Privacy Policy', href: '/privacy' },
-    { text: 'Licensing', href: '/licensing' },
+    { text: 'About', href: '/aboutUs' },
+    { text: 'Find Tutors', href: '/tutors' },
+    { text: 'Jobs', href: '/jobs' },
     { text: 'Contact', href: '/contact' },
   ];
 
   return (
-    <ul className="flex flex-wrap items-center mb-6 text-sm font-medium">
-      {links.map((link, index) => (
-        <li key={index}>
-          <Link
-            href={link.href}
-            className="hover:underline me-4 md:me-6 transition-colors hover:text-gray-700"
-          >
+    <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-muted-foreground">
+      {links.map((link) => (
+        <li key={link.href}>
+          <Link href={link.href} className="transition-colors hover:text-primary">
             {link.text}
           </Link>
         </li>
@@ -42,34 +38,23 @@ const FooterLinks = () => {
 
 const SocialLinks = () => {
   const socialLinks = [
-    {
-      Icon: FaFacebook,
-      href: 'https://www.facebook.com',
-      hoverColor: 'hover:text-blue-600',
-    },
-    {
-      Icon: FaYoutube,
-      href: 'https://www.youtube.com',
-      hoverColor: 'hover:text-red-600',
-    },
-    {
-      Icon: FaTiktok,
-      href: 'https://www.tiktok.com',
-      hoverColor: 'hover:text-black',
-    },
+    { Icon: FaFacebook, href: 'https://www.facebook.com', label: 'Facebook' },
+    { Icon: FaYoutube, href: 'https://www.youtube.com', label: 'YouTube' },
+    { Icon: FaTiktok, href: 'https://www.tiktok.com', label: 'TikTok' },
   ];
 
   return (
-    <div className="flex justify-center space-x-6 mb-4">
-      {socialLinks.map((social, index) => (
+    <div className="flex items-center gap-3">
+      {socialLinks.map((social) => (
         <Link
-          key={index}
+          key={social.label}
           href={social.href}
           target="_blank"
           rel="noopener noreferrer"
-          className={`text-2xl transition-colors ${social.hoverColor}`}
+          aria-label={social.label}
+          className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-soft-sm transition-all hover:-translate-y-0.5 hover:text-primary hover:shadow-soft"
         >
-          <social.Icon />
+          <social.Icon className="text-lg" />
         </Link>
       ))}
     </div>
@@ -80,24 +65,39 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-bluishGrey rounded-lg shadow-lg m-4 text-black">
-      <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <Logo />
-          <FooterLinks />
+    <footer className="mt-16 border-t border-border bg-card">
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-sm space-y-4">
+            <Brand />
+            <p className="text-sm text-muted-foreground">
+              Learning, connected. Tuitioni matches students with verified tutors across Bangladesh
+              — transparent pricing, trusted teachers, effortless booking.
+            </p>
+          </div>
+          <div className="flex flex-col gap-6 sm:items-end">
+            <FooterLinks />
+            <SocialLinks />
+          </div>
         </div>
 
-        <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+        <hr className="my-8 border-border" />
 
-        <SocialLinks />
-
-        <span className="block text-sm text-center">
-          © {currentYear}{' '}
-          <Link href="/" className="hover:underline transition-colors hover:text-gray-700">
-            Tuitioni
-          </Link>
-          . All Rights Reserved.
-        </span>
+        <div className="flex flex-col items-center justify-between gap-3 text-sm text-muted-foreground sm:flex-row">
+          <span>
+            © {currentYear}{' '}
+            <Link
+              href="/"
+              className="font-medium text-foreground transition-colors hover:text-primary"
+            >
+              Tuitioni
+            </Link>
+            . All rights reserved.
+          </span>
+          <span className="text-xs uppercase tracking-widest text-muted-foreground/70">
+            Learning, Connected.
+          </span>
+        </div>
       </div>
     </footer>
   );

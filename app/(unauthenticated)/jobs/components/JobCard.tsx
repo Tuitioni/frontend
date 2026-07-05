@@ -1,4 +1,6 @@
-import React from "react";
+import React from 'react';
+import { AiOutlineCalendar, AiOutlineDollar } from 'react-icons/ai';
+import { HiOutlineBookOpen } from 'react-icons/hi';
 
 interface JobCardProps {
   title: string;
@@ -18,21 +20,45 @@ export default function JobCard({
   monthlySalary,
 }: JobCardProps) {
   return (
-    <div className="p-3 border rounded-md shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
-      <div className="mb-2">
-        <div className="font-bold text-sm sm:text-base">{title}</div>
-        <div className="text-xs sm:text-sm text-gray-600">{description}</div>
+    <div className="group flex flex-col rounded-2xl border border-border bg-card p-5 shadow-soft-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-display text-lg font-bold">{title}</h3>
+        <span className="inline-flex shrink-0 items-center rounded-pill bg-amber/15 px-2.5 py-1 text-xs font-semibold text-amber-600">
+          {medium}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-1.5">
-        <div className="text-xs sm:text-sm">Medium: {medium}</div>
-        <div className="text-xs sm:text-sm">Tutoring Days: {tutoringDays}</div>
-        <div className="text-xs sm:text-sm">
-          Monthly Salary: {monthlySalary}
+      <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{description}</p>
+
+      <div className="mt-4 space-y-2 text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <AiOutlineCalendar className="h-4 w-4 text-primary" />
+          <span>{tutoringDays}</span>
         </div>
-        <div className="text-xs sm:text-sm">
-          Subjects: {subjects.length > 0 ? subjects.join(", ") : "N/A"}
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <AiOutlineDollar className="h-4 w-4 text-primary" />
+          <span className="tabular font-semibold text-foreground">{monthlySalary}</span>
+          <span>/ month</span>
         </div>
+        <div className="flex items-start gap-2 text-muted-foreground">
+          <HiOutlineBookOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <span>{subjects.length > 0 ? subjects.join(', ') : 'N/A'}</span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border pt-4">
+        {subjects.length > 0 ? (
+          subjects.map((subject, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center rounded-pill bg-secondary px-3 py-1 text-xs font-semibold text-primary"
+            >
+              {subject}
+            </span>
+          ))
+        ) : (
+          <span className="text-xs font-medium text-muted-foreground">No subjects listed</span>
+        )}
       </div>
     </div>
   );

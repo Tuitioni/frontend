@@ -149,21 +149,26 @@ export default function AnnouncementDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
-      <div className="w-full flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Announcement Dashboard</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Create Announcement</Button>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Announcements</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            View, edit, and manage all announcements.
+          </p>
+        </div>
+        <Button className="rounded-pill" onClick={() => setIsModalOpen(true)}>
+          Create Announcement
+        </Button>
       </div>
 
-      <div className="w-full flex justify-center">
-        <DataTable
-          data={tableData}
-          columns={columns}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      </div>
+      <DataTable
+        data={tableData}
+        columns={columns}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
@@ -183,7 +188,7 @@ export default function AnnouncementDashboard() {
               maxLength={20}
             />
             <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">Content</label>
+              <label className="block text-sm font-medium text-foreground">Content</label>
               <textarea
                 value={newAnnouncement.content}
                 onChange={(e) =>
@@ -194,7 +199,7 @@ export default function AnnouncementDashboard() {
                 }
                 maxLength={50}
                 rows={3}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary border-gray-300"
+                className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground shadow-soft-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           </div>

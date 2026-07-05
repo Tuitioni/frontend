@@ -65,44 +65,55 @@ export default function StudentDashboardByID({ params }: { params: { id: string 
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Student Profile</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Student Profile</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Full details for {student.firstName} {student.lastName}.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Personal Information */}
-        <AdminCard title="Personal Information" className="bg-white shadow-lg rounded-xl">
-          <div className="space-y-6">
+        <AdminCard title="Personal Information">
+          <div className="space-y-5">
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Full Name</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Full Name
+              </p>
+              <p className="mt-1 text-lg font-semibold">
                 {student.firstName} {student.lastName}
               </p>
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-gray-500">Email</p>
-              <p className="text-lg font-semibold text-gray-900">{student.email}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Email
+              </p>
+              <p className="mt-1 text-lg font-semibold">{student.email}</p>
             </div>
           </div>
         </AdminCard>
 
         {/* Academic Information */}
         {student.profile && (
-          <AdminCard title="Academic Information" className="bg-white shadow-lg rounded-xl">
-            <div className="space-y-6">
+          <AdminCard title="Academic Information">
+            <div className="space-y-5">
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Medium</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {formatMedium(student.profile.medium)}
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Medium
                 </p>
+                <p className="mt-1 text-lg font-semibold">{formatMedium(student.profile.medium)}</p>
               </div>
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Level of Study</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {student.profile.levelOfStudy}
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Level of Study
                 </p>
+                <p className="mt-1 text-lg font-semibold">{student.profile.levelOfStudy}</p>
               </div>
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Subjects</p>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Subjects
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
                   {student.profile.subjects.map((subject, index) => (
                     <Badge key={index} variant="info">
                       {subject}
@@ -116,39 +127,44 @@ export default function StudentDashboardByID({ params }: { params: { id: string 
 
         {/* Additional Details */}
         {student.profile && (
-          <AdminCard
-            title="Additional Details"
-            className="bg-white shadow-lg rounded-xl lg:col-span-2"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AdminCard title="Additional Details" className="lg:col-span-2">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Location</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Location
+                </p>
+                <p className="mt-1 text-lg font-semibold">
                   {student.profile.area}, {student.profile.district}
                 </p>
               </div>
               <div className="flex flex-col">
-                <p className="text-sm font-medium text-gray-500">Age</p>
-                <p className="text-lg font-semibold text-gray-900">{student.profile.age}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Age
+                </p>
+                <p className="mt-1 text-lg font-semibold tabular">{student.profile.age}</p>
               </div>
               {student.profile.school && (
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium text-gray-500">School</p>
-                  <p className="text-lg font-semibold text-gray-900">{student.profile.school}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    School
+                  </p>
+                  <p className="mt-1 text-lg font-semibold">{student.profile.school}</p>
                 </div>
               )}
               {student.profile.college && (
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium text-gray-500">College</p>
-                  <p className="text-lg font-semibold text-gray-900">{student.profile.college}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    College
+                  </p>
+                  <p className="mt-1 text-lg font-semibold">{student.profile.college}</p>
                 </div>
               )}
               {student.profile.university && (
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium text-gray-500">University</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {student.profile.university}
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    University
                   </p>
+                  <p className="mt-1 text-lg font-semibold">{student.profile.university}</p>
                 </div>
               )}
             </div>

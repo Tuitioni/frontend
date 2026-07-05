@@ -111,9 +111,17 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Payment</h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Edit Payment</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Update the payment details and transaction information.
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-soft-sm"
+      >
         <Input
           label="Amount"
           name="amount"
@@ -166,11 +174,17 @@ export default function PaymentEdit({ params }: PaymentEditProps) {
           ]}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
+        <div className="flex justify-end gap-3 border-t border-border pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-pill"
+            onClick={() => router.back()}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" className="rounded-pill" disabled={loading}>
             {loading ? <LoadingSpinner size="sm" /> : 'Update Payment'}
           </Button>
         </div>

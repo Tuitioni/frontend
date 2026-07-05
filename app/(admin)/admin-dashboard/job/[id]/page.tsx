@@ -79,86 +79,169 @@ export default function PostDetailPage({ params }: { params: { id: string } }) {
   }
 
   const footer = (
-    <div className="flex gap-2 justify-end">
+    <div className="flex justify-end gap-3">
       <Button
         variant="outline"
+        className="rounded-pill"
         onClick={() => router.push(`/admin-dashboard/job/${params.id}/edit`)}
       >
         Edit
       </Button>
-      <Button variant="destructive" onClick={handleDelete}>
+      <Button variant="destructive" className="rounded-pill" onClick={handleDelete}>
         Delete
       </Button>
     </div>
   );
 
   return (
-    <div className="container mx-auto py-10">
-      <AdminCard title="Job Post Details" footer={footer}>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <p>
-              <strong>Name:</strong> {post.firstName} {post.lastName}
-            </p>
-            <p>
-              <strong>District:</strong> {post.district}
-            </p>
-            <p>
-              <strong>Area:</strong> {post.area}
-            </p>
-            <p>
-              <strong>Age:</strong> {post.age}
-            </p>
-            <p>
-              <strong>Medium:</strong> {post.medium}
-            </p>
-            <p>
-              <strong>Level of Study:</strong> {post.levelOfStudy}
-            </p>
-            <p>
-              <strong>School:</strong> {post.school || 'N/A'}
-            </p>
-            <p>
-              <strong>College:</strong> {post.college || 'N/A'}
-            </p>
-            <p>
-              <strong>University:</strong> {post.university || 'N/A'}
-            </p>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Job Details</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Full details for the job post by {post.firstName} {post.lastName}.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Applicant Information */}
+        <AdminCard title="Applicant Information">
+          <div className="space-y-5">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </p>
+              <p className="mt-1 text-lg font-semibold">
+                {post.firstName} {post.lastName}
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Gender
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.gender}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Age
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{post.age}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Medium
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.medium}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Level of Study
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.levelOfStudy}</p>
+            </div>
           </div>
-          <div className="space-y-2">
-            <p>
-              <strong>Subjects:</strong> {post.subjects.join(', ')}
-            </p>
-            <p>
-              <strong>Gender:</strong> {post.gender}
-            </p>
-            <p>
-              <strong>Salary:</strong> {post.salary}
-            </p>
-            <p>
-              <strong>Number of Days:</strong> {post.numberOfDays}
-            </p>
-            <p>
-              <strong>Duration:</strong> {post.duration}
-            </p>
-            <p>
-              <strong>Tuition Type:</strong> {post.tuitionType}
-            </p>
-            <p>
-              <strong>Class:</strong> {post.class}
-            </p>
-            <p>
-              <strong>Note:</strong> {post.note || 'N/A'}
-            </p>
-            <p>
-              <strong>Created At:</strong> {new Date(post.createdAt).toLocaleDateString()}
-            </p>
-            <p>
-              <strong>Updated At:</strong> {new Date(post.updatedAt).toLocaleDateString()}
-            </p>
+        </AdminCard>
+
+        {/* Tuition Details */}
+        <AdminCard title="Tuition Details">
+          <div className="space-y-5">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Subjects
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.subjects.join(', ')}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Salary
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{post.salary}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Number of Days
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">{post.numberOfDays}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Duration
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.duration}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Tuition Type
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.tuitionType}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Class
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.class}</p>
+            </div>
           </div>
-        </div>
-      </AdminCard>
+        </AdminCard>
+
+        {/* Location & Education */}
+        <AdminCard title="Location & Education" className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Location
+              </p>
+              <p className="mt-1 text-lg font-semibold">
+                {post.area}, {post.district}
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                School
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.school || 'N/A'}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                College
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.college || 'N/A'}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                University
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.university || 'N/A'}</p>
+            </div>
+          </div>
+        </AdminCard>
+
+        {/* Additional Details */}
+        <AdminCard title="Additional Details" footer={footer} className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="flex flex-col md:col-span-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Note
+              </p>
+              <p className="mt-1 text-lg font-semibold">{post.note || 'N/A'}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Created At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">
+                {new Date(post.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Updated At
+              </p>
+              <p className="mt-1 text-lg font-semibold tabular">
+                {new Date(post.updatedAt).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </AdminCard>
+      </div>
     </div>
   );
 }

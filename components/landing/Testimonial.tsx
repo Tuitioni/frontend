@@ -21,10 +21,10 @@ export default function TestimonialSliderCard() {
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
               <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <Card className="shadow-sm">
+                <Card className="rounded-2xl shadow-soft-sm">
                   <CardContent className="flex aspect-square items-center justify-center p-6">
                     <div className="flex flex-col px-4 py-5 sm:p-6">
-                      <q className="flex-1 text-gray-600 dark:text-gray-300">{testimonial.quote}</q>
+                      <q className="flex-1 text-muted-foreground">{testimonial.quote}</q>
                       <div className="mt-6 flex gap-3">
                         <span className="inline-flex rounded-full">
                           <Image
@@ -38,12 +38,10 @@ export default function TestimonialSliderCard() {
                           />
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          <p className="text-sm font-semibold text-foreground">
                             {testimonial.name}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {testimonial.role}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                         </div>
                       </div>
                     </div>
@@ -52,8 +50,8 @@ export default function TestimonialSliderCard() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2 fill-black" />
-          <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2 fill-black" />
+          <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2" />
+          <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2" />
         </Carousel>
       </div>
     </section>

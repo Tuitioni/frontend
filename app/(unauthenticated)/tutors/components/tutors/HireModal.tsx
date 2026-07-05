@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
 interface HireModalProps {
   isOpen: boolean;
@@ -18,15 +18,10 @@ interface HireModalProps {
   tutorId: string;
 }
 
-export default function HireModal({
-  isOpen,
-  onClose,
-  tutorName,
-  tutorId,
-}: HireModalProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+export default function HireModal({ isOpen, onClose, tutorName, tutorId }: HireModalProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -35,10 +30,10 @@ export default function HireModal({
     setLoading(true);
 
     try {
-      const response = await fetch("/api/hire-tutor", {
-        method: "POST",
+      const response = await fetch('/api/hire-tutor', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email,
@@ -49,20 +44,19 @@ export default function HireModal({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to hire tutor");
+        throw new Error('Failed to hire tutor');
       }
 
       toast({
-        title: "Success!",
-        description:
-          "Your account has been created and the tutor has been hired.",
+        title: 'Success!',
+        description: 'Your account has been created and the tutor has been hired.',
       });
       onClose();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -71,17 +65,19 @@ export default function HireModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="rounded-2xl sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Hire {tutorName}</DialogTitle>
+          <DialogTitle className="font-display text-xl font-bold tracking-tight">
+            Hire {tutorName}
+          </DialogTitle>
           <DialogDescription>
-            Fill in your details below. This will automatically create an
-            account for you and hire the tutor.
+            Fill in your details below. This will automatically create an account for you and hire
+            the tutor.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <label htmlFor="email" className="text-sm font-semibold">
               Email
             </label>
             <Input
@@ -94,7 +90,7 @@ export default function HireModal({
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <label htmlFor="password" className="text-sm font-semibold">
               Password
             </label>
             <Input
@@ -107,7 +103,7 @@ export default function HireModal({
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium">
+            <label htmlFor="phone" className="text-sm font-semibold">
               Phone Number
             </label>
             <Input
@@ -119,8 +115,13 @@ export default function HireModal({
               required
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Processing..." : "Hire Tutor"}
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full rounded-pill font-semibold shadow-glow"
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : 'Hire Tutor'}
           </Button>
         </form>
       </DialogContent>
