@@ -1,16 +1,25 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function AuthButtons() {
   const { isAuthenticated, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  // Auth state comes from a client-only cookie, so it is unknown during SSR.
+  // Render the logged-out state until mounted so the first client render
+  // matches the server and avoids a hydration mismatch.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="hidden md:flex gap-2">
-      {isAuthenticated ? (
+      {mounted && isAuthenticated ? (
         <>
           <Link href="/dashboard">
             <Button variant="default" className="px-4 py-2 bg-transparent">
