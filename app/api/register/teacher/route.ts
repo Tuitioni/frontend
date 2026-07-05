@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
         email: data.email,
         password: data.password,
         phone: data.phone,
-        location: data.location,
+        district: data.district,
+        area: data.area,
       }),
     });
 

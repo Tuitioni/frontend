@@ -31,7 +31,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     email: '',
     password: '',
     phone: '',
-    location: '',
+    district: '',
+    area: '',
     username: '',
   });
 
@@ -97,7 +98,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
-          location: formData.location,
+          district: formData.district,
+          area: formData.area,
         }),
       });
 
@@ -227,9 +229,16 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
                 required
               />
               <Input
-                name="location"
-                placeholder="Location"
-                value={formData.location}
+                name="district"
+                placeholder="District"
+                value={formData.district}
+                onChange={handleInputChange}
+                required
+              />
+              <Input
+                name="area"
+                placeholder="Area"
+                value={formData.area}
                 onChange={handleInputChange}
                 required
               />
