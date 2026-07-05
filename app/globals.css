@@ -4,58 +4,59 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96.9%;
-    --foreground: 222.2 84% 4.9%;
+    /* Tuitioni — "Learning, Connected" · soft indigo + warm amber */
+    --background: 240 60% 99%; /* #FAFAFE */
+    --foreground: 240 25% 13%; /* #191828 */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 25% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --popover-foreground: 240 25% 13%;
+    --primary: 245 73% 60%; /* #5A4FE4 indigo */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 33% 95%; /* #EFEFF7 */
+    --secondary-foreground: 240 25% 13%;
+    --muted: 240 33% 95%;
+    --muted-foreground: 245 15% 40%; /* #565575 */
+    --accent: 240 45% 94%; /* subtle indigo hover wash */
+    --accent-foreground: 245 60% 30%;
+    --destructive: 4 86% 58%; /* #F04438 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 30% 92%; /* #E6E6F1 */
+    --input: 240 28% 88%;
+    --ring: 245 73% 60%;
+    --radius: 0.75rem;
+    --chart-1: 245 73% 60%;
+    --chart-2: 38 91% 55%;
+    --chart-3: 152 82% 39%;
+    --chart-4: 245 76% 72%;
+    --chart-5: 33 94% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 249 32% 6%; /* #0C0B15 */
+    --foreground: 240 40% 97%; /* #F4F4FA */
+    --card: 250 26% 11%; /* #141322 */
+    --card-foreground: 240 40% 97%;
+    --popover: 250 26% 11%;
+    --popover-foreground: 240 40% 97%;
+    --primary: 245 76% 65%; /* #6F63E8 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 245 24% 18%; /* #232238 */
+    --secondary-foreground: 240 40% 97%;
+    --muted: 245 24% 18%;
+    --muted-foreground: 246 16% 73%; /* #ADACC6 */
+    --accent: 245 30% 22%;
+    --accent-foreground: 240 40% 97%;
+    --destructive: 4 74% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 244 22% 21%; /* #2A2942 */
+    --input: 244 22% 24%;
+    --ring: 245 78% 70%;
+    --chart-1: 245 76% 72%;
+    --chart-2: 38 91% 58%;
+    --chart-3: 152 70% 48%;
+    --chart-4: 245 60% 60%;
+    --chart-5: 33 90% 58%;
   }
 }
 
@@ -65,5 +66,35 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: 'ss01';
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: hsl(245 73% 60% / 0.22);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, #6f63e8, #4a3fc7 45%, #f5a524);
+  }
+  .bg-mesh {
+    background-image:
+      radial-gradient(680px 520px at 12% -6%, rgba(111, 99, 232, 0.16), transparent 60%),
+      radial-gradient(560px 460px at 96% 4%, rgba(245, 165, 36, 0.12), transparent 60%),
+      radial-gradient(700px 620px at 82% 92%, rgba(90, 79, 228, 0.1), transparent 62%);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
