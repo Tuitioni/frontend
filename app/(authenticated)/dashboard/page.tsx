@@ -28,7 +28,13 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
   const decodedToken = useToken();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editSection, setEditSection] = useState<'profile' | 'teaching'>('profile');
   const router = useRouter();
+
+  const openEditModal = (section: 'profile' | 'teaching') => {
+    setEditSection(section);
+    setIsEditModalOpen(true);
+  };
 
   const fetchProfile = useCallback(async () => {
     if (!decodedToken?.sub) {
@@ -107,7 +113,7 @@ export default function DashboardPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsEditModalOpen(true)}
+                onClick={() => openEditModal('profile')}
                 aria-label="Edit profile"
               >
                 <Edit2 className="h-4 w-4" />
@@ -156,7 +162,12 @@ export default function DashboardPage() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg sm:text-xl">Teaching Details</CardTitle>
-                <Button variant="ghost" size="icon" aria-label="Edit teaching details">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openEditModal('teaching')}
+                  aria-label="Edit teaching details"
+                >
                   <Edit2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -229,7 +240,7 @@ export default function DashboardPage() {
                 <div className="p-4 bg-primary/5 rounded-lg">
                   <h3 className="text-xs sm:text-sm text-gray-500 mb-1">Expected Salary</h3>
                   <p className="font-semibold text-sm sm:text-base">
-                    ₹{profile?.profile?.monthlySalary.toLocaleString()}/month
+                    ৳{profile?.profile?.monthlySalary.toLocaleString()}/month
                   </p>
                 </div>
               </div>
@@ -249,21 +260,21 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/admin-dashboard/verify/nid`)}
+                      onClick={() => router.push(`/dashboard/verify/nid`)}
                       className="text-sm sm:text-base"
                     >
                       Upload NID
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/admin-dashboard/verify/birth-certificate`)}
+                      onClick={() => router.push(`/dashboard/verify/birth-certificate`)}
                       className="text-sm sm:text-base"
                     >
                       Upload Birth Certificate
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/admin-dashboard/verify/passport`)}
+                      onClick={() => router.push(`/dashboard/verify/passport`)}
                       className="text-sm sm:text-base"
                     >
                       Upload Passport
@@ -283,6 +294,7 @@ export default function DashboardPage() {
           onClose={() => setIsEditModalOpen(false)}
           profile={profile}
           onProfileUpdate={handleProfileUpdate}
+          section={editSection}
         />
       )}
     </div>

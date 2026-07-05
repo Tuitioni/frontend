@@ -20,6 +20,8 @@ interface ProfileEditModalProps {
   onClose: () => void;
   profile: TeacherDetail;
   onProfileUpdate: (updatedProfile: TeacherDetail) => void;
+  /** Which section to edit: personal profile fields or teaching details. */
+  section?: 'profile' | 'teaching';
 }
 
 export function ProfileEditModal({
@@ -27,6 +29,7 @@ export function ProfileEditModal({
   onClose,
   profile,
   onProfileUpdate,
+  section = 'profile',
 }: ProfileEditModalProps) {
   const { makeAuthenticatedRequest } = useAuth();
   const { toast } = useToast();
@@ -137,13 +140,15 @@ export function ProfileEditModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>
+            {section === 'teaching' ? 'Edit Teaching Details' : 'Edit Profile'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && <div className="bg-red-50 text-red-500 p-3 rounded-md">{error}</div>}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Basic Information */}
-            <div className="space-y-4">
+          {section === 'profile' ? (
+            /* Personal Information */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>First Name</Label>
                 <Input
@@ -173,10 +178,24 @@ export function ProfileEditModal({
                   onChange={(e) => handleChange('phone', e.target.value)}
                 />
               </div>
+              <div>
+                <Label>District</Label>
+                <Input
+                  value={formData.profile?.district ?? ''}
+                  onChange={(e) => handleProfileChange('district', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Area</Label>
+                <Input
+                  value={formData.profile?.area ?? ''}
+                  onChange={(e) => handleProfileChange('area', e.target.value)}
+                />
+              </div>
             </div>
-
-            {/* Professional Information */}
-            <div className="space-y-4">
+          ) : (
+            /* Teaching Details */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Education</Label>
                 <Input
@@ -188,10 +207,17 @@ export function ProfileEditModal({
                 <Label>Experience (years)</Label>
                 <Input
                   type="number"
-                  value={formData.profile?.yearsOfExperience}
+                  value={formData.profile?.yearsOfExperience ?? 0}
                   onChange={(e) =>
-                    handleProfileChange('yearsOfExperience', parseInt(e.target.value))
+                    handleProfileChange('yearsOfExperience', parseInt(e.target.value) || 0)
                   }
+                />
+              </div>
+              <div>
+                <Label>Teaching Level</Label>
+                <Input
+                  value={formData.profile?.teachingLevel ?? ''}
+                  onChange={(e) => handleProfileChange('teachingLevel', e.target.value)}
                 />
               </div>
               <div>
@@ -206,19 +232,51 @@ export function ProfileEditModal({
                   <SelectContent>
                     <SelectItem value="ENGLISH_MEDIUM">English Medium</SelectItem>
                     <SelectItem value="BANGLA_MEDIUM">Bangla Medium</SelectItem>
+                    <SelectItem value="ENGLISH_VERSION">English Version</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Monthly Salary (₹)</Label>
+                <Label>Specialization</Label>
+                <Input
+                  value={formData.profile?.specialization ?? ''}
+                  onChange={(e) => handleProfileChange('specialization', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Availability</Label>
+                <Input
+                  value={formData.profile?.availability ?? ''}
+                  onChange={(e) => handleProfileChange('availability', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Expected Salary (৳)</Label>
                 <Input
                   type="number"
-                  value={formData.profile?.monthlySalary}
-                  onChange={(e) => handleProfileChange('monthlySalary', parseInt(e.target.value))}
+                  value={formData.profile?.monthlySalary ?? 0}
+                  onChange={(e) =>
+                    handleProfileChange('monthlySalary', parseInt(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label>Subjects (comma separated)</Label>
+                <Input
+                  value={formData.profile?.subjects?.join(', ') ?? ''}
+                  onChange={(e) =>
+                    handleProfileChange(
+                      'subjects',
+                      e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter(Boolean)
+                    )
+                  }
                 />
               </div>
             </div>
-          </div>
+          )}
 
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={onClose}>
