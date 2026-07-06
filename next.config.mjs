@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // 'standalone' is only for the Docker/self-host path. On Netlify (which sets
+  // NETLIFY=true) its Next runtime manages output itself, so we omit it there.
+  output: process.env.NETLIFY ? undefined : 'standalone',
   reactStrictMode: true,
   staticPageGenerationTimeout: 0,
   images: {
