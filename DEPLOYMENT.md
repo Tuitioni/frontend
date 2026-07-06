@@ -10,8 +10,8 @@ end-to-end runbook (database, storage, backend, wiring, domains) lives in the
    Next.js is auto-detected; no build config needed.
 2. Set environment variables:
    ```
-   TUITIONI_API         = https://<backend>.up.railway.app   # server-side proxy target
-   NEXT_PUBLIC_API_URL  = https://<backend>.up.railway.app   # admin dashboard (browser)
+   TUITIONI_API         = https://<backend>.onrender.com   # server-side proxy target
+   NEXT_PUBLIC_API_URL  = https://<backend>.onrender.com   # admin dashboard (browser)
    NEXT_PUBLIC_SITE_URL = https://<project>.vercel.app        # this site (SEO/sitemap)
    ```
 3. Deploy. Then set the backend's `ALLOWED_ORIGINS` to this Vercel URL (CORS).
