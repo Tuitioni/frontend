@@ -15,6 +15,8 @@ ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+# This image serves the standalone server (node server.js); opt into that output.
+ENV NEXT_OUTPUT=standalone
 
 RUN npm run build
 
