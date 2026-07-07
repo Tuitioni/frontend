@@ -25,6 +25,40 @@ interface Tutor {
   yearsOfExperience: number;
 }
 
+/** Backend teacher shape: contact fields top-level, teaching details nested under `profile`. */
+interface TeacherApiResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  district?: string;
+  area?: string;
+  profile?: {
+    district?: string;
+    area?: string;
+    medium?: string;
+    education?: string;
+    subjects?: string[];
+    yearsOfExperience?: number;
+  } | null;
+}
+
+function toTutor(teacher: TeacherApiResponse): Tutor {
+  const area = teacher.profile?.area ?? teacher.area;
+  const district = teacher.profile?.district ?? teacher.district;
+  return {
+    id: teacher.id,
+    firstName: teacher.firstName,
+    lastName: teacher.lastName,
+    location: [area, district].filter(Boolean).join(', '),
+    phone: teacher.phone,
+    medium: teacher.profile?.medium?.replace(/_/g, ' ') ?? '',
+    education: teacher.profile?.education ?? '',
+    subjects: teacher.profile?.subjects ?? [],
+    yearsOfExperience: teacher.profile?.yearsOfExperience ?? 0,
+  };
+}
+
 function TutorsContent() {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -42,7 +76,7 @@ function TutorsContent() {
         // Initial load or reset - fetch all teachers
         const response = await fetch('/api/teachers');
         const data = await response.json();
-        setTutors(data);
+        setTutors(Array.isArray(data) ? data.map(toTutor) : []);
         return;
       }
 
@@ -60,7 +94,7 @@ function TutorsContent() {
       }
 
       const data = await response.json();
-      setTutors(data);
+      setTutors(Array.isArray(data) ? data.map(toTutor) : []);
     } catch (error) {
     } finally {
       setLoading(false);

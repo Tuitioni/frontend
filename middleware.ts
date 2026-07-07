@@ -3,7 +3,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('access_token') || request.cookies.get('admin_token');
+  // Two parallel sessions exist: teachers/students use `access_token`,
+  // admins use `admin_token`. Route by which one is present.
+  const userToken = request.cookies.get('access_token');
+  const adminToken = request.cookies.get('admin_token');
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin-dashboard');
   const isAuthPage =
     request.nextUrl.pathname.startsWith('/login') ||
@@ -20,15 +23,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Redirect to login if accessing protected route without token
-  if (!token && isProtectedRoute) {
-    const loginUrl = isAdminRoute ? '/signin' : '/login';
-    return NextResponse.redirect(new URL(loginUrl, request.url));
+  // Admin area requires the admin session specifically.
+  if (isAdminRoute && !adminToken) {
+    return NextResponse.redirect(new URL('/signin', request.url));
   }
 
-  // Redirect to dashboard if accessing auth pages with token
-  if (token && isAuthPage) {
-    return NextResponse.redirect(new URL('/admin-dashboard', request.url));
+  // Other protected routes require either session.
+  if (!userToken && !adminToken && isProtectedRoute) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Already signed in: send each session type to its own home.
+  if (isAuthPage && (userToken || adminToken)) {
+    const home = adminToken ? '/admin-dashboard' : '/dashboard';
+    return NextResponse.redirect(new URL(home, request.url));
   }
 
   const response = NextResponse.next();
