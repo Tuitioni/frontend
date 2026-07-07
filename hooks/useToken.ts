@@ -6,6 +6,8 @@ import { tokenService } from '@/lib/auth/token';
 interface TokenPayload {
   sub: string;
   exp?: number;
+  role?: 'student' | 'teacher' | 'admin';
+  email?: string;
 }
 
 export function useToken() {

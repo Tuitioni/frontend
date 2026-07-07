@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -5,11 +7,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useToken } from '@/hooks/useToken';
 
 interface HireModalProps {
   isOpen: boolean;
@@ -19,43 +23,33 @@ interface HireModalProps {
 }
 
 export default function HireModal({ isOpen, onClose, tutorName, tutorId }: HireModalProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { makeAuthenticatedRequest, isAuthenticated } = useAuth();
+  const decoded = useToken();
+  const pathname = usePathname();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const isStudent = isAuthenticated && decoded?.role === 'student';
+  const isNonStudent = isAuthenticated && decoded?.role && decoded.role !== 'student';
+  const loginHref = `/login?redirect=${encodeURIComponent(pathname || '/tutors')}`;
+
+  const handleHire = async () => {
     setLoading(true);
-
     try {
-      const response = await fetch('/api/hire-tutor', {
+      await makeAuthenticatedRequest('/api/hire', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          phone,
-          tutorId,
-        }),
+        data: { teacherId: tutorId },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to hire tutor');
-      }
-
       toast({
-        title: 'Success!',
-        description: 'Your account has been created and the tutor has been hired.',
+        title: 'Request sent',
+        description: `Your hire request has been sent to ${tutorName}. They'll be notified to respond.`,
       });
       onClose();
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
+        title: 'Could not send request',
+        description:
+          error instanceof Error ? error.message : 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -71,59 +65,47 @@ export default function HireModal({ isOpen, onClose, tutorName, tutorId }: HireM
             Hire {tutorName}
           </DialogTitle>
           <DialogDescription>
-            Fill in your details below. This will automatically create an account for you and hire
-            the tutor.
+            {isStudent
+              ? `Send a hire request to ${tutorName}. They'll review it and get back to you.`
+              : isNonStudent
+                ? 'Only student accounts can hire a tutor.'
+                : 'Sign in as a student to send a hire request.'}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-semibold">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+
+        {isStudent ? (
+          <DialogFooter className="mt-4 gap-2 sm:gap-2">
+            <Button variant="outline" onClick={onClose} disabled={loading} className="rounded-pill">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleHire}
+              disabled={loading}
+              className="rounded-pill font-semibold shadow-glow"
+            >
+              {loading ? 'Sending…' : 'Send hire request'}
+            </Button>
+          </DialogFooter>
+        ) : isNonStudent ? (
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={onClose} className="rounded-pill">
+              Close
+            </Button>
+          </DialogFooter>
+        ) : (
+          <div className="mt-4 flex flex-col gap-2">
+            <Link href={loginHref} className="w-full">
+              <Button className="w-full rounded-pill font-semibold shadow-glow">
+                Log in to continue
+              </Button>
+            </Link>
+            <Link href="/register" className="w-full">
+              <Button variant="outline" className="w-full rounded-pill font-semibold">
+                Sign up
+              </Button>
+            </Link>
           </div>
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-semibold">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-semibold">
-              Phone Number
-            </label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="Enter your phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full rounded-pill font-semibold shadow-glow"
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : 'Hire Tutor'}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );
