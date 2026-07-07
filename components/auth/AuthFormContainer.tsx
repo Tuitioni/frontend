@@ -1,5 +1,4 @@
 'use client';
-import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -16,13 +15,9 @@ interface AuthFormContainerProps {
   defaultRole?: AuthRole;
 }
 
-interface TokenPayload {
-  sub: string;
-}
-
 /** Only allow same-origin relative redirects (avoid open-redirect). */
 function safeRedirect(role: AuthRole): string {
-  const fallback = role === 'teacher' ? '/dashboard' : '/tutors';
+  const fallback = role === 'teacher' ? '/dashboard' : '/student-dashboard';
   if (typeof window === 'undefined') return fallback;
   const target = new URLSearchParams(window.location.search).get('redirect');
   if (target && target.startsWith('/') && !target.startsWith('//')) {
@@ -57,38 +52,6 @@ export function AuthFormContainer({
       ...prev,
       [e.target.name]: e.target.value,
     }));
-  };
-
-  // Teachers currently need a profile row to appear in search; students don't.
-  const createTeacherProfile = async (token: string) => {
-    const decoded = jwtDecode<TokenPayload>(token);
-    const profileData = {
-      district: formData.district || 'Not Specified',
-      area: formData.area || 'Not Specified',
-      gender: 'MALE',
-      age: 25,
-      medium: 'ENGLISH_MEDIUM',
-      education: 'Not Specified',
-      yearsOfExperience: 0,
-      subjects: ['Not Specified'],
-      specialization: 'Not Specified',
-      teachingLevel: 'Not Specified',
-      availability: 'Not Specified',
-      monthlySalary: 0,
-      teacherId: decoded.sub,
-    };
-    const response = await fetch('/api/teacher-profile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(profileData),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to create teacher profile');
-    }
-    return response.json();
   };
 
   const handleRegister = async () => {
@@ -132,11 +95,8 @@ export function AuthFormContainer({
       }
 
       tokenService.setToken(loginData.access_token);
-
-      if (role === 'teacher') {
-        await createTeacherProfile(loginData.access_token);
-      }
-
+      // Teachers complete their profile from the dashboard afterwards; no
+      // placeholder profile is created here (it would pollute tutor search).
       router.push(safeRedirect(role));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');

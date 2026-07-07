@@ -127,6 +127,30 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl p-4 sm:p-6">
+      {/* Complete-profile prompt for teachers with no profile yet */}
+      {!profile?.profile && (
+        <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-2xl border border-amber/30 bg-amber/10 p-5 sm:flex-row sm:items-center">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber/20 text-amber-600">
+              <AlertCircle className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="font-display font-bold">Complete your profile</p>
+              <p className="text-sm text-muted-foreground">
+                Add your subjects, rate, and experience so students can find and hire you. You
+                won&apos;t appear in tutor search until your profile is complete.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => openEditModal('teaching')}
+            className="shrink-0 rounded-pill font-semibold shadow-glow"
+          >
+            Complete profile
+          </Button>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>

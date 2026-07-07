@@ -76,7 +76,10 @@ function TutorsContent() {
         // Initial load or reset - fetch all teachers
         const response = await fetch('/api/teachers');
         const data = await response.json();
-        setTutors(Array.isArray(data) ? data.map(toTutor) : []);
+        // Only show teachers who have completed a profile.
+        setTutors(
+          Array.isArray(data) ? data.filter((t: TeacherApiResponse) => t.profile).map(toTutor) : []
+        );
         return;
       }
 
