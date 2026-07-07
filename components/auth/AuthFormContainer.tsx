@@ -9,22 +9,38 @@ import { Input } from '@/components/ui/input';
 import { tokenService } from '@/lib/auth/token';
 import { AuthMode } from '@/types/auth';
 
+type AuthRole = 'student' | 'teacher';
+
 interface AuthFormContainerProps {
   defaultMode?: AuthMode;
+  defaultRole?: AuthRole;
 }
 
 interface TokenPayload {
   sub: string;
-  // add other token payload properties if needed
 }
 
-export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerProps) {
+/** Only allow same-origin relative redirects (avoid open-redirect). */
+function safeRedirect(role: AuthRole): string {
+  const fallback = role === 'teacher' ? '/dashboard' : '/tutors';
+  if (typeof window === 'undefined') return fallback;
+  const target = new URLSearchParams(window.location.search).get('redirect');
+  if (target && target.startsWith('/') && !target.startsWith('//')) {
+    return target;
+  }
+  return fallback;
+}
+
+export function AuthFormContainer({
+  defaultMode = 'login',
+  defaultRole = 'student',
+}: AuthFormContainerProps) {
   const router = useRouter();
   const [mode, setMode] = useState<AuthMode>(defaultMode);
+  const [role, setRole] = useState<AuthRole>(defaultRole);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Form states
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -43,44 +59,36 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
     }));
   };
 
+  // Teachers currently need a profile row to appear in search; students don't.
   const createTeacherProfile = async (token: string) => {
-    try {
-      const decoded = jwtDecode<TokenPayload>(token);
-      const teacherId = decoded.sub;
-
-      const profileData = {
-        district: 'Not Specified',
-        area: 'Not Specified',
-        gender: 'MALE',
-        age: 25,
-        medium: 'ENGLISH_MEDIUM',
-        education: 'Not Specified',
-        yearsOfExperience: 0,
-        subjects: ['Not Specified'],
-        specialization: 'Not Specified',
-        teachingLevel: 'Not Specified',
-        availability: 'Not Specified',
-        monthlySalary: 0,
-        teacherId: teacherId,
-      };
-
-      const response = await fetch('/api/teacher-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create teacher profile');
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    const decoded = jwtDecode<TokenPayload>(token);
+    const profileData = {
+      district: formData.district || 'Not Specified',
+      area: formData.area || 'Not Specified',
+      gender: 'MALE',
+      age: 25,
+      medium: 'ENGLISH_MEDIUM',
+      education: 'Not Specified',
+      yearsOfExperience: 0,
+      subjects: ['Not Specified'],
+      specialization: 'Not Specified',
+      teachingLevel: 'Not Specified',
+      availability: 'Not Specified',
+      monthlySalary: 0,
+      teacherId: decoded.sub,
+    };
+    const response = await fetch('/api/teacher-profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(profileData),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to create teacher profile');
     }
+    return response.json();
   };
 
   const handleRegister = async () => {
@@ -88,8 +96,7 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       setIsLoading(true);
       setError('');
 
-      // 1. Register the user
-      const registerResponse = await fetch('/api/register/teacher', {
+      const registerResponse = await fetch(`/api/register/${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,14 +115,11 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
         throw new Error(errorData.error || 'Registration failed');
       }
 
-      // 2. Automatically login after registration
-      const loginResponse = await fetch('/api/login/teacher', {
+      // Auto-login after registration.
+      const loginResponse = await fetch(`/api/login/${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.email, // Use email as username
-          password: formData.password,
-        }),
+        body: JSON.stringify({ username: formData.email, password: formData.password }),
       });
 
       if (!loginResponse.ok) {
@@ -123,19 +127,17 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       }
 
       const loginData = await loginResponse.json();
-
       if (!loginData.access_token) {
         throw new Error('No access token received');
       }
 
-      // 3. Store the token
       tokenService.setToken(loginData.access_token);
 
-      // 4. Create teacher profile
-      await createTeacherProfile(loginData.access_token);
+      if (role === 'teacher') {
+        await createTeacherProfile(loginData.access_token);
+      }
 
-      // 5. Redirect to dashboard
-      router.push('/dashboard');
+      router.push(safeRedirect(role));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
@@ -148,7 +150,7 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       setIsLoading(true);
       setError('');
 
-      const response = await fetch('/api/login/teacher', {
+      const response = await fetch(`/api/login/${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -159,15 +161,13 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(errorData.error || errorData.message || 'Login failed');
       }
 
       const data = await response.json();
-
       if (data.access_token) {
         tokenService.setToken(data.access_token);
-        const token = tokenService.getToken();
-        router.push('/dashboard');
+        router.push(safeRedirect(role));
       } else {
         throw new Error('No access token received');
       }
@@ -177,6 +177,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
       setIsLoading(false);
     }
   };
+
+  const roleNoun = role === 'teacher' ? 'tutor' : 'student';
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-mesh px-4 py-12">
@@ -190,11 +192,32 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
             {mode === 'login'
-              ? 'Log in to manage your tutoring profile and students.'
-              : 'Join Tuitioni and start connecting with students.'}
+              ? `Log in to your ${roleNoun} account.`
+              : role === 'teacher'
+                ? 'Join Tuitioni and start connecting with students.'
+                : 'Join Tuitioni and find your perfect tutor.'}
           </p>
         </div>
 
+        {/* Role selector */}
+        <div className="mb-3 flex gap-1 rounded-pill bg-secondary p-1">
+          {(['student', 'teacher'] as AuthRole[]).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRole(r)}
+              className={`w-1/2 rounded-pill py-2 text-sm font-semibold transition-all ${
+                role === r
+                  ? 'bg-card text-primary shadow-soft-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {r === 'student' ? "I'm a Student" : "I'm a Tutor"}
+            </button>
+          ))}
+        </div>
+
+        {/* Mode selector */}
         <div className="mb-6 flex gap-1 rounded-pill bg-secondary p-1">
           <button
             type="button"
@@ -274,8 +297,8 @@ export function AuthFormContainer({ defaultMode = 'login' }: AuthFormContainerPr
 
             <Input
               name={mode === 'login' ? 'username' : 'email'}
-              type={mode === 'login' ? 'text' : 'email'}
-              placeholder={mode === 'login' ? 'Username or email' : 'Email'}
+              type="email"
+              placeholder="Email"
               value={mode === 'login' ? formData.username : formData.email}
               onChange={handleInputChange}
               required
