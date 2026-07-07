@@ -1,24 +1,37 @@
+import { jwtDecode } from 'jwt-decode';
 import { NextResponse } from 'next/server';
 
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  // Two parallel sessions exist: teachers/students use `access_token`,
-  // admins use `admin_token`. Route by which one is present.
-  const userToken = request.cookies.get('access_token');
-  const adminToken = request.cookies.get('admin_token');
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin-dashboard');
-  const isAuthPage =
-    request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/register') ||
-    request.nextUrl.pathname === '/signin';
-  const isLogoutPage = request.nextUrl.pathname.startsWith('/api/auth/logout');
-  const isProtectedRoute =
-    request.nextUrl.pathname.startsWith('/admin-dashboard') ||
-    request.nextUrl.pathname.startsWith('/profile') ||
-    request.nextUrl.pathname.startsWith('/dashboard');
+/** Reads the role from a JWT without verifying it (routing only; the API verifies). */
+function roleOf(token: string | undefined): 'student' | 'teacher' | 'admin' | null {
+  if (!token) return null;
+  try {
+    return jwtDecode<{ role?: 'student' | 'teacher' | 'admin' }>(token).role ?? null;
+  } catch {
+    return null;
+  }
+}
 
-  // Allow logout requests to proceed
+export function middleware(request: NextRequest) {
+  // Two parallel sessions: teachers/students use `access_token`, admins use
+  // `admin_token`. The user token's role decides student vs teacher routing.
+  const userToken = request.cookies.get('access_token')?.value;
+  const adminToken = request.cookies.get('admin_token')?.value;
+  const role = roleOf(userToken);
+  const { pathname } = request.nextUrl;
+
+  const isAdminRoute = pathname.startsWith('/admin-dashboard');
+  const isTeacherRoute = pathname.startsWith('/dashboard');
+  const isStudentRoute = pathname.startsWith('/student-dashboard');
+  const isAuthPage =
+    pathname.startsWith('/login') || pathname.startsWith('/register') || pathname === '/signin';
+  const isLogoutPage = pathname.startsWith('/api/auth/logout');
+  const isProtectedRoute =
+    isAdminRoute || isTeacherRoute || isStudentRoute || pathname.startsWith('/profile');
+
+  const userHome = role === 'student' ? '/student-dashboard' : '/dashboard';
+
   if (isLogoutPage) {
     return NextResponse.next();
   }
@@ -28,22 +41,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/signin', request.url));
   }
 
-  // Other protected routes require either session.
-  if (!userToken && !adminToken && isProtectedRoute) {
+  // Teacher/student areas require a user session.
+  if ((isTeacherRoute || isStudentRoute || pathname.startsWith('/profile')) && !userToken) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Keep each role in its own area.
+  if (isTeacherRoute && role === 'student') {
+    return NextResponse.redirect(new URL('/student-dashboard', request.url));
+  }
+  if (isStudentRoute && role === 'teacher') {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Already signed in: send each session type to its own home.
   if (isAuthPage && (userToken || adminToken)) {
-    const home = adminToken ? '/admin-dashboard' : '/dashboard';
+    const home = adminToken ? '/admin-dashboard' : userHome;
     return NextResponse.redirect(new URL(home, request.url));
   }
 
   const response = NextResponse.next();
-
-  // Add request ID for tracing
   response.headers.set('X-Request-Id', crypto.randomUUID());
-
   return response;
 }
 
@@ -52,6 +70,7 @@ export const config = {
     '/admin-dashboard/:path*',
     '/profile/:path*',
     '/dashboard/:path*',
+    '/student-dashboard/:path*',
     '/login',
     '/register',
     '/signin',
