@@ -26,7 +26,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
     firstName: '',
     lastName: '',
     email: '',
-    location: '',
     phone: '',
     profile: {
       district: '',
@@ -54,7 +53,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          location: data.location,
           phone: data.phone,
           profile: data.profile
             ? {
@@ -189,14 +187,6 @@ export default function TeacherEdit({ params }: TeacherEditProps) {
           label="Phone"
           name="phone"
           value={formData.phone}
-          onChange={handleInputChange}
-          required
-        />
-
-        <Input
-          label="Location"
-          name="location"
-          value={formData.location}
           onChange={handleInputChange}
           required
         />

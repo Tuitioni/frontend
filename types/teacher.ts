@@ -1,4 +1,4 @@
-import { Gender, Medium } from "./index";
+import { Gender, Medium } from './index';
 
 //to use in the public page
 
@@ -6,7 +6,6 @@ export interface TeacherPreview {
   id: string;
   firstName: string;
   lastName: string;
-  location: string;
   profile: {
     district: string;
     area: string;
@@ -22,7 +21,6 @@ export interface TeacherDetail {
   firstName: string;
   lastName: string;
   email: string;
-  location: string;
   phone: string;
   createdAt: Date;
   updatedAt: Date;
@@ -66,7 +64,6 @@ export interface UpdateTeacherDto {
   lastName?: string;
   email?: string;
   password?: string;
-  location?: string;
   phone?: string;
   profile?: UpdateTeacherProfileDto;
 }
