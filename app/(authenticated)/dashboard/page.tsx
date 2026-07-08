@@ -25,6 +25,7 @@ import { useToken } from '@/hooks/useToken';
 import { TeacherDetail } from '@/types/teacher';
 
 import { ProfileEditModal } from './components/ProfileEditModal';
+import { TeacherApplications } from './components/TeacherApplications';
 
 export default function DashboardPage() {
   const { makeAuthenticatedRequest, logout } = useAuth();
@@ -429,6 +430,8 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+
+          <TeacherApplications teacherId={decodedToken?.sub} />
         </div>
       </div>
 
