@@ -6,6 +6,7 @@ import MobileMenu from './MobileMenu';
 import AuthButtons from './navbar/AuthButtons';
 import Logo from './navbar/Logo';
 import NavbarButtons from './NavbarButtons';
+import NotificationBell from './NotificationBell';
 import { ThemeToggle } from './ThemeToggle';
 
 export default function Navbar() {
@@ -16,6 +17,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <NavbarButtons />
+          <NotificationBell />
           <AuthButtons />
           <ThemeToggle />
           <MobileMenu className="md:hidden" />
