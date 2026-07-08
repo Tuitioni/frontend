@@ -145,12 +145,14 @@ export default function Page() {
                 {jobs.map((job) => (
                   <JobCard
                     key={job.id}
+                    postId={job.id}
                     title={`${job.firstName} ${job.lastName}`}
                     description={job.note}
                     medium={job.medium}
                     subjects={job.subjects}
                     tutoringDays={`${job.numberOfDays} days per week`}
-                    monthlySalary={`$${job.salary}`}
+                    monthlySalary={`৳${job.salary?.toLocaleString?.() ?? job.salary}`}
+                    salaryValue={job.salary}
                   />
                 ))}
               </div>
