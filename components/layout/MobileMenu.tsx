@@ -14,8 +14,9 @@ interface MobileMenuProps {
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
-  { name: 'Jobs', path: '/jobs' },
-  { name: 'Tutors', path: '/tutors' },
+  { name: 'Find Tutors', path: '/tutors' },
+  { name: 'Post a Request', path: '/post-tuition' },
+  { name: 'Teaching Jobs', path: '/jobs' },
   { name: 'How we work', path: '/aboutUs' },
 ];
 
